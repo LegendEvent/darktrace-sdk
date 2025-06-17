@@ -8,6 +8,14 @@
 
 ---
 
+## 🆕 Latest Updates (v1.0.4)
+
+- **Critical Authentication Fix**: Fixed parameter order mismatch between signature calculation and request URLs
+- **Consistent Parameter Ordering**: Ensured parameters are sorted alphabetically in both signature calculation and requests
+- **Improved BaseEndpoint Class**: Updated to handle parameter sorting consistently across all API calls
+
+---
+
 ## ✨ Features
 
 - **100% API Coverage**: Every endpoint, every parameter, every action from the official Darktrace API Guide is implemented.

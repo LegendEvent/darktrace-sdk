@@ -40,3 +40,8 @@ Thumbs.db
 
 # Project specific files
 Darktrace_API_Guide.txt
+fix_modules.py
+fix_syntax.py
+update_endpoints.py
+check_endpoints.py
+commit_and_push.sh

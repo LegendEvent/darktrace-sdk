@@ -1,16 +1,16 @@
 import requests
 from typing import Optional
-from .dt_utils import debug_print
+from .dt_utils import debug_print, BaseEndpoint
 
-class DeviceInfo:
+class DeviceInfo(BaseEndpoint):
     def __init__(self, client):
-        self.client = client
+        super().__init__(client)
 
     def get(self, did: int, datatype: str = "co", odid: Optional[int] = None, port: Optional[int] = None, external_domain: Optional[str] = None, full_device_details: bool = False, show_all_graph_data: bool = True, similar_devices: Optional[int] = None, interval_hours: int = 1, **params):
         """Get device connection information."""
         endpoint = '/deviceinfo'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         params.update({
             'did': did,
             'datatype': datatype,
@@ -27,6 +27,6 @@ class DeviceInfo:
         if similar_devices is not None:
             params['similardevices'] = similar_devices
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
         response.raise_for_status()
         return response.json() 

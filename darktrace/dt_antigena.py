@@ -1,18 +1,18 @@
 import requests
 from typing import Dict, Any, Union, Optional, List
-from .dt_utils import debug_print
+from .dt_utils import debug_print, BaseEndpoint
 
-class Antigena:
+class Antigena(BaseEndpoint):
     def __init__(self, client):
-        self.client = client
+        super().__init__(client)
 
     def get_actions(self, **params):
         """Get information about current and past Antigena actions."""
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
         response.raise_for_status()
         return response.json()
 
@@ -20,7 +20,7 @@ class Antigena:
         """Approve/activate a pending Antigena action."""
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         body: Dict[str, Any] = {"codeid": code_id, "activate": True}
         if reason:
             body["reason"] = reason
@@ -34,7 +34,7 @@ class Antigena:
         """Extend an active Antigena action."""
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         body: Dict[str, Any] = {"codeid": code_id, "duration": duration}
         if reason:
             body["reason"] = reason
@@ -46,7 +46,7 @@ class Antigena:
         """Clear an active, pending or expired Antigena action."""
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         body: Dict[str, Any] = {"codeid": code_id, "clear": True}
         if reason:
             body["reason"] = reason
@@ -58,7 +58,7 @@ class Antigena:
         """Reactivate a cleared or expired Antigena action."""
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         body: Dict[str, Any] = {"codeid": code_id, "activate": True, "duration": duration}
         if reason:
             body["reason"] = reason
@@ -70,7 +70,7 @@ class Antigena:
         """Create a manual Antigena action."""
         endpoint = '/antigena/manual'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         body: Dict[str, Any] = {"did": did, "action": action, "duration": duration, "reason": reason}
         if action == 'connection' and connections:
             body["connections"] = connections
@@ -86,8 +86,8 @@ class Antigena:
         """Get a summary of active and pending Antigena actions."""
         endpoint = '/antigena/summary'
         url = f"{self.client.host}{endpoint}"
-        headers = self.client.auth.get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
         response.raise_for_status()
         return response.json() 
