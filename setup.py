@@ -12,7 +12,7 @@ setup(
     author='LegendEvent',
     author_email='ridge.thrill7680@eagereverest.com',
     url='https://github.com/LegendEvent/darktrace-sdk',
-    packages=find_packages(),
+    packages=['darktrace'],
     install_requires=[
         'requests>=2.25.1',
     ],
