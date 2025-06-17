@@ -25,6 +25,12 @@
 pip install darktrace-sdk
 ```
 
+After installation, you'll import it in Python as `darktrace`:
+
+```python
+from darktrace import DarktraceClient
+```
+
 Or clone this repository:
 
 ```bash
