@@ -45,3 +45,4 @@ fix_syntax.py
 update_endpoints.py
 check_endpoints.py
 commit_and_push.sh
+generate_docs.py
