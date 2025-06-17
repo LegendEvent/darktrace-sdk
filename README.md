@@ -16,6 +16,7 @@
 - **Async-Ready**: Designed for easy extension to async workflows.
 - **Type Hints & Docstrings**: Full typing and documentation for all public methods.
 - **Production-Ready**: Suitable for SIEM/SOC integration, automation, and research.
+- **Comprehensive Documentation**: Detailed documentation for every module and endpoint.
 
 ---
 
@@ -44,7 +45,7 @@ pip install .
 ## 🚦 Quick Start
 
 ```python
-from darktrace import DarktraceClient, Devices, Antigena
+from darktrace import DarktraceClient
 
 # Initialize the client
 client = DarktraceClient(
@@ -54,15 +55,32 @@ client = DarktraceClient(
 )
 
 # Access endpoint groups
-devices = Devices(client)
+devices = client.devices
 all_devices = devices.get()
 
-antigena = Antigena(client)
+antigena = client.antigena
 actions = antigena.get_actions()
 
 print(all_devices)
 print(actions)
 ```
+
+---
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the [docs](docs/) directory:
+
+- [Main Documentation](docs/README.md) - Overview and getting started
+- [Authentication](docs/modules/auth.md) - How authentication works
+- [Antigena](docs/modules/antigena.md) - Managing Antigena actions
+- [Devices](docs/modules/devices.md) - Working with device information
+- [Model Breaches](docs/modules/breaches.md) - Handling model breach alerts
+- [Status](docs/modules/status.md) - System status information
+
+And [many more modules](docs/modules/) covering every aspect of the Darktrace API.
+
+See the [EXAMPLES.md](EXAMPLES.md) file for additional usage examples.
 
 ---
 
