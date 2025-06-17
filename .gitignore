@@ -1,14 +1,42 @@
+# Python package files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.env
-.venv
-.env.*
-*.egg-info/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
 build/
-dist/ 
-Darktrace_API_Guide.txt
-*.cursor/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 darktrace_sdk.egg-info/
+
+# Virtual environments
+test_env/
 venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.cursor/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Project specific files
+Darktrace_API_Guide.txt
