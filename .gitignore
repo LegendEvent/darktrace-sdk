@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+.env.*
+*.egg-info/
+build/
+dist/ 
+Darktrace_API_Guide.txt
+*.cursor/
+darktrace_sdk.egg-info/
+venv/
