@@ -40,6 +40,7 @@ The authentication process is handled automatically by the SDK, but here's how i
 1. For each API request, the SDK generates a timestamp in UTC format
 2. It creates a signature using:
    - The request path (e.g., `/devices`)
+   - Any query parameters, sorted alphabetically by key (e.g., `?fulldetails=true&source=ThreatIntel`)
    - Your public token
    - The current timestamp
    - Your private token as the HMAC key
@@ -49,6 +50,16 @@ The authentication process is handled automatically by the SDK, but here's how i
    - `DTAPI-Date`: The current timestamp
    - `DTAPI-Signature`: The generated signature
    - `Content-Type`: `application/json`
+5. The same sorted query parameters are used in the actual request to ensure consistency
+
+## Parameter Ordering
+
+The Darktrace API requires that query parameters be included in the signature calculation in **alphabetical order**. The SDK ensures that:
+
+1. Parameters are sorted alphabetically for signature calculation
+2. The same sorted parameters are used in the actual request
+
+This prevents API signature errors that can occur if the parameter order differs between signature calculation and the actual request.
 
 ## Security Best Practices
 
