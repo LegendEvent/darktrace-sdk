@@ -19,7 +19,7 @@ class AdvancedSearch(BaseEndpoint):
             url = f"{self.client.host}{endpoint}/{encoded_query}"
             headers, sorted_params = self._get_headers(f"{endpoint}/{encoded_query}")
             self.client._debug(f"GET {url}")
-            response = requests.get(url, headers=headers, params=sorted_params or , verify=False)
+            response = requests.get(url, headers=headers, params=sorted_params, verify=False)
         response.raise_for_status()
         return response.json()
 
@@ -30,7 +30,7 @@ class AdvancedSearch(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url}")
-        response = requests.get(url, headers=headers, params=sorted_params or , verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
         response.raise_for_status()
         return response.json()
 
@@ -41,6 +41,6 @@ class AdvancedSearch(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url}")
-        response = requests.get(url, headers=headers, params=sorted_params or , verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
         response.raise_for_status()
         return response.json() 
