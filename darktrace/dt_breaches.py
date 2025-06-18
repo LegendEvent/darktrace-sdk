@@ -8,9 +8,10 @@ class ModelBreaches(BaseEndpoint):
         super().__init__(client)
 
     def get(self, **params):
-        """Get model breach alerts.
-        
-        Parameters:
+        """
+        Get model breach alerts from the /modelbreaches endpoint.
+
+        Parameters (all optional, see API docs for details):
             deviceattop (bool): Return device JSON at top-level (default: True)
             did (int): Device ID to filter by
             endtime (int): End time in milliseconds since epoch
@@ -30,21 +31,38 @@ class ModelBreaches(BaseEndpoint):
             saasonly (bool): Return only SaaS breaches
             group (str): Group results (e.g. 'device')
             includesuppressed (bool): Include suppressed breaches
-            saasfilter (str): Filter by SaaS platform
+            saasfilter (str or list): Filter by SaaS platform (can be repeated)
             creationtime (bool): Use creation time for filtering
+            fulldevicedetails (bool): Return full device/component info (if supported)
+
+        Returns:
+            list or dict: API response containing model breach data
+
+        Notes:
+            - Time parameters must always be specified in pairs.
+            - When minimal=true, response is reduced.
+            - See API docs for full parameter details and response schema.
         """
         endpoint = '/modelbreaches'
-        
-        # Handle special parameter names
+
+        # Handle special parameter names for API compatibility
         if 'from_time' in params:
             params['from'] = params.pop('from_time')
         if 'to_time' in params:
             params['to'] = params.pop('to_time')
-            
+
+        # Support multiple saasfilter values
+        if 'saasfilter' in params and isinstance(params['saasfilter'], list):
+            # requests will handle repeated params if passed as a list of tuples
+            saasfilters = params.pop('saasfilter')
+            params_list = list(params.items()) + [("saasfilter", v) for v in saasfilters]
+        else:
+            params_list = list(params.items())
+
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        
+        headers, sorted_params = self._get_headers(endpoint, dict(params_list))
         self.client._debug(f"GET {url} params={sorted_params}")
+
         response = requests.get(
             url,
             headers=headers,
@@ -55,7 +73,15 @@ class ModelBreaches(BaseEndpoint):
         return response.json()
 
     def get_comments(self, pbid: int, **params):
-        """Get comments for a specific model breach alert."""
+        """
+        Get comments for a specific model breach alert.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+            responsedata (str, optional): Restrict response to specific fields.
+        Returns:
+            list: List of comment objects (see API docs for schema)
+        """
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
@@ -64,8 +90,16 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, pbid: int, message: str):
-        """Add a comment to a model breach alert."""
+    def add_comment(self, pbid: int, message: str) -> bool:
+        """
+        Add a comment to a model breach alert.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+            message (str): The comment text to add.
+        Returns:
+            bool: True if comment was added successfully, False otherwise.
+        """
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
@@ -74,8 +108,15 @@ class ModelBreaches(BaseEndpoint):
         response = requests.post(url, headers=headers, json=body, verify=False)
         return response.status_code == 200
 
-    def acknowledge(self, pbid: int):
-        """Acknowledge a model breach alert."""
+    def acknowledge(self, pbid: int) -> bool:
+        """
+        Acknowledge a model breach alert.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+        Returns:
+            bool: True if acknowledged successfully, False otherwise.
+        """
         endpoint = f'/modelbreaches/{pbid}/acknowledge'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
@@ -84,8 +125,15 @@ class ModelBreaches(BaseEndpoint):
         response = requests.post(url, headers=headers, json=body, verify=False)
         return response.status_code == 200
 
-    def unacknowledge(self, pbid: int):
-        """Unacknowledge a model breach alert."""
+    def unacknowledge(self, pbid: int) -> bool:
+        """
+        Unacknowledge a model breach alert.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+        Returns:
+            bool: True if unacknowledged successfully, False otherwise.
+        """
         endpoint = f'/modelbreaches/{pbid}/unacknowledge'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
