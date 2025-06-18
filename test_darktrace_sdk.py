@@ -72,18 +72,87 @@ def test_devices(client, limit=5):
 
 def test_model_breaches(client, limit=5):
     """Test getting model breaches from Darktrace"""
-    print("\nFetching model breaches...")
+    print("\nTesting model breaches endpoint...")
+    successes = 0
+    total_tests = 3
+    
     try:
-        # Using multiple parameters to test parameter ordering in authentication
-        breaches = client.breaches.get(count=limit, full_details=True)
-        breach_count = len(breaches.get('modelbreaches', []))
-        print(f"✅ Found {breach_count} model breaches")
+        # Test 1: Basic breach retrieval with count limit
+        print("\nTest 1: Basic breach retrieval...")
+        try:
+            breaches = client.breaches.get(minimal=True, count=limit)
+            print(f"Raw response type: {type(breaches)}")
+            
+            if isinstance(breaches, list):
+                print(f"✅ Found {len(breaches)} model breaches")
+                # Print some details about each breach
+                for i, breach in enumerate(breaches[:limit]):
+                    model_name = breach.get('model', {}).get('then', {}).get('name', 'Unknown')
+                    pbid = breach.get('pbid', 'Unknown')
+                    print(f"  [{i+1}] {model_name} (ID: {pbid})")
+                successes += 1
+            else:
+                print(f"❌ Expected list response for breaches, got {type(breaches)}")
+        except Exception as e:
+            print(f"❌ Error in test 1: {str(e)}")
+            return False
         
-        # Print some details about each breach
-        for i, breach in enumerate(breaches.get('modelbreaches', [])[:limit]):
-            model = breach.get('model', {})
-            print(f"  [{i+1}] {model.get('name', 'Unknown')} - Score: {breach.get('score', 'Unknown')}")
-        return True
+        # Test 2: Detailed breach info with device at top
+        print("\nTest 2: Detailed breach info...")
+        try:
+            detailed_breaches = client.breaches.get(
+                minimal=False,
+                deviceattop=True,
+                count=1,
+                expandenums=True
+            )
+            
+            print(f"Raw response type: {type(detailed_breaches)}")
+            
+            if isinstance(detailed_breaches, list):
+                print("✅ Successfully retrieved breach response")
+                print(f"  Found {len(detailed_breaches)} detailed breaches")
+                # Print some details from the first breach
+                if detailed_breaches:
+                    first_breach = detailed_breaches[0]
+                    model_name = first_breach.get('model', {}).get('then', {}).get('name', 'Unknown')
+                    device = first_breach.get('device', {})
+                    print(f"  First breach: {model_name}")
+                    if device:
+                        print(f"  Device: {device.get('hostname', 'Unknown')} ({device.get('did', 'Unknown')})")
+                successes += 1
+            else:
+                print(f"❌ Expected list response for detailed breaches, got {type(detailed_breaches)}")
+        except Exception as e:
+            print(f"❌ Error in test 2: {str(e)}")
+            return False
+        
+        # Test 3: Time-based filtering (last 24 hours)
+        print("\nTest 3: Time-based filtering...")
+        try:
+            from datetime import datetime, timezone, timedelta
+            end = datetime.now(timezone.utc)
+            start = end - timedelta(days=1)
+            time_breaches = client.breaches.get(
+                from_time=start.strftime('%Y-%m-%d %H:%M:%S'),
+                to_time=end.strftime('%Y-%m-%d %H:%M:%S'),
+                minimal=True
+            )
+            
+            print(f"Raw response type: {type(time_breaches)}")
+            
+            if isinstance(time_breaches, list):
+                print("✅ Successfully retrieved time-filtered breaches")
+                print(f"  Found {len(time_breaches)} breaches in the last 24 hours")
+                successes += 1
+            else:
+                print(f"❌ Expected list response for time-filtered breaches, got {type(time_breaches)}")
+        except Exception as e:
+            print(f"❌ Error in test 3: {str(e)}")
+            return False
+        
+        print(f"\nModel breaches tests completed: {successes}/{total_tests} passed")
+        return successes == total_tests
     
     except requests.RequestException as e:
         print(f"❌ Error fetching model breaches: {str(e)}")
@@ -92,7 +161,7 @@ def test_model_breaches(client, limit=5):
             print(f"Response text: {e.response.text}")
         return False
     except Exception as e:
-        print(f"❌ Error fetching model breaches: {str(e)}")
+        print(f"❌ Error in model breaches test: {str(e)}")
         return False
 
 def test_intel_feed(client):
@@ -199,4 +268,4 @@ def main():
     print("\n✅ All tests completed successfully!")
 
 if __name__ == "__main__":
-    main() 
+    main()
