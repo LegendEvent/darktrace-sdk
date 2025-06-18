@@ -35,7 +35,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params or , data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
         return response.status_code == 200
 
     def unacknowledge(self, uuids: Union[str, List[str]]):
@@ -47,7 +47,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params or , data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
         return response.status_code == 200
 
     def pin(self, uuids: Union[str, List[str]]):
@@ -59,7 +59,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params or , data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
         return response.status_code == 200
 
     def unpin(self, uuids: Union[str, List[str]]):
@@ -71,7 +71,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params or , data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
         return response.status_code == 200
 
     def get_comments(self, incident_id: str, response_data: Optional[str] = ""):
