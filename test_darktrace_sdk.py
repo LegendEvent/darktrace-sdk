@@ -385,6 +385,136 @@ def test_advanced_search(client, limit=5):
         print(f"❌ Error testing Advanced Search: {str(e)}")
         return False
 
+def test_analyst(client):
+    """Test the AI Analyst module with various endpoints and parameters"""
+    print("\nTesting AI Analyst module...")
+    try:
+        success_count = 0
+        total_tests = 7
+        
+        # Test 1: Get incident events
+        print("\nTest 1: Getting incident events...")
+        try:
+            events = client.analyst.get_incident_events()
+            if isinstance(events, list):
+                print(f"✅ Found {len(events)} incident events")
+            else:
+                print(f"✅ Incident events response: {type(events)}")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error getting incident events: {str(e)}")
+        
+        # Test 2: Get incident events with parameters
+        print("\nTest 2: Getting incident events with parameters...")
+        try:
+            # Get events from last 24 hours with specific score range
+            import time
+            now = int(time.time() * 1000)
+            yesterday = now - (24 * 60 * 60 * 1000)
+            
+            events_filtered = client.analyst.get_incident_events(
+                starttime=yesterday,
+                endtime=now,
+                minscore=50,
+                includeacknowledged=False
+            )
+            if isinstance(events_filtered, list):
+                print(f"✅ Found {len(events_filtered)} high-score unacknowledged events from last 24h")
+            else:
+                print(f"✅ Filtered incident events response: {type(events_filtered)}")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error getting filtered incident events: {str(e)}")
+        
+        # Test 3: Get incident groups
+        print("\nTest 3: Getting incident groups...")
+        try:
+            groups = client.analyst.get_groups()
+            if isinstance(groups, list):
+                print(f"✅ Found {len(groups)} incident groups")
+            else:
+                print(f"✅ Groups response: {type(groups)}")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error getting groups: {str(e)}")
+        
+        # Test 4: Get groups with filtering
+        print("\nTest 4: Getting groups with category filtering...")
+        try:
+            critical_groups = client.analyst.get_groups(
+                groupcritical=True,
+                includeacknowledged=False
+            )
+            if isinstance(critical_groups, list):
+                print(f"✅ Found {len(critical_groups)} unacknowledged critical groups")
+            else:
+                print(f"✅ Critical groups response: {type(critical_groups)}")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error getting critical groups: {str(e)}")
+        
+        # Test 5: Get statistics
+        print("\nTest 5: Getting AI Analyst statistics...")
+        try:
+            stats = client.analyst.get_stats()
+            if isinstance(stats, dict):
+                print(f"✅ Got statistics: {list(stats.keys())}")
+            else:
+                print(f"✅ Stats response: {type(stats)}")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error getting stats: {str(e)}")
+        
+        # Test 6: Get investigations
+        print("\nTest 6: Getting AI Analyst investigations...")
+        try:
+            investigations = client.analyst.get_investigations()
+            if isinstance(investigations, list):
+                print(f"✅ Found {len(investigations)} investigations")
+                
+                # Show some details if investigations exist
+                for i, investigation in enumerate(investigations[:2]):
+                    inv_id = investigation.get('investigationId', 'Unknown')
+                    status = investigation.get('status', 'Unknown')
+                    did = investigation.get('did', 'Unknown')
+                    print(f"  [{i+1}] Investigation {inv_id}: Device {did}, Status: {status}")
+                    
+            else:
+                print(f"✅ Investigations response: {type(investigations)}")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error getting investigations: {str(e)}")
+        
+        # Test 7: Test comments functionality (read-only)
+        print("\nTest 7: Testing comments functionality...")
+        try:
+            # Try to get events first to find an incident ID for testing comments
+            events = client.analyst.get_incident_events()
+            if isinstance(events, list) and len(events) > 0:
+                # Use the first event's ID to test comments
+                test_incident_id = events[0].get('id', '')
+                if test_incident_id:
+                    comments = client.analyst.get_comments(test_incident_id)
+                    if isinstance(comments, dict):
+                        comment_list = comments.get('comments', [])
+                        print(f"✅ Found {len(comment_list)} comments for incident {test_incident_id}")
+                    else:
+                        print(f"✅ Comments response: {type(comments)}")
+                else:
+                    print("⚠️  No incident ID found in events, skipping comments test")
+            else:
+                print("⚠️  No events available, skipping comments test")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ Error testing comments: {str(e)}")
+        
+        print(f"\nAI Analyst tests completed: {success_count}/{total_tests} passed")
+        return success_count == total_tests
+        
+    except Exception as e:
+        print(f"❌ Error in AI Analyst test: {str(e)}")
+        return False
+
 def main():
     """Main function to run the test script"""
     parser = argparse.ArgumentParser(description='Test the Darktrace SDK')
@@ -399,8 +529,7 @@ def main():
     # Disable SSL warnings if requested
     if args.no_verify:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    
-    # Test the connection and get client
+      # Test the connection and get client
     client = test_connection(args.host, args.public_token, args.private_token, args.debug, not args.no_verify)
     if not client:
         sys.exit(1)
@@ -410,6 +539,7 @@ def main():
     test_model_breaches(client)
     test_intel_feed(client)  # Added test for Intel Feed
     test_antigena_actions(client)
+    test_analyst(client)  # Added test for AI Analyst
     test_advanced_search(client)  # Added test for Advanced Search
     
     print("\n✅ All tests completed successfully!")
