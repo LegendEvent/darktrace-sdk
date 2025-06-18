@@ -43,18 +43,20 @@ def test_connection(host, public_token, private_token, debug=False, verify_ssl=T
         return None
     except Exception as e:
         print(f"❌ Connection failed: {str(e)}")
-        return None
-
+        return None    
+    
 def test_devices(client, limit=5):
     """Test getting devices from Darktrace"""
     print("\nFetching devices...")
     try:
         # Using count parameter to demonstrate parameter handling
         devices = client.devices.get(count=limit)
-        print(f"✅ Found {len(devices.get('devices', []))} devices")
+        if isinstance(devices, dict):
+            devices = devices.get('devices', [])
+        print(f"✅ Found {len(devices)} devices")
         
         # Print some details about each device
-        for i, device in enumerate(devices.get('devices', [])[:limit]):
+        for i, device in enumerate(devices[:limit]):
             print(f"  [{i+1}] {device.get('hostname', 'Unknown')} (ID: {device.get('did', 'Unknown')})")
         return True
     
