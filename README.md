@@ -8,11 +8,13 @@
 
 ---
 
-## 🆕 Latest Updates (v1.0.4)
+## 🆕 Latest Updates (v1.0.5)
 
 - **Critical Authentication Fix**: Fixed parameter order mismatch between signature calculation and request URLs
 - **Consistent Parameter Ordering**: Ensured parameters are sorted alphabetically in both signature calculation and requests
 - **Improved BaseEndpoint Class**: Updated to handle parameter sorting consistently across all API calls
+- **Fixed AI Analyst Module**: Updated authentication handling in the analyst module
+- **Enhanced Examples**: Added comprehensive examples for Intel Feed module
 
 ---
 
