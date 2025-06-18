@@ -28,7 +28,7 @@ from .dt_details import Details
 from .dt_deviceinfo import DeviceInfo
 from .dt_devicesearch import DeviceSearch
 from .dt_breaches import ModelBreaches
-from .dt_advanced_search import AdvancedSearch
+from .dt_advanced_search import AdvancedSearch 
 
 __all__ = [
     'Antigena',
@@ -64,4 +64,4 @@ __all__ = [
 ]
 
 # Version
-__version__ = '1.0.2' 
+__version__ = '1.0.4' 

@@ -61,7 +61,7 @@ With `full_details=True`, the response includes additional information:
 
 ```json
 [
-  {
+{
     "name": "example1.com",
     "description": "Test"
   },

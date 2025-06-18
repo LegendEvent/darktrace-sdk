@@ -37,10 +37,10 @@ class DarktraceAuth:
         
         return {
             'headers': {
-                'DTAPI-Token': self.public_token,
-                'DTAPI-Date': date,
-                'DTAPI-Signature': signature,
-                'Content-Type': 'application/json',
+            'DTAPI-Token': self.public_token,
+            'DTAPI-Date': date,
+            'DTAPI-Signature': signature,
+            'Content-Type': 'application/json',
             },
             'params': sorted_params or params
         }
