@@ -101,18 +101,32 @@ def test_intel_feed(client):
         sources = client.intelfeed.get_sources()
         print(f"✅ Found {len(sources)} Intel Feed sources")
         
+        # Test basic get functionality
+        print("Testing basic get functionality...")
+        entries = client.intelfeed.get()
+        print(f"✅ Found {len(entries)} Intel Feed entries")
+        
+        # Test get with full_details parameter
+        print("Testing get with full_details parameter...")
+        detailed_entries = client.intelfeed.get(full_details=True)
+        print(f"✅ Found {len(detailed_entries)} detailed Intel Feed entries")
+        
         # If there are sources, try to get entries from the first source
         if sources and len(sources) > 0:
             source = sources[0]
             print(f"Fetching entries from source '{source}'...")
             
-            # Using multiple parameters to test parameter ordering in authentication
-            entries = client.intelfeed.get(source=source, full_details=True)
-            entry_count = len(entries)
-            print(f"✅ Found {entry_count} entries in source '{source}'")
+            # Test source parameter
+            source_entries = client.intelfeed.get(source=source)
+            print(f"✅ Found {len(source_entries)} entries in source '{source}'")
+            
+            # Test multiple parameters together (source and full_details)
+            print(f"Testing multiple parameters (source and full_details)...")
+            detailed_source_entries = client.intelfeed.get(source=source, full_details=True)
+            print(f"✅ Found {len(detailed_source_entries)} detailed entries in source '{source}'")
             
             # Print some details about a few entries
-            for i, entry in enumerate(entries[:3]):
+            for i, entry in enumerate(detailed_source_entries[:3]):
                 if isinstance(entry, dict):
                     print(f"  [{i+1}] {entry.get('name', 'Unknown')} - {entry.get('description', 'No description')}")
                 else:

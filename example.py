@@ -82,6 +82,42 @@ def main():
     except Exception as e:
         print(f"Error getting Antigena actions: {e}")
     
+    # Example 5: Get Intel Feed sources and entries
+    print("\nExample 5: Get Intel Feed sources and entries")
+    try:
+        # Get all available sources
+        sources = client.intelfeed.get_sources()
+        print(f"Found {len(sources)} Intel Feed sources")
+        
+        # Print the first few sources
+        for source in sources[:3]:
+            print(f"Source: {source}")
+        
+        # Get entries with full details
+        print("\nGetting Intel Feed entries with full details...")
+        entries = client.intelfeed.get(full_details=True)
+        print(f"Found {len(entries)} Intel Feed entries")
+        
+        # If sources exist, get entries from a specific source
+        if sources:
+            source = sources[0]
+            print(f"\nGetting entries from source '{source}' with full details...")
+            # This demonstrates the fixed authentication with multiple parameters
+            source_entries = client.intelfeed.get(source=source, full_details=True)
+            print(f"Found {len(source_entries)} entries in source '{source}'")
+            
+            # Print details about the first few entries
+            for i, entry in enumerate(source_entries[:3]):
+                if isinstance(entry, dict):
+                    name = entry.get('name', 'Unknown')
+                    desc = entry.get('description', 'No description')
+                    expiry = entry.get('expiry', 'No expiry')
+                    print(f"Entry {i+1}: {name} - {desc} (Expires: {expiry})")
+                else:
+                    print(f"Entry {i+1}: {entry}")
+    except Exception as e:
+        print(f"Error getting Intel Feed data: {e}")
+    
     print("\nExample script completed!")
 
 if __name__ == "__main__":
