@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Test script for the Darktrace SDK
@@ -745,6 +746,56 @@ def test_analyst(client):
     except Exception as e:
         print(f"❌ Error in AI Analyst test: {str(e)}")
         return False
+    
+def test_components(client):
+    """Test the Components module (read-only)."""
+    print("\nTesting Components endpoint (read-only)...")
+    try:
+        # Test 1: Get all components
+        print("Test 1: Get all components...")
+        components = client.components.get()
+        if isinstance(components, list):
+            print(f"✅ Found {len(components)} components.")
+        elif isinstance(components, dict):
+            print(f"✅ Got a single component: {components.get('cid', 'Unknown')}")
+        else:
+            print(f"❌ Unexpected response type: {type(components)}")
+
+        # Test 2: Get a single component by cid (if available)
+        print("Test 2: Get a single component by cid...")
+        cid = None
+        if isinstance(components, list) and components:
+            cid = components[0].get('cid')
+        elif isinstance(components, dict):
+            cid = components.get('cid')
+        if cid is not None:
+            single_component = client.components.get(cid=cid)
+            if isinstance(single_component, dict):
+                print(f"✅ Retrieved component with cid={cid}")
+            else:
+                print(f"❌ Unexpected response type for single component: {type(single_component)}")
+        else:
+            print("⚠️  No component ID available for single component test.")
+
+        # Test 3: Use responsedata parameter
+        print("Test 3: Use responsedata parameter...")
+        filters_only = client.components.get(responsedata='filters')
+        if isinstance(filters_only, list) or isinstance(filters_only, dict):
+            print(f"✅ Responsedata=filters returned type: {type(filters_only)}")
+            # Print the first filter if it's a list and not empty
+            if isinstance(filters_only, list) and filters_only:
+                print(f"First filter: {filters_only[0]}")
+            elif isinstance(filters_only, dict):
+                print(f"Keys: {list(filters_only.keys())}")
+        else:
+            print(f"❌ Unexpected response for responsedata=filters: {type(filters_only)}")
+
+        print("\nComponents tests completed.")
+        return True
+    except Exception as e:
+        print(f"❌ Error testing Components: {e}")
+        return False
+
 
 def main():
     """Main function to run the test script"""
@@ -772,6 +823,7 @@ def main():
     test_antigena_actions(client)
     test_analyst(client)  # Added test for AI Analyst
     test_advanced_search(client)  # Added test for Advanced Search
+    test_components(client)  # Added test for Components (read-only)
     
     print("\n✅ All tests completed successfully!")
 
