@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Test script for the Darktrace SDK
@@ -796,6 +795,48 @@ def test_components(client):
         print(f"❌ Error testing Components: {e}")
         return False
 
+def test_cves(client):
+    """Test the CVEs module (read-only)."""
+    print("\nTesting CVEs endpoint (read-only)...")
+    try:
+        # Test 1: Get all CVEs
+        print("Test 1: Get all CVEs...")
+        cves = client.cves.get()
+        if isinstance(cves, dict) and 'results' in cves:
+            print(f"✅ Found {len(cves['results'])} CVE device entries.")
+        else:
+            print(f"❌ Unexpected response type: {type(cves)}")
+
+        # Test 2: Get CVEs for a single device (if available)
+        print("Test 2: Get CVEs for a single device...")
+        did = None
+        if isinstance(cves, dict) and 'results' in cves and cves['results']:
+            did = cves['results'][0].get('did')
+        if did is not None:
+            single_device_cves = client.cves.get(did=did)
+            if isinstance(single_device_cves, dict) and 'results' in single_device_cves:
+                print(f"✅ Retrieved CVEs for device did={did}, count: {len(single_device_cves['results'])}")
+            else:
+                print(f"❌ Unexpected response type for single device CVEs: {type(single_device_cves)}")
+        else:
+            print("⚠️  No device ID available for single device CVE test.")
+
+        # Test 3: Use fulldevicedetails parameter
+        print("Test 3: Use fulldevicedetails parameter...")
+        cves_full = client.cves.get(fulldevicedetails=True)
+        if isinstance(cves_full, dict):
+            if 'devices' in cves_full:
+                print(f"✅ fulldevicedetails returned devices object with {len(cves_full['devices'])} devices.")
+            else:
+                print("⚠️  fulldevicedetails did not return a devices object.")
+        else:
+            print(f"❌ Unexpected response for fulldevicedetails: {type(cves_full)}")
+
+        print("\nCVEs tests completed.")
+        return True
+    except Exception as e:
+        print(f"❌ Error testing CVEs: {e}")
+        return False
 
 def main():
     """Main function to run the test script"""
@@ -824,6 +865,7 @@ def main():
     test_analyst(client)  # Added test for AI Analyst
     test_advanced_search(client)  # Added test for Advanced Search
     test_components(client)  # Added test for Components (read-only)
+    test_cves(client)  # Added test for CVEs (read-only)
     
     print("\n✅ All tests completed successfully!")
 
