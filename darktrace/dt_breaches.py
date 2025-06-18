@@ -90,54 +90,57 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, pbid: int, message: str) -> bool:
+    def add_comment(self, pbid: int, message: str, **params) -> bool:
         """
         Add a comment to a model breach alert.
 
         Args:
             pbid (int): Policy breach ID of the model breach.
             message (str): The comment text to add.
+            params: Additional parameters for the API call (future-proofing, e.g., responsedata)
         Returns:
             bool: True if comment was added successfully, False otherwise.
         """
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint, params)
         body: Dict[str, Any] = {'message': message}
-        self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        self.client._debug(f"POST {url} params={sorted_params} body={body}")
+        response = requests.post(url, headers=headers, params=sorted_params, json=body, verify=False)
         return response.status_code == 200
 
-    def acknowledge(self, pbid: int) -> bool:
+    def acknowledge(self, pbid: int, **params) -> bool:
         """
         Acknowledge a model breach alert.
 
         Args:
             pbid (int): Policy breach ID of the model breach.
+            params: Additional parameters for the API call (future-proofing)
         Returns:
             bool: True if acknowledged successfully, False otherwise.
         """
         endpoint = f'/modelbreaches/{pbid}/acknowledge'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint, params)
         body: Dict[str, bool] = {'acknowledge': True}
-        self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        self.client._debug(f"POST {url} params={sorted_params} body={body}")
+        response = requests.post(url, headers=headers, params=sorted_params, json=body, verify=False)
         return response.status_code == 200
 
-    def unacknowledge(self, pbid: int) -> bool:
+    def unacknowledge(self, pbid: int, **params) -> bool:
         """
         Unacknowledge a model breach alert.
 
         Args:
             pbid (int): Policy breach ID of the model breach.
+            params: Additional parameters for the API call (future-proofing)
         Returns:
             bool: True if unacknowledged successfully, False otherwise.
         """
         endpoint = f'/modelbreaches/{pbid}/unacknowledge'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint, params)
         body: Dict[str, bool] = {'unacknowledge': True}
-        self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        self.client._debug(f"POST {url} params={sorted_params} body={body}")
+        response = requests.post(url, headers=headers, params=sorted_params, json=body, verify=False)
         return response.status_code == 200
