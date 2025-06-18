@@ -1,10 +1,14 @@
-# 🚀 Darktrace Python SDK
+
+# 🚀 Darktrace Python SDK *(Work in Progress)*
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/darktrace-sdk)
 ![GitHub License](https://img.shields.io/github/license/LegendEvent/darktrace-sdk)
 ![GitHub Repo stars](https://img.shields.io/github/stars/LegendEvent/darktrace-sdk?style=social)
 
-> **A modern, fully-featured, and Pythonic SDK for the entire Darktrace Threat Visualizer API.**
+
+> **A modern, Pythonic SDK for the Darktrace Threat Visualizer API.**
+> 
+> **⚠️ Work in progress – not 100% production ready. Breaking changes and incomplete features may exist.**
 
 ---
 
@@ -18,15 +22,16 @@
 
 ---
 
+
 ## ✨ Features
 
-- **100% API Coverage**: Every endpoint, every parameter, every action from the official Darktrace API Guide is implemented.
+- **Extensive API Coverage**: Most endpoints, parameters, and actions from the official Darktrace API Guide are implemented.
 - **Modular & Maintainable**: Each endpoint group is a separate Python module/class.
 - **Easy Authentication**: Secure HMAC-SHA1 signature generation and token management.
 - **Async-Ready**: Designed for easy extension to async workflows.
 - **Type Hints & Docstrings**: Full typing and documentation for all public methods.
-- **Production-Ready**: Suitable for SIEM/SOC integration, automation, and research.
 - **Comprehensive Documentation**: Detailed documentation for every module and endpoint.
+- **⚠️ Not yet production ready**: Some features may be incomplete or subject to change.
 
 ---
 
@@ -94,9 +99,10 @@ See the [EXAMPLES.md](EXAMPLES.md) file for additional usage examples.
 
 ---
 
-## 🛡️ 100% Endpoint Coverage
 
-This SDK covers **every endpoint** in the Darktrace API Guide, including:
+## 🛡️ Endpoint Coverage
+
+This SDK aims to cover **all endpoints** in the Darktrace API Guide, including:
 
 - `/advancedsearch` (search, analyze, graph)
 - `/aianalyst` (incidentevents, groups, acknowledge, pin, comments, stats, investigations, incidents)
@@ -104,7 +110,10 @@ This SDK covers **every endpoint** in the Darktrace API Guide, including:
 - `/components`, `/cves`, `/details`, `/deviceinfo`, `/devices`, `/devicesearch`, `/devicesummary`
 - `/endpointdetails`, `/enums`, `/filtertypes`, `/intelfeed`, `/mbcomments`, `/metricdata`, `/metrics`, `/models`, `/modelbreaches`, `/network`, `/pcaps`, `/similardevices`, `/status`, `/subnets`, `/summarystatistics`, `/tags`, and all `/agemail` endpoints
 
+
 > **If you find a missing endpoint, open an issue or PR and it will be added!**
+> 
+> **⚠️ This SDK is a work in progress and not yet 100% production ready.**
 
 ---
 
