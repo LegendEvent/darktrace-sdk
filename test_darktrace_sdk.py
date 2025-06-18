@@ -279,6 +279,112 @@ def test_antigena_actions(client, limit=5):
         print(f"❌ Error testing Antigena: {str(e)}")
         return False
 
+def test_advanced_search(client, limit=5):
+    """Test Advanced Search functionality"""
+    print("\nTesting Advanced Search endpoints...")
+    
+    try:
+        # Test 1: Basic search functionality
+        print("\nTest 1: Basic search query...")
+        # Simple query for SSL connections on port 443 in the last 15 minutes
+        search_query = {
+            "search": "@type:\"ssl\" AND @fields.dest_port:\"443\"",
+            "fields": [],
+            "offset": 0,
+            "timeframe": "900",  # 15 minutes
+            "time": {"user_interval": 0}
+        }
+        
+        search_results = client.advanced_search.search(search_query)
+        total_hits = search_results.get('hits', {}).get('total', 0)
+        hits = search_results.get('hits', {}).get('hits', [])
+        print(f"✅ Found {total_hits} SSL connections, showing {len(hits)} results")
+        
+        # Show some sample results
+        for i, hit in enumerate(hits[:3]):
+            source = hit.get('_source', {})
+            timestamp = source.get('@timestamp', 'Unknown')
+            msg_type = source.get('@type', 'Unknown')
+            print(f"  [{i+1}] {msg_type} at {timestamp}")
+        
+        # Test 2: Analyze field data (terms analysis)
+        print("\nTest 2: Field analysis (terms)...")
+        # Analyze destination ports for DNS traffic
+        analyze_query = {
+            "search": "@type:\"dns\" AND @fields.proto:\"udp\"",
+            "fields": [],
+            "offset": 0,
+            "timeframe": "3600",  # 1 hour
+            "time": {"user_interval": 0}
+        }
+        
+        analyze_results = client.advanced_search.analyze("@fields.dest_port", "terms", analyze_query)
+        buckets = analyze_results.get('aggregations', {}).get('terms', {}).get('buckets', [])
+        print(f"✅ Analyzed destination ports, found {len(buckets)} unique values")
+        
+        # Show top ports
+        for i, bucket in enumerate(buckets[:3]):
+            port = bucket.get('key', 'Unknown')
+            count = bucket.get('doc_count', 0)
+            print(f"  [{i+1}] Port {port}: {count} occurrences")
+        
+        # Test 3: Graph data (count over time)
+        print("\nTest 3: Graph data (count)...")
+        # Get connection counts over the last 4 hours with 5-minute intervals
+        graph_query = {
+            "search": "@type:\"conn\"",
+            "fields": [],
+            "offset": 0,
+            "timeframe": "14400",  # 4 hours
+            "time": {"user_interval": 0}
+        }
+        
+        graph_results = client.advanced_search.graph("count", 300000, graph_query)  # 5-minute intervals
+        graph_buckets = graph_results.get('aggregations', {}).get('count', {}).get('buckets', [])
+        print(f"✅ Generated graph data with {len(graph_buckets)} time intervals")
+        
+        # Show some time intervals
+        for i, bucket in enumerate(graph_buckets[:3]):
+            timestamp = bucket.get('key', 0)
+            count = bucket.get('doc_count', 0)
+            # Convert timestamp to readable format
+            from datetime import datetime
+            readable_time = datetime.fromtimestamp(timestamp / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            print(f"  [{i+1}] {readable_time}: {count} connections")
+          # Test 4: POST request method (currently not supported)
+        print("\nTest 4: POST request method...")
+        post_query = {
+            "search": "@type:\"conn\" AND @fields.proto:\"tcp\"",
+            "fields": [],
+            "offset": 0,
+            "timeframe": "1800",  # 30 minutes
+            "time": {"user_interval": 0}
+        }
+        
+        try:
+            post_results = client.advanced_search.search(post_query, post_request=True)
+            post_hits = post_results.get('hits', {}).get('total', 0)
+            print(f"✅ POST request returned {post_hits} TCP connections")
+        except NotImplementedError as e:
+            print(f"⚠️  POST request is not supported: {e}")
+            print("   Using GET request instead (recommended)...")
+            # Fall back to GET request
+            get_results = client.advanced_search.search(post_query, post_request=False)
+            get_hits = get_results.get('hits', {}).get('total', 0)
+            print(f"✅ GET request returned {get_hits} TCP connections")
+        
+        return True
+        
+    except requests.RequestException as e:
+        print(f"❌ Error testing Advanced Search: {str(e)}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Response status: {e.response.status_code}")
+            print(f"Response text: {e.response.text}")
+        return False
+    except Exception as e:
+        print(f"❌ Error testing Advanced Search: {str(e)}")
+        return False
+
 def main():
     """Main function to run the test script"""
     parser = argparse.ArgumentParser(description='Test the Darktrace SDK')
@@ -304,6 +410,7 @@ def main():
     test_model_breaches(client)
     test_intel_feed(client)  # Added test for Intel Feed
     test_antigena_actions(client)
+    test_advanced_search(client)  # Added test for Advanced Search
     
     print("\n✅ All tests completed successfully!")
 

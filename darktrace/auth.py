@@ -1,5 +1,6 @@
 import hmac
 import hashlib
+import json
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any
 
@@ -8,13 +9,14 @@ class DarktraceAuth:
         self.public_token = public_token
         self.private_token = private_token
 
-    def get_headers(self, request_path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_headers(self, request_path: str, params: Optional[Dict[str, Any]] = None, json_body: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:    
         """
         Generate authentication headers and sorted parameters for Darktrace API requests.
         
         Args:
             request_path: The API endpoint path
             params: Optional query parameters to include in the signature
+            json_body: Optional JSON body for POST requests to include in signature
             
         Returns:
             Dict containing:
@@ -32,6 +34,15 @@ class DarktraceAuth:
             sorted_params = dict(sorted(params.items()))
             query_string = '&'.join(f"{k}={v}" for k, v in sorted_params.items())
             signature_path = f"{request_path}?{query_string}"
+          # For POST requests with JSON body, include the body as a query string parameter
+        # as per Darktrace docs: "add each post parameter into the query string as /postendpoint?{"param1":"value","param2":"value"}"
+        # NOTE: This implementation is currently not working for Advanced Search POST requests.
+        # Multiple attempts following the official documentation result in "API SIGNATURE ERROR".
+        # GET requests work correctly with this authentication method.
+        if json_body:
+            json_string = json.dumps(json_body, separators=(',', ':'))  # Compact JSON without spaces
+            separator = '&' if '?' in signature_path else '?'
+            signature_path = f"{signature_path}{separator}{json_string}"
         
         signature = self.generate_signature(signature_path, date)
         

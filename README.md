@@ -108,6 +108,17 @@ This SDK covers **every endpoint** in the Darktrace API Guide, including:
 
 ---
 
+## ⚠️ Known Issues
+
+### Advanced Search POST Requests
+POST requests to the Advanced Search API (`/advancedsearch/api/search`) are currently not working due to unresolved authentication signature calculation issues. The Darktrace API documentation specifies that POST parameters should be included in the signature calculation as query string parameters, but multiple implementation attempts following the official documentation have resulted in "API SIGNATURE ERROR" responses.
+
+**Workaround**: Use GET requests for Advanced Search queries, which work correctly and support all the same functionality. The SDK automatically defaults to GET requests for the Advanced Search module.
+
+**Status**: Under investigation. GET requests remain fully functional for all use cases.
+
+---
+
 ## 📝 Contributing
 
 Contributions are welcome! Please:
@@ -132,4 +143,4 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ---
 
-> Made with ❤️ for the Darktrace community. 
+> Made with ❤️ for the Darktrace community.
