@@ -217,26 +217,66 @@ def test_intel_feed(client):
 
 def test_antigena_actions(client, limit=5):
     """Test getting Antigena actions from Darktrace"""
-    print("\nFetching Antigena actions...")
+    print("\nTesting Antigena endpoints...")
     try:
-        # Using multiple parameters to test parameter ordering in authentication
-        actions = client.antigena.get_actions(count=limit, details=True)
-        action_count = len(actions.get('actions', []))
-        print(f"✅ Found {action_count} Antigena actions")
+        # Test 1: Basic actions with full device details
+        print("\nTest 1: Basic actions retrieval...")
+        actions = client.antigena.get_actions(
+            fulldevicedetails=True,
+            includehistory=True
+        )
         
-        # Print some details about each action
-        for i, action in enumerate(actions.get('actions', [])[:limit]):
-            print(f"  [{i+1}] {action.get('action', 'Unknown')} - Status: {action.get('status', 'Unknown')}")
+        # Handle response format
+        if isinstance(actions, dict):
+            action_list = actions.get('actions', [])
+            device_list = actions.get('devices', [])
+            print(f"✅ Found {len(action_list)} actions and {len(device_list)} device details")
+        else:
+            action_list = actions if isinstance(actions, list) else []
+            print(f"✅ Found {len(action_list)} actions")
+            
+        # Show some action details
+        for i, action in enumerate(action_list[:limit]):
+            print(f"  [{i+1}] {action.get('action', 'Unknown')} - "
+                  f"Status: {'Active' if action.get('active') else 'Inactive'}")
+            if action.get('history'):
+                print(f"      History entries: {len(action['history'])}")
+                
+        # Test 2: Get actions with connections
+        print("\nTest 2: Actions with connection details...")
+        actions_with_connections = client.antigena.get_actions(
+            includeconnections=True,
+            includecleared=True
+        )
+        if isinstance(actions_with_connections, dict):
+            connections = actions_with_connections.get('connections', [])
+            print(f"✅ Found {len(connections)} blocked connections")
+            
+        # Test 3: Get actions summary
+        print("\nTest 3: Actions summary...")
+        from datetime import datetime, timezone, timedelta
+        end = datetime.now(timezone.utc)
+        start = end - timedelta(days=1)
+        
+        summary = client.antigena.get_summary(
+            starttime=int(start.timestamp() * 1000),
+            endtime=int(end.timestamp() * 1000)
+        )
+        print(f"✅ Active actions: {summary.get('activeCount', 0)}")
+        print(f"  Pending actions: {summary.get('pendingCount', 0)}")
+        if summary.get('activeActionDevices'):
+            print(f"  Devices with active actions: {len(summary['activeActionDevices'])}")
+            
         return True
     
     except requests.RequestException as e:
-        print(f"❌ Error fetching Antigena actions: {str(e)}")
+        print(f"❌ Error testing Antigena: {str(e)}")
         if hasattr(e, 'response') and e.response is not None:
             print(f"Response status: {e.response.status_code}")
             print(f"Response text: {e.response.text}")
         return False
     except Exception as e:
-        print(f"❌ Error fetching Antigena actions: {str(e)}")
+        print(f"❌ Error testing Antigena: {str(e)}")
         return False
 
 def main():
