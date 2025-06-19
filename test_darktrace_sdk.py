@@ -921,6 +921,66 @@ def test_details(client):
     except Exception as e:
         print(f"❌ Error testing Details: {e}")
         return False
+    
+def test_deviceinfo(client):
+    """Test the DeviceInfo (deviceinfo endpoint) with various parameter combinations (read-only)."""
+    print("\nTesting DeviceInfo endpoint (read-only)...")
+    try:
+        # Test 1: Basic deviceinfo retrieval
+        print("Test 1: Basic deviceinfo retrieval...")
+        try:
+            result = client.deviceinfo.get(did=1)
+            print(f"  ✅ Basic call returned type: {type(result)}")
+        except Exception as e:
+            print(f"  ❌ Error in test 1: {e}")
+
+        # Test 2: All parameters set
+        print("Test 2: All parameters set...")
+        try:
+            result = client.deviceinfo.get(
+                did=1,
+                datatype="sizein",
+                odid=100,
+                port=443,
+                externaldomain="google.com",
+                fulldevicedetails=True,
+                showallgraphdata=True,
+                similardevices=2,
+                intervalhours=12
+            )
+            print(f"  ✅ All params call returned type: {type(result)}")
+        except Exception as e:
+            print(f"  ❌ Error in test 2: {e}")
+
+        # Test 3: Edge case - similardevices=0
+        print("Test 3: similardevices=0...")
+        try:
+            result = client.deviceinfo.get(did=1, similardevices=0)
+            print(f"  ✅ similardevices=0 call returned type: {type(result)}")
+        except Exception as e:
+            print(f"  ❌ Error in test 3: {e}")
+
+        # Test 4: Edge case - intervalhours > 1
+        print("Test 4: intervalhours=6...")
+        try:
+            result = client.deviceinfo.get(did=1, intervalhours=6)
+            print(f"  ✅ intervalhours=6 call returned type: {type(result)}")
+        except Exception as e:
+            print(f"  ❌ Error in test 4: {e}")
+
+        # Test 5: Edge case - showallgraphdata=False
+        print("Test 5: showallgraphdata=False...")
+        try:
+            result = client.deviceinfo.get(did=1, showallgraphdata=False)
+            print(f"  ✅ showallgraphdata=False call returned type: {type(result)}")
+        except Exception as e:
+            print(f"  ❌ Error in test 5: {e}")
+
+        print("\nDeviceInfo tests completed.")
+        return True
+    except Exception as e:
+        print(f"❌ Error testing DeviceInfo: {e}")
+        return False
 
 def main():
     """Main function to run the test script"""
@@ -951,6 +1011,7 @@ def main():
     test_components(client)  # Added test for Components (read-only)
     test_cves(client)  # Added test for CVEs (read-only)
     test_details(client)  # Added test for Details (read-only)
+    test_deviceinfo(client)  # Added test for DeviceInfo (read-only)
     
     print("\n✅ All tests completed successfully!")
 
