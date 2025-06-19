@@ -64,22 +64,11 @@ class Devices(BaseEndpoint):
             params['responsedata'] = responsedata
         if cloudsecurity is not None:
             params['cloudsecurity'] = cloudsecurity
-        # saasfilter can be a string or list of strings
+        # saasfilter can be a string or list of strings; always pass as list for repeated query params
         if saasfilter is not None:
-            if isinstance(saasfilter, (list, tuple)):
-                # Multiple saasfilter values
-                params['saasfilter'] = saasfilter
-            else:
-                params['saasfilter'] = [saasfilter]
-
-        # Flatten saasfilter for requests (repeated param)
-        if 'saasfilter' in params:
-            saas_val = params.pop('saasfilter')
-            if isinstance(saas_val, (list, tuple)):
-                for i, val in enumerate(saas_val):
-                    params[f'saasfilter[{i}]'] = val
-            else:
-                params['saasfilter'] = saas_val
+            params['saasfilter'] = saasfilter
+        if 'saasfilter' in params and isinstance(params['saasfilter'], str):
+            params['saasfilter'] = [params['saasfilter']]
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
