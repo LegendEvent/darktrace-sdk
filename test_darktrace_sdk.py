@@ -409,3 +409,40 @@ def test_model_breaches(dt_client):
             assert comments is not None
 
 
+@pytest.mark.usefixtures("dt_client")
+def test_devicesearch_basic(dt_client):
+    """Test /devicesearch endpoint: basic retrieval and parameter coverage."""
+    # 1. Basic search (default params)
+    result = dt_client.devicesearch.get()
+    assert isinstance(result, dict)
+    assert 'devices' in result
+
+    # 2. Search with query string (wildcard)
+    result_query = dt_client.devicesearch.get(query='*')
+    assert isinstance(result_query, dict)
+    assert 'devices' in result_query
+
+    # 3. Search with count and offset (pagination)
+    result_page = dt_client.devicesearch.get(count=2, offset=0)
+    assert isinstance(result_page, dict)
+    assert 'devices' in result_page
+
+    # 4. Search with orderBy and order
+    result_order = dt_client.devicesearch.get(orderBy='lastSeen', order='desc')
+    assert isinstance(result_order, dict)
+    assert 'devices' in result_order
+
+    # 5. Search with responsedata (restrict fields)
+    result_resp = dt_client.devicesearch.get(responsedata='devices')
+    assert isinstance(result_resp, dict)
+    assert 'devices' in result_resp
+
+    # 6. Search with seensince (relative time)
+    result_seen = dt_client.devicesearch.get(seensince='1hour')
+    assert isinstance(result_seen, dict)
+    assert 'devices' in result_seen
+
+    # 7. Combined query (tag and label)
+    result_combined = dt_client.devicesearch.get(query='tag:"*" label:"*"', count=1)
+    assert isinstance(result_combined, dict)
+    assert 'devices' in result_combined
