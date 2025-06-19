@@ -838,6 +838,90 @@ def test_cves(client):
         print(f"❌ Error testing CVEs: {e}")
         return False
 
+def test_details(client):
+    """Test the Details module (read-only)."""
+    print("\nTesting Details endpoint (read-only)...")
+    try:
+        did = 3937  # Placeholder for device ID, replace with a real one if available
+        pbid = 48892  # Placeholder for model breach ID, replace with a real one if available
+        # Test 1: Get details by did (device ID)
+        print("Test 1: Get details by did...")
+        details = client.details.get(did, count=1)
+        if isinstance(details, list):
+            print(f"✅ Got details for did={did} (type: {type(details)})")
+            if details:
+                print(f"  First item: {details[0]}")
+            else:
+                print("  (No items in list)")
+        elif isinstance(details, dict):
+            print(f"✅ Got details for did={did} (type: {type(details)})")
+            print(f"  Keys: {list(details.keys())}")
+        else:
+            print(f"❌ Unexpected response type for details by did: {type(details)}")
+
+        # Test 2: Get details by pbid (model breach ID)
+        print("Test 2: Get details by pbid...")
+        details_by_pbid = client.details.get(pbid, count=1)  
+        if isinstance(details_by_pbid, list):
+            print(f"✅ Got details for pbid={pbid} (type: {type(details_by_pbid)})")
+            if details_by_pbid:
+                print(f"  First item: {details_by_pbid[0]}")
+            else:
+                print("  (No items in list)")
+        elif isinstance(details_by_pbid, dict):
+            print(f"✅ Got details for pbid={pbid} (type: {type(details_by_pbid)})")
+            print(f"  Keys: {list(details_by_pbid.keys())}")
+        else:
+            print(f"❌ Unexpected response type for details by pbid: {type(details_by_pbid)}")
+
+        # Test 3: Get details with time range (from_/to)
+        print("Test 3: Get details with from_/to time range...")
+        from datetime import datetime, timedelta
+        end = datetime.now()
+        start = end - timedelta(hours=1)
+        details_time = client.details.get(
+            did,
+            from_=start.strftime('%Y-%m-%d %H:%M:%S'),
+            to=end.strftime('%Y-%m-%d %H:%M:%S'),
+        )
+        if isinstance(details_time, list):
+            print(f"✅ Got details for did={did} in last hour (type: {type(details_time)})")
+            if details_time:
+                print(f"  First item: {details_time[0]}")
+            else:
+                print("  (No items in list)")
+        elif isinstance(details_time, dict):
+            print(f"✅ Got details for did={did} in last hour (type: {type(details_time)})")
+            print(f"  Keys: {list(details_time.keys())}")
+        else:
+            print(f"❌ Unexpected response type for details with time range: {type(details_time)})")
+
+        # Test 4: Get details with eventtype and responsedata
+        print("Test 4: Get details with eventtype and responsedata...")
+        details_event = client.details.get(
+            did,
+            eventtype="connection",
+            responsedata="device,model,connections",
+            count=1
+        )
+        if isinstance(details_event, list):
+            print(f"✅ Got details with eventtype and responsedata (type: {type(details_event)})")
+            if details_event:
+                print(f"  First item: {details_event[0]}")
+            else:
+                print("  (No items in list)")
+        elif isinstance(details_event, dict):
+            print(f"✅ Got details with eventtype and responsedata (type: {type(details_event)})")
+            print(f"  Keys: {list(details_event.keys())}")
+        else:
+            print(f"❌ Unexpected response type for details with eventtype: {type(details_event)})")
+
+        print("\nDetails tests completed.")
+        return True
+    except Exception as e:
+        print(f"❌ Error testing Details: {e}")
+        return False
+
 def main():
     """Main function to run the test script"""
     parser = argparse.ArgumentParser(description='Test the Darktrace SDK')
@@ -866,6 +950,7 @@ def main():
     test_advanced_search(client)  # Added test for Advanced Search
     test_components(client)  # Added test for Components (read-only)
     test_cves(client)  # Added test for CVEs (read-only)
+    test_details(client)  # Added test for Details (read-only)
     
     print("\n✅ All tests completed successfully!")
 
