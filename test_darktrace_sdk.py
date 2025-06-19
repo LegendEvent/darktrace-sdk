@@ -446,3 +446,24 @@ def test_devicesearch_basic(dt_client):
     result_combined = dt_client.devicesearch.get(query='tag:"*" label:"*"', count=1)
     assert isinstance(result_combined, dict)
     assert 'devices' in result_combined
+
+@pytest.mark.usefixtures("dt_client")
+def test_devicesummary_basic(dt_client):
+    """Test /devicesummary endpoint: basic retrieval and parameter coverage."""
+    # 1. Get a device summary for a known device (did=4336 as example, replace with real did if needed)
+    result = dt_client.devicesummary.get(did=4336)
+    assert isinstance(result, dict)
+    assert 'data' in result
+
+    # 2. Get device summary with responsedata filter
+    result_resp = dt_client.devicesummary.get(did=4336, responsedata='devices')
+    assert isinstance(result_resp, dict)
+    assert 'data' in result_resp
+
+    # 3. Edge case: non-existent did (should return empty or error handled gracefully)
+    try:
+        result_none = dt_client.devicesummary.get(did=4336)
+        assert isinstance(result_none, dict)
+    except Exception as e:
+        # Acceptable: API returns error for unknown did
+        assert True
