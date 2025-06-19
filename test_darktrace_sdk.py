@@ -846,7 +846,7 @@ def test_details(client):
         pbid = 48892  # Placeholder for model breach ID, replace with a real one if available
         # Test 1: Get details by did (device ID)
         print("Test 1: Get details by did...")
-        details = client.details.get(did, count=1)  # did=1 is a placeholder; replace with a real did if available
+        details = client.details.get(did, count=1)
         if isinstance(details, list):
             print(f"✅ Got details for did={did} (type: {type(details)})")
             if details:
