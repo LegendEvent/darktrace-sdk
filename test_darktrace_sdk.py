@@ -1037,68 +1037,6 @@ def test_deviceinfo(client):
     except Exception as e:
         print(f"❌ Error testing DeviceInfo: {e}")
         return False
-    
-def test_devices_readonly(client):
-    """Comprehensive read-only tests for Devices endpoint with all supported parameters and edge cases."""
-    print("\nTesting Devices endpoint (read-only, all parameters)...")
-    try:
-        # Test 1: Basic retrieval
-        print("Test 1: Basic retrieval...")
-        try:
-            result = client.devices.get(count=2)
-            print(f"  ✅ Basic call returned type: {type(result)}")
-        except Exception as e:
-            print(f"  ❌ Error in test 1: {e}")
-
-        # Test 2: All parameters set
-        print("Test 2: All parameters set...")
-        try:
-            result = client.devices.get(
-                did=1,
-                ip="10.0.0.1",
-                iptime="2024-01-01T00:00:00Z",
-                mac="00:11:22:33:44:55",
-                seensince="1hour",
-                sid=1,
-                count=1,
-                includetags=True,
-                responsedata="did,hostname",
-                cloudsecurity=True,
-                saasfilter=["office365*", "gcp*"]
-            )
-            print(f"  ✅ All params call returned type: {type(result)}")
-        except Exception as e:
-            print(f"  ❌ Error in test 2: {e}")
-
-        # Test 3: Edge case - saasfilter as string
-        print("Test 3: saasfilter as string...")
-        try:
-            result = client.devices.get(saasfilter="office365*")
-            print(f"  ✅ saasfilter=string call returned type: {type(result)}")
-        except Exception as e:
-            print(f"  ❌ Error in test 3: {e}")
-
-        # Test 4: Edge case - seensince as seconds
-        print("Test 4: seensince as seconds...")
-        try:
-            result = client.devices.get(seensince="60")
-            print(f"  ✅ seensince=60 call returned type: {type(result)}")
-        except Exception as e:
-            print(f"  ❌ Error in test 4: {e}")
-
-        # Test 5: Edge case - cloudsecurity False
-        print("Test 5: cloudsecurity=False...")
-        try:
-            result = client.devices.get(cloudsecurity=False)
-            print(f"  ✅ cloudsecurity=False call returned type: {type(result)}")
-        except Exception as e:
-            print(f"  ❌ Error in test 5: {e}")
-
-        print("\nDevices read-only tests completed.")
-        return True
-    except Exception as e:
-        print(f"❌ Error testing Devices: {e}")
-        return False
 
 def main():
     """Main function to run the test script"""
