@@ -18,8 +18,7 @@ class Devices(BaseEndpoint):
             includetags: bool = None,
             responsedata: str = None,
             cloudsecurity: bool = None,
-            saasfilter: Any = None,
-            **params
+            saasfilter: Any = None
             ):
         """
         Get device information from Darktrace.
@@ -36,7 +35,6 @@ class Devices(BaseEndpoint):
             responsedata (str, optional): Restrict the returned JSON to only the specified field(s).
             cloudsecurity (bool, optional): When true, limits the devices returned to those identified by Darktrace Cloud Security.
             saasfilter (str or list of str, optional): Limit returned devices to specific SaaS/Cloud/Zero Trust module users. Can be repeated.
-            **params: Additional query parameters (for forward compatibility).
 
         Returns:
             dict or list: Device information from Darktrace.
@@ -73,8 +71,6 @@ class Devices(BaseEndpoint):
                 params['saasfilter'] = saasfilter
             else:
                 params['saasfilter'] = [saasfilter]
-        # Add any extra params
-        params.update(params)
 
         # Flatten saasfilter for requests (repeated param)
         if 'saasfilter' in params:
