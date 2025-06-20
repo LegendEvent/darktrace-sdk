@@ -124,7 +124,14 @@ POST requests to the Advanced Search API (`/advancedsearch/api/search`) are curr
 
 **Workaround**: Use GET requests for Advanced Search queries, which work correctly and support all the same functionality. The SDK automatically defaults to GET requests for the Advanced Search module.
 
-**Status**: Under investigation. GET requests remain fully functional for all use cases.
+**Status**: Tracked as [issue #1](https://github.com/LegendEvent/darktrace-sdk/issues/1). GET requests remain fully functional for all use cases.
+
+### /devicesummary Endpoint Returns HTTP 500
+The `/devicesummary` endpoint may return a `500 Internal Server Error` when accessed with API tokens, even though it works in the browser or with session/cookie authentication. This is a known limitation of the Darktrace API backend and not a bug in the SDK or your code.
+
+**Workaround**: There is currently no programmatic workaround. If you require this endpoint, please contact Darktrace support or use browser-based access where possible.
+
+**Status**: Tracked as [issue #37](https://github.com/LegendEvent/darktrace-sdk/issues/37). If you encounter this, please reference the issue for updates.
 
 ---
 
