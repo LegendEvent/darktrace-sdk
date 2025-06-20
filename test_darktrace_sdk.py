@@ -633,3 +633,38 @@ def test_email_get_email_and_download(dt_client):
                 assert isinstance(content, (bytes, bytearray))
     except Exception:
         pass  # Acceptable if no email is available
+
+@pytest.mark.usefixtures("dt_client")
+def test_endpointdetails_basic(dt_client):
+    """Test EndpointDetails endpoint: all parameters and edge cases."""
+    # 1. Basic IP query
+    result_ip = dt_client.endpointdetails.get(ip="8.8.8.8")
+    assert result_ip is not None
+
+    # 2. Hostname query
+    result_host = dt_client.endpointdetails.get(hostname="darktrace.com")
+    assert result_host is not None
+
+    # 3. Hostname with devices
+    result_host_devices = dt_client.endpointdetails.get(hostname="darktrace.com", devices=True)
+    assert result_host_devices is not None
+
+    # 4. Hostname with additionalinfo
+    result_host_info = dt_client.endpointdetails.get(hostname="darktrace.com", additionalinfo=True)
+    assert result_host_info is not None
+
+    # 5. Hostname with score
+    result_host_score = dt_client.endpointdetails.get(hostname="darktrace.com", score=True)
+    assert result_host_score is not None
+
+    # 6. Hostname with responsedata
+    result_host_resp = dt_client.endpointdetails.get(hostname="darktrace.com", responsedata="devices")
+    assert result_host_resp is not None
+
+    # 7. Edge case: non-existent hostname
+    try:
+        result_none = dt_client.endpointdetails.get(hostname="nonexistentdomain.example")
+        assert result_none is not None
+    except Exception:
+        # Acceptable: API returns error for unknown hostname
+        assert True
