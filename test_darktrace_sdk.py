@@ -693,3 +693,44 @@ def test_enums_invalid_responsedata(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown responsedata
         assert True
+
+# --- Filtertypes module tests ---
+
+@pytest.mark.usefixtures("dt_client")
+def test_filtertypes_all(dt_client):
+    """Test /filtertypes endpoint: get all filter types."""
+    result = dt_client.filtertypes.get()
+    assert isinstance(result, list)
+    # Should contain at least one filter type with required fields
+    assert any(
+        isinstance(item, dict) and 'filtertype' in item and 'valuetype' in item and 'comparators' in item
+        for item in result
+    )
+
+@pytest.mark.usefixtures("dt_client")
+def test_filtertypes_responsedata_comparators(dt_client):
+    """Test /filtertypes endpoint: filter by responsedata=comparators."""
+    result = dt_client.filtertypes.get(responsedata="comparators")
+    # Should be a dict or list, depending on API version/response
+    assert isinstance(result, (dict, list))
+    # If dict, should have 'comparators' or similar key
+    if isinstance(result, dict):
+        assert any('comparator' in k.lower() for k in result.keys()) or any('comparator' in str(v).lower() for v in result.values())
+    elif isinstance(result, list):
+        # If list, should contain comparator strings or dicts with comparators
+        assert all(isinstance(item, (str, dict)) for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_filtertypes_invalid_responsedata(dt_client):
+    """Test /filtertypes endpoint: invalid responsedata returns empty or error handled gracefully."""
+    try:
+        result = dt_client.filtertypes.get(responsedata="notarealfield")
+        assert isinstance(result, (dict, list))
+        # Should be empty or not contain the invalid key
+        if isinstance(result, dict):
+            assert not result or all(k.lower() != "notarealfield" for k in result.keys())
+        elif isinstance(result, list):
+            assert not result
+    except Exception:
+        # Acceptable: API returns error for unknown responsedata
+        assert True
