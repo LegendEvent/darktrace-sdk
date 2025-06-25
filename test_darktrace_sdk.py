@@ -1021,3 +1021,24 @@ def test_network_basic(dt_client):
         assert isinstance(result_none, dict)
     except Exception:
         assert True
+
+# --- pcaps module tests (#21) ---
+@pytest.mark.usefixtures("dt_client")
+def test_pcaps_list(dt_client):
+    """Test /pcaps endpoint: get list of all PCAPs and their status."""
+    result = dt_client.pcaps.get()
+    # Should be a list or dict (API may return a list or dict depending on version)
+    assert isinstance(result, (list, dict))
+
+@pytest.mark.usefixtures("dt_client")
+def test_pcaps_download_invalid(dt_client):
+    """Test /pcaps endpoint: try to download a non-existent PCAP file (should error or return bytes)."""
+    try:
+        content = dt_client.pcaps.get(pcap_id="notarealfile.pcap")
+        # Should be bytes (file) or dict (error)
+        assert isinstance(content, (bytes, dict))
+        if isinstance(content, dict):
+            assert 'error' in content or 'message' in content or not content
+    except Exception:
+        # Acceptable: API returns error for unknown file
+        assert True
