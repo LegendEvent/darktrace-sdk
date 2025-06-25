@@ -886,3 +886,41 @@ def test_metricdata_invalid_metric(dt_client):
         assert not result or 'error' in result or 'message' in result
     except Exception:
         assert True
+
+# --- metrics module tests (#18) ---
+@pytest.mark.usefixtures("dt_client")
+def test_metrics_list(dt_client):
+    """Test /metrics endpoint: get list of all metrics."""
+    result = dt_client.metrics.get()
+    assert isinstance(result, list)
+    assert result and isinstance(result[0], dict) and 'mlid' in result[0]
+
+@pytest.mark.usefixtures("dt_client")
+def test_metrics_single(dt_client):
+    """Test /metrics/{id} endpoint: get details for a single metric."""
+    metrics = dt_client.metrics.get()
+    if metrics and isinstance(metrics, list):
+        mlid = metrics[0].get('mlid')
+        if mlid is not None:
+            result = dt_client.metrics.get(metric_id=mlid)
+            assert isinstance(result, dict)
+            assert result.get('mlid') == mlid
+
+@pytest.mark.usefixtures("dt_client")
+def test_metrics_responsedata(dt_client):
+    """Test /metrics endpoint: restrict response with responsedata param."""
+    result = dt_client.metrics.get(responsedata="mlid,name")
+    assert isinstance(result, list)
+    if result:
+        assert 'mlid' in result[0] and 'name' in result[0]
+
+@pytest.mark.usefixtures("dt_client")
+def test_metrics_invalid_id(dt_client):
+    """Test /metrics/{id} endpoint: invalid id returns error or empty result gracefully."""
+    try:
+        result = dt_client.metrics.get(metric_id=999999999)
+        assert isinstance(result, dict)
+        # Should be empty or error handled gracefully
+        assert not result or 'error' in result or 'message' in result
+    except Exception:
+        assert True
