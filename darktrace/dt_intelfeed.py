@@ -2,42 +2,56 @@ import requests
 from typing import Optional, List, Dict, Any, Union
 from .dt_utils import debug_print, BaseEndpoint
 
+
 class IntelFeed(BaseEndpoint):
+    """
+    Interact with the /intelfeed endpoint of the Darktrace API.
+    The /intelfeed endpoint provides programmatic access to Watched Domains (Customer Portal), a list of domains, IPs, and hostnames used by Darktrace, Inoculation, and STIX/TAXII integration.
+
+    GET parameters:
+        - sources (bool): If True, returns the current set of sources rather than the list of watched entries.
+        - source (str): Restrict a retrieved list of entries to a particular source (label, max 64 chars).
+        - fulldetails (bool): If True, returns full details about expiry time and description for each entry.
+        - responsedata (str): Restrict the returned JSON to only the specified field/object (future compatibility).
+        - **params: Additional query parameters (not officially supported).
+
+    POST parameters (see update method):
+        - addentry, addlist, description, expiry, hostname, removeall, removeentry, source, iagn
+
+    Returns:
+        list: List of watched domains, IPs, or hostnames, or list of sources, or detailed entry dicts.
+    """
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, feed_type: Optional[str] = None, response_data: Optional[str] = None, 
-            sources: Optional[bool] = None, source: Optional[str] = None, 
-            full_details: Optional[bool] = None, **params):
-        """Get intelligence feed data or details for a specific feed type.
-        
-        Args:
-            feed_type: Optional feed type to filter by
-            response_data: Optional response data format
-            sources: If True, returns the current set of sources rather than the list of watched entries
-            source: Optional source name to filter entries by
-            full_details: If True, returns full details about expiry time and description for each entry
-            **params: Additional parameters to pass to the API
+    def get(self, sources: Optional[bool] = None, source: Optional[str] = None,
+            fulldetails: Optional[bool] = None, responsedata: Optional[str] = None, **params):
         """
-        endpoint = f'/intelfeed{f"/{feed_type}" if feed_type else ""}'
+        Get the intelfeed list, sources, or detailed entries.
+
+        Args:
+            sources (bool, optional): If True, returns the current set of sources.
+            source (str, optional): Restrict entries to a particular source.
+            fulldetails (bool, optional): If True, returns full details for each entry.
+            responsedata (str, optional): Restrict the returned JSON to only the specified field/object.
+            **params: Additional query parameters (not officially supported).
+
+        Returns:
+            list: List of watched domains, IPs, hostnames, or sources, or detailed entry dicts.
+        """
+        endpoint = '/intelfeed'
         url = f"{self.client.host}{endpoint}"
-        
-        # Build the query parameters
-        query_params = {}
-        if response_data:
-            query_params['responsedata'] = response_data
+        query_params = dict()
         if sources is not None:
             query_params['sources'] = str(sources).lower()
         if source:
             query_params['source'] = source
-        if full_details:
+        if fulldetails:
             query_params['fulldetails'] = 'true'
-        # Add any additional parameters
+        if responsedata:
+            query_params['responsedata'] = responsedata
         query_params.update(params)
-        
-        # Get headers and sorted parameters for consistent signature calculation
         headers, sorted_params = self._get_headers(endpoint, query_params)
-            
         self.client._debug(f"GET {url} params={sorted_params}")
         response = requests.get(url, headers=headers, params=sorted_params, verify=False)
         response.raise_for_status()
