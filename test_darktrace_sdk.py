@@ -779,3 +779,56 @@ def test_intelfeed_invalid_source(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown source
         assert True
+
+# --- MBComments module tests (#16) ---
+@pytest.mark.usefixtures("dt_client")
+def test_mbcomments_all(dt_client):
+    """Test /mbcomments endpoint: get all comments (default params)."""
+    result = dt_client.mbcomments.get()
+    assert isinstance(result, list)
+    # Should contain dicts with required fields if not empty
+    if result:
+        assert all(isinstance(item, dict) for item in result)
+        for item in result:
+            assert 'time' in item and 'pbid' in item and 'username' in item and 'message' in item
+
+@pytest.mark.usefixtures("dt_client")
+def test_mbcomments_time_range(dt_client):
+    """Test /mbcomments endpoint: get comments in a specific time range."""
+    end = int(datetime.now(timezone.utc).timestamp() * 1000)
+    start = end - 7 * 24 * 60 * 60 * 1000  # last 7 days
+    result = dt_client.mbcomments.get(starttime=start, endtime=end)
+    assert isinstance(result, list)
+    if result:
+        assert all(isinstance(item, dict) for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_mbcomments_count(dt_client):
+    """Test /mbcomments endpoint: get a limited number of comments."""
+    result = dt_client.mbcomments.get(count=1)
+    assert isinstance(result, list)
+    assert len(result) <= 1
+
+@pytest.mark.usefixtures("dt_client")
+def test_mbcomments_by_pbid(dt_client):
+    """Test /mbcomments endpoint: get comments for a specific model breach (if any exist)."""
+    all_comments = dt_client.mbcomments.get()
+    pbid = None
+    if all_comments:
+        pbid = all_comments[0].get('pbid')
+    if pbid is not None:
+        result = dt_client.mbcomments.get(pbid=pbid)
+        assert isinstance(result, list)
+        if result:
+            assert all(item.get('pbid') == pbid for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_mbcomments_invalid_pbid(dt_client):
+    """Test /mbcomments endpoint: invalid pbid returns empty or error handled gracefully."""
+    try:
+        result = dt_client.mbcomments.get(pbid=999999999)
+        assert isinstance(result, list)
+        assert not result  # Should be empty
+    except Exception:
+        # Acceptable: API returns error for unknown pbid
+        assert True
