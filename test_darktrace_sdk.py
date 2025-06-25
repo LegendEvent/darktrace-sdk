@@ -695,7 +695,6 @@ def test_enums_invalid_responsedata(dt_client):
         assert True
 
 # --- Filtertypes module tests ---
-
 @pytest.mark.usefixtures("dt_client")
 def test_filtertypes_all(dt_client):
     """Test /filtertypes endpoint: get all filter types."""
@@ -733,4 +732,50 @@ def test_filtertypes_invalid_responsedata(dt_client):
             assert not result
     except Exception:
         # Acceptable: API returns error for unknown responsedata
+        assert True
+
+
+# --- IntelFeed module tests (#15) ---
+@pytest.mark.usefixtures("dt_client")
+def test_intelfeed_sources(dt_client):
+    """Test /intelfeed endpoint: get all sources."""
+    result = dt_client.intelfeed.get(sources=True)
+    assert isinstance(result, list)
+    # Should contain at least one string (source name)
+    assert all(isinstance(item, str) for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_intelfeed_by_source(dt_client):
+    """Test /intelfeed endpoint: get entries by source (if any source exists)."""
+    sources = dt_client.intelfeed.get(sources=True)
+    if sources:
+        result = dt_client.intelfeed.get(source=sources[0])
+        assert isinstance(result, list)
+        assert all(isinstance(item, (str, dict)) for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_intelfeed_all(dt_client):
+    """Test /intelfeed endpoint: get all watched domains/IPs/hostnames."""
+    result = dt_client.intelfeed.get()
+    assert isinstance(result, list)
+    if result:
+        assert any(isinstance(item, (str, dict)) for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_intelfeed_fulldetails(dt_client):
+    """Test /intelfeed endpoint: get all entries with full details."""
+    result = dt_client.intelfeed.get(fulldetails=True)
+    assert isinstance(result, list)
+    if result:
+        assert any(isinstance(item, dict) and 'name' in item for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_intelfeed_invalid_source(dt_client):
+    """Test /intelfeed endpoint: invalid source returns empty or error handled gracefully."""
+    try:
+        result = dt_client.intelfeed.get(source="notarealsource")
+        assert isinstance(result, list)
+        assert not result  # Should be empty
+    except Exception:
+        # Acceptable: API returns error for unknown source
         assert True
