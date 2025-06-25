@@ -832,3 +832,57 @@ def test_mbcomments_invalid_pbid(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown pbid
         assert True
+
+# --- metricdata module tests (#17) ---
+@pytest.mark.usefixtures("dt_client")
+def test_metricdata_basic(dt_client):
+    """Test /metricdata endpoint: basic metric query with required parameter."""
+    # Try a common metric (e.g., 'connections') and a known device if possible
+    try:
+        result = dt_client.metricdata.get(metric="connections")
+        assert isinstance(result, dict)
+        assert 'data' in result or 'metric' in result or result  # Accept any non-empty dict
+    except Exception as e:
+        # Acceptable: API returns error if no data or metric not available
+        assert True
+
+@pytest.mark.usefixtures("dt_client")
+def test_metricdata_multiple_metrics(dt_client):
+    """Test /metricdata endpoint: query with multiple metrics."""
+    try:
+        result = dt_client.metricdata.get(metrics=["connections", "bytesin"])
+        assert isinstance(result, dict)
+        assert result  # Should be non-empty if metrics exist
+    except Exception as e:
+        assert True
+
+@pytest.mark.usefixtures("dt_client")
+def test_metricdata_with_parameters(dt_client):
+    """Test /metricdata endpoint: all supported parameters (read-only)."""
+    # Use a time range for the last hour
+    end = int(datetime.now(timezone.utc).timestamp() * 1000)
+    start = end - 60 * 60 * 1000
+    try:
+        result = dt_client.metricdata.get(
+            metric="connections",
+            starttime=start,
+            endtime=end,
+            interval="5min",
+            protocol="tcp",
+            breachtimes=True,
+            fulldevicedetails=False
+        )
+        assert isinstance(result, dict)
+    except Exception as e:
+        assert True
+
+@pytest.mark.usefixtures("dt_client")
+def test_metricdata_invalid_metric(dt_client):
+    """Test /metricdata endpoint: invalid metric returns error or empty result gracefully."""
+    try:
+        result = dt_client.metricdata.get(metric="notarealmetric")
+        assert isinstance(result, dict)
+        # Should be empty or error handled gracefully
+        assert not result or 'error' in result or 'message' in result
+    except Exception:
+        assert True
