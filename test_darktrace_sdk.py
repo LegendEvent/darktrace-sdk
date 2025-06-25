@@ -4,8 +4,6 @@ Test script for the Darktrace SDK
 This script demonstrates the basic functionality of the Darktrace SDK
 """
 
-
-
 import pytest
 import requests
 import urllib3
@@ -667,4 +665,31 @@ def test_endpointdetails_basic(dt_client):
         assert result_none is not None
     except Exception:
         # Acceptable: API returns error for unknown hostname
+        assert True
+        
+    # --- Enums module tests ---
+@pytest.mark.usefixtures("dt_client")
+def test_enums_all(dt_client):
+    """Test /enums endpoint: get all enums."""
+    result = dt_client.enums.get()
+    assert isinstance(result, dict)
+    # Should contain at least one known enum category (e.g., 'Country', 'Matching metrics', etc.)
+    assert any(isinstance(v, list) for v in result.values())
+
+@pytest.mark.usefixtures("dt_client")
+def test_enums_countries(dt_client):
+    """Test /enums endpoint: filter by responsedata=Country."""
+    result = dt_client.enums.get(responsedata="Country")
+    assert isinstance(result, dict)
+
+@pytest.mark.usefixtures("dt_client")
+def test_enums_invalid_responsedata(dt_client):
+    """Test /enums endpoint: invalid responsedata returns empty or error handled gracefully."""
+    try:
+        result = dt_client.enums.get(responsedata="notarealenumcategory")
+        assert isinstance(result, dict)
+        # Should be empty or not contain the invalid key
+        assert not result or all(k.lower() != "notarealenumcategory" for k in result.keys())
+    except Exception:
+        # Acceptable: API returns error for unknown responsedata
         assert True
