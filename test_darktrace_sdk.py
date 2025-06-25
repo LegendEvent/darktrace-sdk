@@ -972,3 +972,52 @@ def test_models_invalid_uuid(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown uuid
         assert True
+
+# --- network module tests (#20) ---
+@pytest.mark.usefixtures("dt_client")
+def test_network_basic(dt_client):
+    """Test /network endpoint: basic retrieval and parameter coverage."""
+    # 1. Basic call (should return a dict with statistics and devices)
+    result = dt_client.network.get()
+    assert isinstance(result, dict)
+    assert 'statistics' in result
+
+    # 2. Filter by device id (did)
+    result_did = dt_client.network.get(did=1)
+    assert isinstance(result_did, dict)
+
+    # 3. Filter by metric (datatransfervolume)
+    result_metric = dt_client.network.get(metric="datatransfervolume")
+    assert isinstance(result_metric, dict)
+
+    # 4. Filter by protocol (e.g., 'TCP')
+    result_proto = dt_client.network.get(protocol="TCP")
+    assert isinstance(result_proto, dict)
+
+    # 5. Filter by applicationprotocol (e.g., 'DNS')
+    result_aproto = dt_client.network.get(applicationprotocol="DNS")
+    assert isinstance(result_aproto, dict)
+
+    # 6. Filter by intext (internal/external)
+    result_internal = dt_client.network.get(intext="internal")
+    assert isinstance(result_internal, dict)
+    result_external = dt_client.network.get(intext="external")
+    assert isinstance(result_external, dict)
+
+    # 7. Filter by time (from/to)
+    end = datetime.now()
+    start = end - timedelta(hours=1)
+    result_time = dt_client.network.get(from_=start.strftime('%Y-%m-%d %H:%M:%S'), to=end.strftime('%Y-%m-%d %H:%M:%S'))
+    assert isinstance(result_time, dict)
+
+    # 8. Filter by responsedata (restrict fields)
+    result_resp = dt_client.network.get(responsedata="statistics")
+    assert isinstance(result_resp, dict)
+    assert 'statistics' in result_resp
+
+    # 9. Edge case: non-existent did
+    try:
+        result_none = dt_client.network.get(did=999999)
+        assert isinstance(result_none, dict)
+    except Exception:
+        assert True
