@@ -924,3 +924,51 @@ def test_metrics_invalid_id(dt_client):
         assert not result or 'error' in result or 'message' in result
     except Exception:
         assert True
+
+# --- models module tests (#19) ---
+@pytest.mark.usefixtures("dt_client")
+def test_models_list(dt_client):
+    """Test /models endpoint: get list of all models."""
+    result = dt_client.models.get()
+    assert isinstance(result, list)
+    # Should contain at least one model with required fields
+    if result:
+        assert any(isinstance(item, dict) and 'uuid' in item and 'name' in item for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_models_single(dt_client):
+    """Test /models endpoint: get details for a single model by uuid."""
+    models = dt_client.models.get()
+    if models and isinstance(models, list):
+        uuid = models[0].get('uuid')
+        if uuid is not None:
+            result = dt_client.models.get(uuid=uuid)
+            # API may return a list or dict for single uuid
+            assert isinstance(result, (dict, list))
+            if isinstance(result, dict):
+                assert result.get('uuid') == uuid
+            elif isinstance(result, list):
+                assert any(item.get('uuid') == uuid for item in result)
+
+@pytest.mark.usefixtures("dt_client")
+def test_models_responsedata(dt_client):
+    """Test /models endpoint: restrict response with responsedata param."""
+    result = dt_client.models.get(responsedata="uuid,name")
+    assert isinstance(result, list)
+    if result:
+        assert 'uuid' in result[0] and 'name' in result[0]
+
+@pytest.mark.usefixtures("dt_client")
+def test_models_invalid_uuid(dt_client):
+    """Test /models endpoint: invalid uuid returns error or empty result gracefully."""
+    try:
+        result = dt_client.models.get(uuid="not-a-real-uuid-1234")
+        assert isinstance(result, (dict, list))
+        # Should be empty or error handled gracefully
+        if isinstance(result, dict):
+            assert not result or 'error' in result or 'message' in result
+        elif isinstance(result, list):
+            assert not result
+    except Exception:
+        # Acceptable: API returns error for unknown uuid
+        assert True
