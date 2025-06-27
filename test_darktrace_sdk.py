@@ -1243,3 +1243,47 @@ def test_tags_basic(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown tag_id
         assert True
+
+# --- tags/entities module tests (#38) ---
+import pytest
+
+@pytest.mark.usefixtures("dt_client")
+def test_tags_entities_basic(dt_client):
+    """Test /tags/entities endpoint: basic retrieval and parameter coverage (read-only)."""
+    # 1. List tags for a device (if any device exists)
+    # Try to get a device ID from devices endpoint
+    devices = dt_client.devices.get(count=1)
+    did = None
+    if isinstance(devices, list) and devices:
+        did = devices[0].get('did')
+    elif isinstance(devices, dict):
+        devlist = devices.get('devices', []) if 'devices' in devices else [devices]
+        if devlist and isinstance(devlist, list):
+            did = devlist[0].get('did')
+    if did:
+        tags = dt_client.tags.get_entities(did=did)
+        assert isinstance(tags, (list, dict))
+
+    # 2. List devices for a tag (if any tag exists)
+    tags_list = dt_client.tags.get()
+    tag_name = None
+    if isinstance(tags_list, list) and tags_list:
+        tag_name = tags_list[0].get('name')
+    elif isinstance(tags_list, dict) and 'name' in tags_list:
+        tag_name = tags_list['name']
+    if tag_name:
+        devices_for_tag = dt_client.tags.get_entities(tag=tag_name)
+        assert isinstance(devices_for_tag, (list, dict))
+
+    # 3. With responsedata and fulldevicedetails
+    if did:
+        tags_resp = dt_client.tags.get_entities(did=did, responsedata="name", fulldevicedetails=True)
+        assert isinstance(tags_resp, (list, dict))
+
+    # 4. Edge case: non-existent device/tag
+    result_none = dt_client.tags.get_entities(did=99999999)
+    assert isinstance(result_none, (list, dict))
+    if isinstance(result_none, dict):
+        assert not result_none or 'error' in result_none or 'message' in result_none
+    elif isinstance(result_none, list):
+        assert not result_none

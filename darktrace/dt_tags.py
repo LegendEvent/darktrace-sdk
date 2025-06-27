@@ -3,9 +3,11 @@ from typing import Optional
 from .dt_utils import debug_print, BaseEndpoint
 
 class Tags(BaseEndpoint):
+    
     def __init__(self, client):
         super().__init__(client)
 
+    #TAGS ENDPOINT
     def get(self,
             tag_id: Optional[str] = None,
             tag: Optional[str] = None,
@@ -78,6 +80,84 @@ class Tags(BaseEndpoint):
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"DELETE {url}")
         response = requests.delete(url, headers=headers, verify=False)
+        if response.status_code == 200:
+            return True
+        response.raise_for_status()
+        return False
+
+
+    #TAGS/ENTITIES ENDPOINT   
+
+    def get_entities(self, did: Optional[int] = None, tag: Optional[str] = None, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None):
+        """
+        Get tags for a device or devices for a tag via /tags/entities.
+
+        Args:
+            did (int, optional): Device ID to list tags for a device.
+            tag (str, optional): Name of an existing tag to list devices for a tag.
+            responsedata (str, optional): Restrict the returned JSON to only the specified field or object.
+            fulldevicedetails (bool, optional): If true and a tag is queried, adds a devices object to the response with more detailed device data.
+
+        Returns:
+            list or dict: Tag or device information from Darktrace.
+        """
+        endpoint = '/tags/entities'
+        url = f"{self.client.host}{endpoint}"
+        params = dict()
+        if did is not None:
+            params['did'] = did
+        if tag is not None:
+            params['tag'] = tag
+        if responsedata is not None:
+            params['responsedata'] = responsedata
+        if fulldevicedetails is not None:
+            params['fulldevicedetails'] = fulldevicedetails
+        headers, sorted_params = self._get_headers(endpoint, params)
+        self.client._debug(f"GET {url} params={sorted_params}")
+        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response.raise_for_status()
+        return response.json()
+
+    def post_entities(self, did: int, tag: str, duration: Optional[int] = None):
+        """
+        Add a tag to a device via /tags/entities (POST, form-encoded).
+
+        Args:
+            did (int): Device ID to tag.
+            tag (str): Name of the tag to add.
+            duration (int, optional): How long the tag should be set for the device (seconds).
+
+        Returns:
+            dict: API response from Darktrace.
+        """
+        endpoint = '/tags/entities'
+        url = f"{self.client.host}{endpoint}"
+        data = {'did': did, 'tag': tag}
+        if duration is not None:
+            data['duration'] = duration
+        headers, _ = self._get_headers(endpoint)
+        self.client._debug(f"POST {url} data={data}")
+        response = requests.post(url, headers=headers, data=data, verify=False)
+        response.raise_for_status()
+        return response.json()
+
+    def delete_entities(self, did: int, tag: str):
+        """
+        Remove a tag from a device via /tags/entities (DELETE).
+
+        Args:
+            did (int): Device ID to untag.
+            tag (str): Name of the tag to remove.
+
+        Returns:
+            bool: True if deletion was successful, False otherwise.
+        """
+        endpoint = '/tags/entities'
+        url = f"{self.client.host}{endpoint}"
+        params = {'did': did, 'tag': tag}
+        headers, sorted_params = self._get_headers(endpoint, params)
+        self.client._debug(f"DELETE {url} params={sorted_params}")
+        response = requests.delete(url, headers=headers, params=sorted_params, verify=False)
         if response.status_code == 200:
             return True
         response.raise_for_status()
