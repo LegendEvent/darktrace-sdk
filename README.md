@@ -1,5 +1,5 @@
 
-# 🚀 Darktrace Python SDK *(Work in Progress)*
+# 🚀 Darktrace Python SDK
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/darktrace-sdk)
 ![GitHub License](https://img.shields.io/github/license/LegendEvent/darktrace-sdk)
@@ -7,8 +7,7 @@
 
 
 > **A modern, Pythonic SDK for the Darktrace Threat Visualizer API.**
-> 
-> **⚠️ Work in progress – not 100% production ready. Breaking changes and incomplete features may exist.**
+
 
 ---
 
@@ -112,8 +111,6 @@ This SDK aims to cover **all endpoints** in the Darktrace API Guide, including:
 
 
 > **If you find a missing endpoint, open an issue or PR and it will be added!**
-> 
-> **⚠️ This SDK is a work in progress and not yet 100% production ready.**
 
 ---
 
