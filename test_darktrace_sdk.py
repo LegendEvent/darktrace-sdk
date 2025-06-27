@@ -1080,3 +1080,37 @@ def test_similardevices_basic(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown device_id
         assert True
+
+# --- status module tests (#23) ---
+@pytest.mark.usefixtures("dt_client")
+def test_status_basic(dt_client):
+    """Test /status endpoint: basic retrieval and parameter coverage."""
+    # 1. Basic call (should return a dict with system status)
+    result = dt_client.status.get()
+    assert isinstance(result, dict)
+    assert 'version' in result or 'time' in result
+
+    # 2. With includechildren parameter (False)
+    result_no_children = dt_client.status.get(includechildren=False)
+    assert isinstance(result_no_children, dict)
+
+    # 3. With fast parameter (True)
+    result_fast = dt_client.status.get(fast=True)
+    assert isinstance(result_fast, dict)
+
+    # 4. With responsedata parameter (restrict fields)
+    # Try a common field like 'probes' or 'subnetData' if present
+    result_resp = dt_client.status.get(responsedata="probes")
+    assert isinstance(result_resp, dict)
+    # Accept either empty or containing 'probes'
+    assert 'probes' in result_resp or not result_resp
+
+    # 5. All parameters combined
+    result_all = dt_client.status.get(includechildren=False, fast=True, responsedata="probes")
+    assert isinstance(result_all, dict)
+
+    # 6. Edge case: invalid responsedata
+    result_invalid = dt_client.status.get(responsedata="notarealfield")
+    assert isinstance(result_invalid, dict)
+    # Should be empty or error handled gracefully
+    assert not result_invalid or 'error' in result_invalid or 'message' in result_invalid
