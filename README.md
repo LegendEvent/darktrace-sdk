@@ -11,8 +11,11 @@
 
 ---
 
-## 🆕 Latest Updates (v0.8.0)
+## 🆕 Latest Updates (v0.8.1)
 
+- **Enhanced IDE Integration**: Added full IntelliSense support with type hints and parameter documentation
+- **Modern Python Packaging**: Added pyproject.toml and py.typed marker for better tooling support
+- **Improved Type Annotations**: Enhanced constructor documentation with detailed parameter descriptions
 - **Critical Authentication Fix**: Fixed parameter order mismatch between signature calculation and request URLs
 - **Consistent Parameter Ordering**: Ensured parameters are sorted alphabetically in both signature calculation and requests
 - **Improved BaseEndpoint Class**: Updated to handle parameter sorting consistently across all API calls
