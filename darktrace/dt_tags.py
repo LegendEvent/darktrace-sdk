@@ -162,3 +162,74 @@ class Tags(BaseEndpoint):
             return True
         response.raise_for_status()
         return False
+    
+        # /tags/[tid]/entities ENDPOINT
+    def get_tag_entities(self, tid: int, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None):
+        """
+        Get entities (devices or credentials) associated with a specific tag via /tags/[tid]/entities (GET).
+
+        Args:
+            tid (int): Tag ID (tid) to query.
+            responsedata (str, optional): Restrict the returned JSON to only the specified field or object.
+            fulldevicedetails (bool, optional): If true, adds a devices object to the response with more detailed device data.
+
+        Returns:
+            list or dict: Entities associated with the tag from Darktrace.
+        """
+        endpoint = f"/tags/{tid}/entities"
+        url = f"{self.client.host}{endpoint}"
+        params = dict()
+        if responsedata is not None:
+            params['responsedata'] = responsedata
+        if fulldevicedetails is not None:
+            params['fulldevicedetails'] = fulldevicedetails
+        headers, sorted_params = self._get_headers(endpoint, params)
+        self.client._debug(f"GET {url} params={sorted_params}")
+        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response.raise_for_status()
+        return response.json()
+
+    def post_tag_entities(self, tid: int, entityType: str, entityValue, expiryDuration: Optional[int] = None):
+        """
+        Add a tag to one or more entities (device or credential) via /tags/[tid]/entities (POST, JSON body).
+
+        Args:
+            tid (int): Tag ID (tid) to apply.
+            entityType (str): The type of entity to be tagged. Valid values: 'Device', 'Credential'.
+            entityValue (str or list): For devices, the did (as string or list of strings). For credentials, the credential value(s).
+            expiryDuration (int, optional): Duration in seconds the tag should be applied for.
+
+        Returns:
+            dict: API response from Darktrace.
+        """
+        endpoint = f"/tags/{tid}/entities"
+        url = f"{self.client.host}{endpoint}"
+        body = {"entityType": entityType, "entityValue": entityValue}
+        if expiryDuration is not None:
+            body["expiryDuration"] = expiryDuration
+        headers, _ = self._get_headers(endpoint)
+        self.client._debug(f"POST {url} body={body}")
+        response = requests.post(url, headers=headers, json=body, verify=False)
+        response.raise_for_status()
+        return response.json()
+
+    def delete_tag_entity(self, tid: int, teid: int):
+        """
+        Remove a tag from an entity via /tags/[tid]/entities/[teid] (DELETE).
+
+        Args:
+            tid (int): Tag ID (tid).
+            teid (int): Tag entity ID (teid) representing the tag-to-entity relationship.
+
+        Returns:
+            bool: True if deletion was successful, False otherwise.
+        """
+        endpoint = f"/tags/{tid}/entities/{teid}"
+        url = f"{self.client.host}{endpoint}"
+        headers, _ = self._get_headers(endpoint)
+        self.client._debug(f"DELETE {url}")
+        response = requests.delete(url, headers=headers, verify=False)
+        if response.status_code == 200:
+            return True
+        response.raise_for_status()
+        return False
