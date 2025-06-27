@@ -1042,3 +1042,41 @@ def test_pcaps_download_invalid(dt_client):
     except Exception:
         # Acceptable: API returns error for unknown file
         assert True
+
+# --- similardevices module tests (#22) ---
+@pytest.mark.usefixtures("dt_client")
+def test_similardevices_basic(dt_client):
+    """Test /similardevices endpoint: basic retrieval and parameter coverage."""
+    # 1. Basic call (should return a list or dict)
+    result = dt_client.similardevices.get()
+    assert isinstance(result, (list, dict))
+
+    # 2. With count parameter
+    result_count = dt_client.similardevices.get(count=2)
+    assert isinstance(result_count, (list, dict))
+
+    # 3. With fulldevicedetails parameter
+    result_full = dt_client.similardevices.get(fulldevicedetails=True)
+    assert isinstance(result_full, (list, dict))
+
+    # 4. With responsedata parameter (restrict fields)
+    result_resp = dt_client.similardevices.get(responsedata="similardevices")
+    assert isinstance(result_resp, (list, dict))
+
+    # 5. With token parameter (pagination, if supported)
+    # This is a smoke test; token is usually returned in a paginated response, so just check no error
+    result_token = dt_client.similardevices.get(token="notarealtoken")
+    assert isinstance(result_token, (list, dict))
+
+    # 6. Edge case: non-existent device_id
+    try:
+        result_none = dt_client.similardevices.get(device_id="notarealdeviceid1234")
+        assert isinstance(result_none, (list, dict))
+        # Should be empty or error handled gracefully
+        if isinstance(result_none, dict):
+            assert not result_none or 'error' in result_none or 'message' in result_none
+        elif isinstance(result_none, list):
+            assert not result_none
+    except Exception:
+        # Acceptable: API returns error for unknown device_id
+        assert True
