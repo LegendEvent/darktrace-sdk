@@ -137,7 +137,7 @@ The `/devicesummary` endpoint may return a `500 Internal Server Error` when acce
 Contributions are welcome! Please:
 
 1. Fork the repo and create your branch.
-2. Write clear, tested code following PEP8 and clean code principles.
+2. Write clear, tested code and clean code principles.
 3. Add/Update docstrings and type hints.
 4. Submit a pull request with a detailed description.
 
