@@ -1152,3 +1152,50 @@ def test_subnets_basic(dt_client):
         assert not result_none or 'error' in result_none or 'message' in result_none
     elif isinstance(result_none, list):
         assert not result_none
+
+# --- summarystatistics module tests (#25) ---
+@pytest.mark.usefixtures("dt_client")
+def test_summarystatistics_basic(dt_client):
+    """Test /summarystatistics endpoint: basic retrieval and parameter coverage (read-only)."""
+    # 1. Basic call (should return a dict with summary statistics)
+    result = dt_client.summarystatistics.get()
+    assert isinstance(result, dict)
+    assert 'devicecount' in result or 'usercredentialcount' in result or 'bandwidth' in result
+
+    # 2. With responsedata parameter (restrict fields)
+    result_resp = dt_client.summarystatistics.get(responsedata="bandwidth")
+    assert isinstance(result_resp, dict)
+    assert 'bandwidth' in result_resp or not result_resp
+
+    # 3. With eventtype parameter (e.g., 'networkdevicedetails')
+    result_event = dt_client.summarystatistics.get(eventtype="networkdevicedetails")
+    assert isinstance(result_event, dict)
+
+    # 4. With eventtype and to/hours parameters
+    end = datetime.now()
+    to_str = end.strftime('%Y-%m-%d %H:%M:%S')
+    result_time = dt_client.summarystatistics.get(eventtype="networkdevicedetails", to=to_str, hours=2)
+    assert isinstance(result_time, dict)
+
+    # 5. With csensor parameter (True)
+    result_csensor = dt_client.summarystatistics.get(csensor=True)
+    assert isinstance(result_csensor, dict)
+
+    # 6. With mitreTactics parameter (True)
+    result_mitre = dt_client.summarystatistics.get(mitreTactics=True)
+    assert isinstance(result_mitre, dict)
+
+    # 7. Edge case: invalid eventtype
+    result_invalid = dt_client.summarystatistics.get(eventtype="notarealeventtype")
+    assert isinstance(result_invalid, dict)
+    # Should be empty, error handled gracefully, or all event counts zero
+    if not result_invalid or 'error' in result_invalid or 'message' in result_invalid:
+        assert True
+    elif 'data' in result_invalid and isinstance(result_invalid['data'], list):
+        # Accept if all events are zero
+        assert all(
+            isinstance(item, dict) and item.get('events', 0) == 0
+            for item in result_invalid['data']
+        )
+    else:
+        assert False, f"Unexpected summarystatistics result for invalid eventtype: {result_invalid}"
