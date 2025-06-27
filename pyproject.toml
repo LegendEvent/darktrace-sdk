@@ -7,14 +7,13 @@ name = "darktrace-sdk"
 version = "0.8.0"
 description = "A modern, modular, and complete Python SDK for the Darktrace API"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "LegendEvent", email = "ridge.thrill7680@eagereverest.com"}
 ]
 keywords = ["darktrace", "sdk", "api", "security", "threat-visualizer"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Intended Audience :: Developers", 
     "Intended Audience :: Information Technology",
