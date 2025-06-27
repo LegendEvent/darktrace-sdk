@@ -12,7 +12,7 @@
 
 ---
 
-## 🆕 Latest Updates (v1.0.5)
+## 🆕 Latest Updates (v0.8.0)
 
 - **Critical Authentication Fix**: Fixed parameter order mismatch between signature calculation and request URLs
 - **Consistent Parameter Ordering**: Ensured parameters are sorted alphabetically in both signature calculation and requests
