@@ -23,15 +23,17 @@ The AI Analyst module provides the following methods:
 
 - **`get_incident_events()`** - Get AI Analyst incident events with comprehensive filtering
 - **`get_groups()`** - Get AI Analyst incident groups 
-- **`get_investigations()`** - Get AI Analyst investigations (NEW)
-- **`create_investigation()`** - Create new AI Analyst investigations (NEW)
-- **`get_stats()`** - Get AI Analyst statistics with enhanced filtering
-- **`get_comments()`** - Get comments for incident events
-- **`add_comment()`** - Add comments to incident events
+- **`get_investigations()`** - Get AI Analyst investigations
+- **`create_investigation()`** - Create new AI Analyst investigations
+- **`get_stats()`** - Get AI Analyst statistics
+- **`get_comments()`** - Get comments for specific incidents
+- **`add_comment()`** - Add comments to incidents
 - **`acknowledge()`** - Acknowledge incident events
 - **`unacknowledge()`** - Unacknowledge incident events
 - **`pin()`** - Pin incident events
 - **`unpin()`** - Unpin incident events
+- **`acknowledge()`** - Acknowledge incident events
+- **`unacknowledge()`** - Unacknowledge incident events
 
 ## Enhanced Methods
 

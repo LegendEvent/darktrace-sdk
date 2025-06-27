@@ -27,6 +27,167 @@ advanced_search = client.advanced_search
 
 ### Search
 
+Perform advanced search queries on Darktrace logs and events.
+
+```python
+# Basic search query
+query = {
+    "offset": 0,
+    "count": 100,
+    "query": "*",
+    "timeframe": "1 hour"
+}
+results = advanced_search.search(query)
+
+# Search with POST request (not recommended - will raise NotImplementedError)
+try:
+    results = advanced_search.search(query, post_request=True)
+except NotImplementedError as e:
+    print(f"POST not supported: {e}")
+    # Use GET instead
+    results = advanced_search.search(query, post_request=False)
+```
+
+#### Parameters
+
+- `query` (Dict[str, Any]): Dictionary containing the search query parameters
+- `post_request` (bool, optional): If True, attempts to use POST method. Defaults to False (GET method)
+
+#### Query Parameters
+
+The query dictionary can include:
+- `offset` (int): Starting offset for results
+- `count` (int): Number of results to return
+- `query` (str): Search query string
+- `timeframe` (str): Time frame for the search (e.g., "1 hour", "24 hours")
+
+### Analyze
+
+Analyze field data from search results.
+
+```python
+# Analyze a specific field
+query = {
+    "query": "*",
+    "timeframe": "1 hour"
+}
+analysis = advanced_search.analyze(
+    field="source_ip",
+    analysis_type="count",
+    query=query
+)
+```
+
+#### Parameters
+
+- `field` (str): The field to analyze
+- `analysis_type` (str): Type of analysis to perform (e.g., "count", "unique")
+- `query` (Dict[str, Any]): Search query parameters
+
+### Graph
+
+Get graph data for visualization.
+
+```python
+# Get graph data
+query = {
+    "query": "*",
+    "timeframe": "1 hour"
+}
+graph_data = advanced_search.graph(
+    graph_type="timeseries",
+    interval=300,  # 5 minutes in seconds
+    query=query
+)
+```
+
+#### Parameters
+
+- `graph_type` (str): Type of graph to generate (e.g., "timeseries")
+- `interval` (int): Time interval in seconds for graph data points
+- `query` (Dict[str, Any]): Search query parameters
+
+## Examples
+
+### Basic Search
+
+```python
+from darktrace import DarktraceClient
+
+client = DarktraceClient(
+    host="https://your-darktrace-instance.com",
+    public_token="your_public_token",
+    private_token="your_private_token"
+)
+
+# Perform a basic search
+query = {
+    "offset": 0,
+    "count": 50,
+    "query": "source_ip:192.168.1.100",
+    "timeframe": "2 hours"
+}
+
+try:
+    results = client.advanced_search.search(query)
+    print(f"Found {len(results.get('events', []))} events")
+    for event in results.get('events', [])[:5]:
+        print(f"Event: {event}")
+except Exception as e:
+    print(f"Search failed: {e}")
+```
+
+### Field Analysis
+
+```python
+# Analyze source IPs
+query = {
+    "query": "*",
+    "timeframe": "24 hours"
+}
+
+analysis = client.advanced_search.analyze(
+    field="source_ip",
+    analysis_type="count",
+    query=query
+)
+print(f"Top source IPs: {analysis}")
+```
+
+### Time Series Graph
+
+```python
+# Generate time series graph data
+graph_data = client.advanced_search.graph(
+    graph_type="timeseries",
+    interval=600,  # 10-minute intervals
+    query=query
+)
+print(f"Graph data points: {len(graph_data.get('data', []))}")
+```
+
+## Error Handling
+
+```python
+try:
+    results = client.advanced_search.search(query)
+except NotImplementedError as e:
+    print(f"Feature not supported: {e}")
+except requests.exceptions.HTTPError as e:
+    print(f"HTTP error: {e}")
+except Exception as e:
+    print(f"Unexpected error: {e}")
+```
+
+## Notes
+
+- All queries are automatically base64-encoded before being sent to the API
+- GET requests are the recommended method due to POST authentication issues
+- Time intervals for graphs are specified in seconds
+- Query syntax follows Darktrace's advanced search format
+
+### Search
+
 Perform advanced search queries on Darktrace data.
 
 ```python

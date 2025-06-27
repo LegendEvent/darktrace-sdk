@@ -1,6 +1,6 @@
 # Antigena Module
 
-The Antigena module provides access to Darktrace's Antigena functionality, which includes automated and manual response actions.
+The Antigena module provides access to Darktrace's RESPOND/Network (formerly Antigena Network) functionality, which includes automated response actions and manual intervention capabilities. This module allows you to manage active and pending RESPOND actions, create manual actions, and get comprehensive summaries.
 
 ## Initialization
 
@@ -17,37 +17,103 @@ client = DarktraceClient(
 antigena = client.antigena
 ```
 
+## Methods Overview
+
+The Antigena module provides the following methods:
+
+- **`get_actions()`** - Retrieve current and past RESPOND actions with comprehensive filtering
+- **`activate_action()`** - Activate pending RESPOND actions
+- **`extend_action()`** - Extend active RESPOND actions
+- **`clear_action()`** - Clear active, pending or expired actions
+- **`reactivate_action()`** - Reactivate cleared or expired actions
+- **`create_manual_action()`** - Create manual RESPOND/Network actions
+- **`get_summary()`** - Get summary of active and pending actions
+
 ## Methods
 
 ### Get Actions
 
-Retrieve information about current and past Antigena actions.
+Retrieve information about current and past Darktrace RESPOND actions. If no time window is specified, returns all current actions with a future expiry date and all historic actions with an expiry date in the last 14 days.
 
 ```python
-# Get all Antigena actions (default limit is usually 100)
-all_actions = antigena.get_actions()
+# Get all current and recent actions
+actions = antigena.get_actions()
 
-# Get a specific number of actions
-recent_actions = antigena.get_actions(count=10)
+# Get actions with full device details
+actions = antigena.get_actions(fulldevicedetails=True)
 
-# Get actions with specific parameters
-filtered_actions = antigena.get_actions(
-    count=50,           # Number of actions to return
-    offset=0,           # Starting offset
-    status="active",    # Filter by status (active, pending, expired, cleared)
-    did=123,            # Filter by device ID
-    hostname="server*", # Filter by hostname (supports wildcards)
-    ip="192.168.1.*",   # Filter by IP address (supports wildcards)
+# Get all actions including cleared ones
+actions = antigena.get_actions(includecleared=True)
+
+# Get actions requiring confirmation
+pending_actions = antigena.get_actions(needconfirming=True)
+
+# Get actions for specific device with history
+device_actions = antigena.get_actions(
+    did=123,
+    includehistory=True,
+    includeconnections=True
+)
+
+# Get actions within time range
+time_filtered = antigena.get_actions(
+    starttime=1640995200000,  # Unix timestamp in milliseconds
+    endtime=1641081600000,
+    includecleared=True
+)
+
+# Get actions using human-readable time format
+readable_time = antigena.get_actions(
+    from_time="2024-01-01 10:00:00",
+    to_time="2024-01-01 18:00:00"
 )
 ```
 
 #### Parameters
 
-- `count` (int, optional): Number of actions to return
-- `offset` (int, optional): Starting offset for pagination
-- `status` (str, optional): Filter by action status (active, pending, expired, cleared)
-- `did` (int, optional): Filter by device ID
-- `hostname` (str, optional): Filter by hostname (supports wildcards)
+- `fulldevicedetails` (bool): Returns full device detail objects for all referenced devices. Alters JSON structure to include separate `actions` and `devices` objects
+- `includecleared` (bool): Include already cleared RESPOND actions (default: False)
+- `includehistory` (bool): Include additional history information about action state (creation, extension times)
+- `needconfirming` (bool): Filter by actions requiring human confirmation (True) or not requiring confirmation (False)
+- `endtime` (int): End time in millisecond format (Unix timestamp)
+- `from_time` (str): Start time in "YYYY-MM-DD HH:MM:SS" format (alternative to starttime)
+- `starttime` (int): Start time in millisecond format (Unix timestamp)
+- `to_time` (str): End time in "YYYY-MM-DD HH:MM:SS" format (alternative to endtime)
+- `includeconnections` (bool): Add connections object showing connections blocked by actions
+- `responsedata` (str): Restrict returned JSON to specific top-level field or object
+- `pbid` (int): Return only actions created by model breach with specified ID
+- `did` (int): Filter actions for specific device ID
+
+#### Response Structure
+
+```python
+# With fulldevicedetails=False (default)
+{
+  "actions": [
+    {
+      "code": 12345,
+      "active": true,
+      "cleared": false,
+      "manual": false,
+      "aiaScore": 95,
+      "did": 123,
+      "device": {...},
+      "triggerer": {
+        "username": "user@example.com",
+        "reason": "Suspicious activity detected"
+      },
+      "created": 1641038400000,
+      "expires": 1641042000000
+    }
+  ]
+}
+
+# With fulldevicedetails=True
+{
+  "actions": [...],
+  "devices": {...}
+}
+```
 - `ip` (str, optional): Filter by IP address (supports wildcards)
 - `codeid` (int, optional): Get a specific action by its code ID
 
@@ -100,24 +166,55 @@ success = antigena.approve_action(
 
 Returns `True` if the approval was successful, `False` otherwise.
 
-### Extend Action
+### Activate Action
 
-Extend an active Antigena action.
+Activate a pending Darktrace RESPOND action. Changes the state from pending to active.
 
 ```python
-# Extend an action
-success = antigena.extend_action(
-    code_id=12345,           # Action code ID (required)
-    duration=3600,           # New duration in seconds (required)
-    reason="Extended due to ongoing investigation" # Reason for extension (optional)
+# Activate with default duration
+success = antigena.activate_action(
+    codeid=12345,
+    reason="Confirmed threat - activating response"
+)
+
+# Activate with custom duration (10 minutes)
+success = antigena.activate_action(
+    codeid=12345,
+    duration=600,
+    reason="Extended monitoring required"
 )
 ```
 
 #### Parameters
 
-- `code_id` (int, required): The action code ID to extend
-- `duration` (int, required): New duration in seconds for the action
-- `reason` (str, optional): Reason for extending the action
+- `codeid` (int): Unique numeric identifier of the RESPOND action
+- `reason` (str, optional): Free text field specifying action purpose (required if "Audit Antigena" is enabled)
+- `duration` (int, optional): Duration in seconds (uses model default if not specified)
+
+#### Response
+
+Returns `True` if the activation was successful, `False` otherwise.
+
+### Extend Action
+
+Extend an active Darktrace RESPOND action. The duration defines the new total length the action should cover.
+
+```python
+# Extend action to run for total of 300 seconds
+success = antigena.extend_action(
+    codeid=12345,
+    duration=300,
+    reason="Extended monitoring needed"
+)
+```
+
+#### Parameters
+
+- `codeid` (int): Unique numeric identifier of the RESPOND action
+- `duration` (int): New total duration in seconds (not additional time)
+- `reason` (str, optional): Free text field for extension purpose
+
+**Warning**: The duration parameter sets the total action length, not additional time. If an action has 100 seconds remaining and you specify duration=110, it extends by 10 seconds. If you specify duration=10, it reduces to 10 seconds remaining.
 
 #### Response
 
@@ -125,20 +222,20 @@ Returns `True` if the extension was successful, `False` otherwise.
 
 ### Clear Action
 
-Clear an active, pending, or expired Antigena action.
+Clear an active, pending, or expired Darktrace RESPOND action.
 
 ```python
 # Clear an action
 success = antigena.clear_action(
-    code_id=12345,           # Action code ID (required)
-    reason="Threat mitigated" # Reason for clearing (optional)
+    codeid=12345,
+    reason="False positive confirmed"
 )
 ```
 
 #### Parameters
 
-- `code_id` (int, required): The action code ID to clear
-- `reason` (str, optional): Reason for clearing the action
+- `codeid` (int): Unique numeric identifier of the RESPOND action
+- `reason` (str, optional): Free text field for clearing purpose
 
 #### Response
 
@@ -146,22 +243,22 @@ Returns `True` if the clearing was successful, `False` otherwise.
 
 ### Reactivate Action
 
-Reactivate a cleared or expired Antigena action.
+Reactivate a cleared or expired Darktrace RESPOND action.
 
 ```python
-# Reactivate an action
+# Reactivate a cleared action for 10 minutes
 success = antigena.reactivate_action(
-    code_id=12345,           # Action code ID (required)
-    duration=3600,           # Duration in seconds (required)
-    reason="Threat still present" # Reason for reactivation (optional)
+    codeid=12345,
+    duration=600,
+    reason="New evidence requires action"
 )
 ```
 
 #### Parameters
 
-- `code_id` (int, required): The action code ID to reactivate
-- `duration` (int, required): Duration in seconds for the reactivated action
-- `reason` (str, optional): Reason for reactivating the action
+- `codeid` (int): Unique numeric identifier of the RESPOND action
+- `duration` (int): Duration for reactivated action in seconds (required)
+- `reason` (str, optional): Free text field for reactivation purpose
 
 #### Response
 
@@ -169,121 +266,246 @@ Returns `True` if the reactivation was successful, `False` otherwise.
 
 ### Create Manual Action
 
-Create a manual Antigena action for a device.
+Create manual Darktrace RESPOND/Network actions. Available from Darktrace Threat Visualizer 6+.
 
 ```python
-# Create a manual action to block all traffic
-action_id = antigena.create_manual_action(
-    did=123,                # Device ID (required)
-    action="breachblock",   # Action type (required)
-    duration=3600,          # Duration in seconds (required)
-    reason="Suspicious activity detected" # Reason (optional)
+# Create quarantine action
+codeid = antigena.create_manual_action(
+    did=123,
+    action="quarantine",
+    duration=600,
+    reason="Suspicious device behavior"
 )
 
-# Create a manual action to block specific connections
-action_id = antigena.create_manual_action(
+# Create connection blocking action
+codeid = antigena.create_manual_action(
     did=123,
     action="connection",
-    duration=3600,
-    reason="Blocking suspicious connections",
+    duration=600,
+    reason="Block malicious connections",
     connections=[
-        {"ip": "10.0.0.1", "port": 443, "proto": "tcp"},
-        {"ip": "10.0.0.2", "port": 80, "proto": "tcp"}
+        {"src": "10.10.10.10", "dst": "8.8.8.8"},
+        {"src": "10.10.10.10", "dst": "malicious.com", "port": 443}
     ]
+)
+
+# Enforce pattern of life
+codeid = antigena.create_manual_action(
+    did=123,
+    action="pol",
+    duration=1800,
+    reason="Unusual behavior detected"
 )
 ```
 
 #### Parameters
 
-- `did` (int, required): The device ID to apply the action to
-- `action` (str, required): The type of action to apply (breachblock, slowdown, connection)
-- `duration` (int, required): Duration in seconds for the action
-- `reason` (str, optional): Reason for creating the action
-- `connections` (list, optional): List of connections to block (required when action='connection')
+- `did` (int): Device ID for the target device
+- `action` (str): Action type:
+  - `'connection'`: Block Matching Connections
+  - `'pol'`: Enforce pattern of life
+  - `'gpol'`: Enforce group pattern of life  
+  - `'quarantine'`: Quarantine device
+  - `'quarantineOutgoing'`: Block all outgoing traffic
+  - `'quarantineIncoming'`: Block all incoming traffic
+- `duration` (int): Action duration in seconds
+- `reason` (str, optional): Free text field for action purpose
+- `connections` (list, optional): Connection pairs to block (only for 'connection' action):
+  - `'src'` (str): Source IP or hostname
+  - `'dst'` (str): Destination IP or hostname
+  - `'port'` (int, optional): Destination port
 
-#### Response
+#### Returns
 
-Returns the code ID of the created action if successful, 0 otherwise.
+Returns the `codeid` (unique numeric ID) of the created action, or 0 if creation failed.
 
 ### Get Summary
 
-Get a summary of active and pending Antigena actions.
+Get a summary of active and pending Darktrace RESPOND actions.
 
 ```python
-# Get summary of all Antigena actions
+# Get current summary
 summary = antigena.get_summary()
+print(f"Active actions: {summary['activeCount']}")
+print(f"Pending actions: {summary['pendingCount']}")
+
+# Get summary for specific time window
+summary = antigena.get_summary(
+    starttime=1640995200000,
+    endtime=1641081600000
+)
 ```
 
 #### Parameters
 
-None
+- `endtime` (int): End time in millisecond format (Unix timestamp)
+- `starttime` (int): Start time in millisecond format (Unix timestamp)
+- `responsedata` (str): Restrict returned JSON to specific field or object
 
-#### Response
+#### Response Structure
 
-```json
+```python
 {
-  "summary": {
-    "active": 5,
-    "pending": 2,
-    "total": 7,
-    "actions": {
-      "breachblock": 3,
-      "slowdown": 2,
-      "connection": 2
-    }
-  }
+  "pendingCount": 3,
+  "activeCount": 7,
+  "pendingActionDevices": [123, 456, 789],
+  "activeActionDevices": [111, 222, 333, 444, 555, 666, 777]
 }
 ```
 
 ## Examples
 
-### Get Active Antigena Actions
+### Complete Action Management Workflow
 
 ```python
-active_actions = client.antigena.get_actions(status="active")
-for action in active_actions.get("actions", []):
-    print(f"Action ID: {action.get('codeid')}, Type: {action.get('action')}, Device: {action.get('hostname')}")
-```
+from darktrace import DarktraceClient
+import time
 
-### Approve a Pending Action
-
-```python
-action_id = 12345
-success = client.antigena.approve_action(
-    code_id=action_id,
-    reason="Manually approved after review",
-    duration=7200  # 2 hours
+client = DarktraceClient(
+    host="https://your-darktrace-instance.com",
+    public_token="your_public_token",
+    private_token="your_private_token"
 )
-if success:
-    print(f"Successfully approved action {action_id}")
-else:
-    print(f"Failed to approve action {action_id}")
+
+# Get summary of current state
+summary = client.antigena.get_summary()
+print(f"Current state: {summary['activeCount']} active, {summary['pendingCount']} pending")
+
+# Get pending actions requiring confirmation
+pending_actions = client.antigena.get_actions(
+    needconfirming=True,
+    includehistory=True
+)
+
+for action in pending_actions.get('actions', []):
+    codeid = action.get('code')
+    device_id = action.get('did')
+    score = action.get('aiaScore', 0)
+    
+    print(f"Reviewing action {codeid} for device {device_id} (score: {score})")
+    
+    # Activate high-score actions automatically
+    if score > 90:
+        success = client.antigena.activate_action(
+            codeid=codeid,
+            reason="High confidence threat - auto-activated"
+        )
+        print(f"Auto-activated action {codeid}: {success}")
+    
+    # Create manual quarantine for suspicious devices
+    elif score > 70:
+        manual_codeid = client.antigena.create_manual_action(
+            did=device_id,
+            action="quarantine",
+            duration=300,  # 5 minutes
+            reason="Preventive quarantine pending investigation"
+        )
+        print(f"Created manual quarantine {manual_codeid}")
+
+# Monitor active actions
+active_actions = client.antigena.get_actions(
+    needconfirming=False,
+    includeconnections=True
+)
+
+for action in active_actions.get('actions', []):
+    if action.get('active') and not action.get('cleared'):
+        expires = action.get('expires', 0)
+        remaining = (expires - int(time.time() * 1000)) / 1000
+        
+        print(f"Action {action.get('code')} expires in {remaining:.0f} seconds")
+        
+        # Extend actions that are about to expire
+        if remaining < 60:  # Less than 1 minute
+            client.antigena.extend_action(
+                codeid=action.get('code'),
+                duration=600,  # Extend to 10 minutes total
+                reason="Automatic extension - investigation ongoing"
+            )
 ```
 
-### Create a Manual Block Action
+### Device-Specific Action Management
 
 ```python
+# Monitor specific device
 device_id = 123
-action_id = client.antigena.create_manual_action(
+device_actions = client.antigena.get_actions(
     did=device_id,
-    action="breachblock",
-    duration=3600,  # 1 hour
-    reason="Manual block due to suspicious activity"
+    includecleared=True,
+    includehistory=True
 )
-if action_id > 0:
-    print(f"Successfully created manual action with ID {action_id}")
-else:
-    print("Failed to create manual action")
+
+print(f"Actions for device {device_id}:")
+for action in device_actions.get('actions', []):
+    status = "Active" if action.get('active') else "Inactive"
+    if action.get('cleared'):
+        status = "Cleared"
+    
+    print(f"  Action {action.get('code')}: {status}")
+    print(f"    Type: {'Manual' if action.get('manual') else 'Automatic'}")
+    print(f"    Score: {action.get('aiaScore', 'N/A')}")
+
+# Create comprehensive response for suspicious device
+if len(device_actions.get('actions', [])) == 0:
+    # No existing actions - create quarantine
+    codeid = client.antigena.create_manual_action(
+        did=device_id,
+        action="quarantine",
+        duration=1800,  # 30 minutes
+        reason="Suspicious device - comprehensive isolation"
+    )
+    print(f"Created quarantine action {codeid}")
 ```
 
 ## Error Handling
 
 ```python
 try:
-    actions = client.antigena.get_actions()
-    # Process the actions
+    # Attempt to activate action
+    success = client.antigena.activate_action(
+        codeid=12345,
+        reason="Threat confirmation"
+    )
+    
+    if success:
+        print("Action activated successfully")
+    else:
+        print("Failed to activate action - check permissions and action state")
+        
 except requests.exceptions.HTTPError as e:
-    print(f"HTTP error occurred: {e}")
+    print(f"HTTP error: {e}")
+    if hasattr(e, 'response'):
+        print(f"Status code: {e.response.status_code}")
+        print(f"Response: {e.response.text}")
+        
 except Exception as e:
-    print(f"An error occurred: {e}")
-``` 
+    print(f"Unexpected error: {e}")
+```
+
+## Notes
+
+### Time Parameters
+- All timestamp parameters expect Unix timestamps in milliseconds
+- Time parameters (`starttime`/`endtime` or `from_time`/`to_time`) must be specified in pairs
+- Human-readable time format: "YYYY-MM-DD HH:MM:SS"
+
+### Action States
+- `active=true`: Action has been activated (by confirmation or automatically)
+- `cleared=true`: Action manually cleared by user
+- `cleared=false`: Action expired naturally
+- `manual=true`: Manual RESPOND/Network action
+
+### Special Behaviors
+- Actions without time windows return current actions + 14 days of history
+- Clearing active actions suppresses action/breach combinations for remaining duration
+- Full device details alter JSON structure to separate `actions` and `devices` objects
+- Manual actions appear with triggerer username and reason in action history
+
+### Action Types
+Available manual action types:
+- **connection**: Block specific connections
+- **pol**: Enforce individual device pattern of life
+- **gpol**: Enforce group pattern of life
+- **quarantine**: Complete device isolation
+- **quarantineOutgoing**: Block outbound traffic only
+- **quarantineIncoming**: Block inbound traffic only
