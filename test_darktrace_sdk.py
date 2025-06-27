@@ -1114,3 +1114,41 @@ def test_status_basic(dt_client):
     assert isinstance(result_invalid, dict)
     # Should be empty or error handled gracefully
     assert not result_invalid or 'error' in result_invalid or 'message' in result_invalid
+
+# --- subnets module tests (#24) ---
+@pytest.mark.usefixtures("dt_client")
+def test_subnets_basic(dt_client):
+    """Test /subnets endpoint: basic retrieval and parameter coverage (read-only)."""
+    # 1. Basic call (should return a list or dict)
+    result = dt_client.subnets.get()
+    assert isinstance(result, (list, dict))
+
+    # 2. With seensince parameter (e.g., '1hour')
+    result_seen = dt_client.subnets.get(seensince="1hour")
+    assert isinstance(result_seen, (list, dict))
+
+    # 3. With seensince parameter (e.g., '3600' seconds)
+    result_seen2 = dt_client.subnets.get(seensince="3600")
+    assert isinstance(result_seen2, (list, dict))
+
+    # 4. With sid parameter (if any subnet exists)
+    subnets = result if isinstance(result, list) else (result.get('subnets', []) if isinstance(result, dict) else [])
+    sid = None
+    if subnets and isinstance(subnets, list) and len(subnets) > 0:
+        sid = subnets[0].get('sid')
+    if sid is not None:
+        result_sid = dt_client.subnets.get(sid=sid)
+        assert isinstance(result_sid, (list, dict))
+
+    # 5. With responsedata parameter (restrict fields)
+    result_resp = dt_client.subnets.get(responsedata="subnets")
+    assert isinstance(result_resp, (list, dict))
+
+    # 6. Edge case: non-existent sid
+    result_none = dt_client.subnets.get(sid=99999999)
+    assert isinstance(result_none, (list, dict))
+    # Should be empty or error handled gracefully
+    if isinstance(result_none, dict):
+        assert not result_none or 'error' in result_none or 'message' in result_none
+    elif isinstance(result_none, list):
+        assert not result_none
