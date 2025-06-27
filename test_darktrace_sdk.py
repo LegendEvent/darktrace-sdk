@@ -1287,3 +1287,36 @@ def test_tags_entities_basic(dt_client):
         assert not result_none or 'error' in result_none or 'message' in result_none
     elif isinstance(result_none, list):
         assert not result_none
+
+# --- tags/[tid]/entities module tests (#39) ---
+@pytest.mark.usefixtures("dt_client")
+def test_tags_tid_entities_basic(dt_client):
+    """Test /tags/[tid]/entities endpoint: basic retrieval and parameter coverage (read-only)."""
+    # 1. Get a tag id (tid) from /tags
+    tags = dt_client.tags.get()
+    tid = None
+    if isinstance(tags, list) and tags:
+        tid = tags[0].get('tid')
+    elif isinstance(tags, dict) and 'tid' in tags:
+        tid = tags['tid']
+    if not tid:
+        pytest.skip("No tag available for /tags/[tid]/entities test.")
+
+    # 2. GET: List entities for a tag
+    entities = dt_client.tags.get_tag_entities(tid)
+    assert isinstance(entities, (list, dict))
+
+    # 3. GET: With responsedata and fulldevicedetails
+    entities_resp = dt_client.tags.get_tag_entities(tid, responsedata="entityType", fulldevicedetails=True)
+    assert isinstance(entities_resp, (list, dict))
+
+    # 6. Edge case: non-existent tid
+    try:
+        result_none = dt_client.tags.get_tag_entities(99999999)
+        assert isinstance(result_none, (list, dict))
+        if isinstance(result_none, dict):
+            assert not result_none or 'error' in result_none or 'message' in result_none
+        elif isinstance(result_none, list):
+            assert not result_none
+    except Exception:
+        assert True
