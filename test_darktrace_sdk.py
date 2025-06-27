@@ -1199,3 +1199,47 @@ def test_summarystatistics_basic(dt_client):
         )
     else:
         assert False, f"Unexpected summarystatistics result for invalid eventtype: {result_invalid}"
+
+# --- tags module tests (#26) ---
+@pytest.mark.usefixtures("dt_client")
+def test_tags_basic(dt_client):
+    """Test /tags endpoint: basic retrieval and parameter coverage (read-only)."""
+    # 1. Basic call (should return a list or dict)
+    result = dt_client.tags.get()
+    assert isinstance(result, (list, dict))
+
+    # 2. With tag parameter (if any tag exists)
+    tag_name = None
+    if isinstance(result, list) and result:
+        tag_name = result[0].get('name')
+    elif isinstance(result, dict) and 'name' in result:
+        tag_name = result['name']
+    if tag_name:
+        result_tag = dt_client.tags.get(tag=tag_name)
+        assert isinstance(result_tag, (list, dict))
+
+    # 3. With responsedata parameter (restrict fields)
+    result_resp = dt_client.tags.get(responsedata="name")
+    assert isinstance(result_resp, (list, dict))
+
+    # 4. With tag_id parameter (if any tag exists)
+    tag_id = None
+    if isinstance(result, list) and result:
+        tag_id = result[0].get('tid')
+    elif isinstance(result, dict) and 'tid' in result:
+        tag_id = result['tid']
+    if tag_id:
+        result_tid = dt_client.tags.get(tag_id=tag_id)
+        assert isinstance(result_tid, (list, dict))
+
+    # 5. Edge case: non-existent tag_id
+    try:
+        result_none = dt_client.tags.get(tag_id="99999999")
+        assert isinstance(result_none, (list, dict))
+        if isinstance(result_none, dict):
+            assert not result_none or 'error' in result_none or 'message' in result_none
+        elif isinstance(result_none, list):
+            assert not result_none
+    except Exception:
+        # Acceptable: API returns error for unknown tag_id
+        assert True
