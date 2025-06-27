@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='darktrace-sdk',
-    version='0.8.0',
+    version='0.8.1',
     description='A modern, modular, and complete Python SDK for the Darktrace API',
     long_description=long_description,
     long_description_content_type='text/markdown',
