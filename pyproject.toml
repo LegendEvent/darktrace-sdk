@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "darktrace-sdk"
+version = "0.8.0"
+description = "A modern, modular, and complete Python SDK for the Darktrace API"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "LegendEvent", email = "ridge.thrill7680@eagereverest.com"}
+]
+keywords = ["darktrace", "sdk", "api", "security", "threat-visualizer"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers", 
+    "Intended Audience :: Information Technology",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "requests>=2.25.1",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/LegendEvent/darktrace-sdk"
+"Bug Reports" = "https://github.com/LegendEvent/darktrace-sdk/issues"
+"Source" = "https://github.com/LegendEvent/darktrace-sdk"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["darktrace*"]
+
+[tool.setuptools.package-data]
+darktrace = ["py.typed"]

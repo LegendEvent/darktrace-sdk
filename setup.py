@@ -13,6 +13,9 @@ setup(
     author_email='ridge.thrill7680@eagereverest.com',
     url='https://github.com/LegendEvent/darktrace-sdk',
     packages=['darktrace'],
+    package_data={
+        'darktrace': ['py.typed'],
+    },
     install_requires=[
         'requests>=2.25.1',
     ],
