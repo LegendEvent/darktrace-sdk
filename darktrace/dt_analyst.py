@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Union, List, Dict, Any, Optional
 from .dt_utils import debug_print, BaseEndpoint
 
@@ -146,10 +147,14 @@ class Analyst(BaseEndpoint):
         """
         endpoint = '/aianalyst/incident/comments'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, json_body=True)
         body: Dict[str, Any] = {"incident_id": incident_id, "message": message}
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         return response.status_code == 200
 
     def get_stats(self, **params):
@@ -220,11 +225,14 @@ class Analyst(BaseEndpoint):
             "did": did
         }
         
-        # For POST requests with JSON body
-        headers, _ = self._get_headers(endpoint, json_body=True)
-        headers['Content-Type'] = 'application/json'
+        # For POST requests with JSON body, include it in signature
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         
         self.client._debug(f"POST {url} json={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
