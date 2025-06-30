@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Dict, Any, Optional, Union, List
 from .dt_utils import debug_print, BaseEndpoint
 
@@ -135,9 +136,12 @@ class DarktraceEmail(BaseEndpoint):
         """Perform an action on an email by UUID in Darktrace/Email API."""
         endpoint = f'/agemail/api/ep/api/v1.0/emails/{uuid}/action'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint, json_body=data)
+        headers['Content-Type'] = 'application/json'
         self.client._debug(f"POST {url} data={data}")
-        response = requests.post(url, headers=headers, json=data, verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=False)
+        self.client._debug(f"Response status: {response.status_code}")
+        self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
         return response.json()
 
@@ -189,9 +193,12 @@ class DarktraceEmail(BaseEndpoint):
         """Search emails in Darktrace/Email API."""
         endpoint = '/agemail/api/ep/api/v1.0/emails/search'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        headers, sorted_params = self._get_headers(endpoint, json_body=data)
+        headers['Content-Type'] = 'application/json'
         self.client._debug(f"POST {url} data={data}")
-        response = requests.post(url, headers=headers, json=data, verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=False)
+        self.client._debug(f"Response status: {response.status_code}")
+        self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
         return response.json()
 
