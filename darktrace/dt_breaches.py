@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Dict, Any, Optional, Union
 from datetime import datetime
 from .dt_utils import debug_print, BaseEndpoint
@@ -101,13 +102,57 @@ class ModelBreaches(BaseEndpoint):
         Returns:
             bool: True if comment was added successfully, False otherwise.
         """
+        print(f"DEBUG BREACHES: add_comment called with:")
+        print(f"  - pbid: {pbid}")
+        print(f"  - message: '{message}'")
+        print(f"  - params: {params}")
+        
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
         body: Dict[str, Any] = {'message': message}
+        
+        print(f"DEBUG BREACHES: Calling _get_headers with:")
+        print(f"  - endpoint: '{endpoint}'")
+        print(f"  - params: {params}")
+        print(f"  - body: {body}")
+        
+        headers, sorted_params = self._get_headers(endpoint, params, body)
+        
+        print(f"DEBUG BREACHES: Received from _get_headers:")
+        print(f"  - headers: {headers}")
+        print(f"  - sorted_params: {sorted_params}")
+        
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        response = requests.post(url, headers=headers, params=sorted_params, json=body, verify=False)
-        return response.status_code == 200
+        
+        try:
+            # Send JSON as raw data, not as json parameter (as per Darktrace docs)
+            # IMPORTANT: Must use same JSON formatting as in signature generation!
+            json_data = json.dumps(body, separators=(',', ':'))
+            print(f"DEBUG BREACHES: JSON data to send: '{json_data}'")
+            print(f"DEBUG BREACHES: Making POST request to: {url}")
+            print(f"DEBUG BREACHES: With headers: {headers}")
+            print(f"DEBUG BREACHES: With params: {sorted_params}")
+            print(f"DEBUG BREACHES: With data: '{json_data}'")
+            
+            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+            self.client._debug(f"Response Status: {response.status_code}")
+            self.client._debug(f"Response Text: {response.text}")
+            
+            print(f"DEBUG BREACHES: Response status: {response.status_code}")
+            print(f"DEBUG BREACHES: Response headers: {dict(response.headers)}")
+            print(f"DEBUG BREACHES: Response text: '{response.text}'")
+            
+            if response.status_code == 200:
+                self.client._debug("Comment added successfully")
+                return True
+            else:
+                self.client._debug(f"Failed to add comment. Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.client._debug(f"Exception occurred while adding comment: {str(e)}")
+            print(f"DEBUG BREACHES: Exception: {str(e)}")
+            return False
 
     def acknowledge(self, pbid: int, **params) -> bool:
         """
@@ -121,11 +166,28 @@ class ModelBreaches(BaseEndpoint):
         """
         endpoint = f'/modelbreaches/{pbid}/acknowledge'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
         body: Dict[str, bool] = {'acknowledge': True}
+        headers, sorted_params = self._get_headers(endpoint, params, body)
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        response = requests.post(url, headers=headers, params=sorted_params, json=body, verify=False)
-        return response.status_code == 200
+        
+        try:
+            # Send JSON as raw data, not as json parameter (as per Darktrace docs)
+            # IMPORTANT: Must use same JSON formatting as in signature generation!
+            json_data = json.dumps(body, separators=(',', ':'))
+            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+            self.client._debug(f"Response Status: {response.status_code}")
+            self.client._debug(f"Response Text: {response.text}")
+            
+            if response.status_code == 200:
+                self.client._debug("Breach acknowledged successfully")
+                return True
+            else:
+                self.client._debug(f"Failed to acknowledge breach. Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
+            return False
 
     def unacknowledge(self, pbid: int, **params) -> bool:
         """
@@ -139,8 +201,25 @@ class ModelBreaches(BaseEndpoint):
         """
         endpoint = f'/modelbreaches/{pbid}/unacknowledge'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
         body: Dict[str, bool] = {'unacknowledge': True}
+        headers, sorted_params = self._get_headers(endpoint, params, body)
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        response = requests.post(url, headers=headers, params=sorted_params, json=body, verify=False)
-        return response.status_code == 200
+        
+        try:
+            # Send JSON as raw data, not as json parameter (as per Darktrace docs)
+            # IMPORTANT: Must use same JSON formatting as in signature generation!
+            json_data = json.dumps(body, separators=(',', ':'))
+            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+            self.client._debug(f"Response Status: {response.status_code}")
+            self.client._debug(f"Response Text: {response.text}")
+            
+            if response.status_code == 200:
+                self.client._debug("Breach unacknowledged successfully")
+                return True
+            else:
+                self.client._debug(f"Failed to unacknowledge breach. Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
+            return False

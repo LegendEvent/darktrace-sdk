@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Dict, Any, Union, Optional, List
 from .dt_utils import debug_print, BaseEndpoint
 
@@ -111,8 +112,6 @@ class Antigena(BaseEndpoint):
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
         
-        headers, sorted_params = self._get_headers(endpoint, {})
-        
         body: Dict[str, Any] = {
             "codeid": codeid, 
             "activate": True
@@ -123,14 +122,14 @@ class Antigena(BaseEndpoint):
         if duration is not None:
             body["duration"] = duration
             
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
         
-        response = requests.post(
-            url, 
-            headers=headers, 
-            json=body, 
-            verify=False
-        )
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         return response.status_code == 200
 
     def extend_action(self, codeid: int, duration: int, reason: str = "") -> bool:
@@ -163,8 +162,6 @@ class Antigena(BaseEndpoint):
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
         
-        headers, sorted_params = self._get_headers(endpoint, {})
-        
         body: Dict[str, Any] = {
             "codeid": codeid, 
             "duration": duration
@@ -173,14 +170,14 @@ class Antigena(BaseEndpoint):
         if reason:
             body["reason"] = reason
             
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
         
-        response = requests.post(
-            url, 
-            headers=headers, 
-            json=body, 
-            verify=False
-        )
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         return response.status_code == 200
 
     def clear_action(self, codeid: int, reason: str = "") -> bool:
@@ -209,8 +206,6 @@ class Antigena(BaseEndpoint):
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
         
-        headers, sorted_params = self._get_headers(endpoint, {})
-        
         body: Dict[str, Any] = {
             "codeid": codeid, 
             "clear": True
@@ -219,14 +214,14 @@ class Antigena(BaseEndpoint):
         if reason:
             body["reason"] = reason
             
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
         
-        response = requests.post(
-            url, 
-            headers=headers, 
-            json=body, 
-            verify=False
-        )
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         return response.status_code == 200
 
     def reactivate_action(self, codeid: int, duration: int, reason: str = "") -> bool:
@@ -250,8 +245,6 @@ class Antigena(BaseEndpoint):
         endpoint = '/antigena'
         url = f"{self.client.host}{endpoint}"
         
-        headers, sorted_params = self._get_headers(endpoint, {})
-        
         body: Dict[str, Any] = {
             "codeid": codeid, 
             "activate": True, 
@@ -261,13 +254,14 @@ class Antigena(BaseEndpoint):
         if reason:
             body["reason"] = reason
             
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
         
-        response = requests.post(
-            url, 
-            headers=headers, 
-            json=body, 
-            verify=False        )
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         return response.status_code == 200
 
     def create_manual_action(self, did: int, action: str, duration: int, reason: str = "", 
@@ -328,8 +322,6 @@ class Antigena(BaseEndpoint):
         endpoint = '/antigena/manual'
         url = f"{self.client.host}{endpoint}"
         
-        headers, sorted_params = self._get_headers(endpoint, {})
-        
         body: Dict[str, Any] = {
             "did": did, 
             "action": action, 
@@ -340,14 +332,14 @@ class Antigena(BaseEndpoint):
         if action == 'connection' and connections:
             body["connections"] = connections
             
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
         
-        response = requests.post(
-            url, 
-            headers=headers, 
-            json=body, 
-            verify=False
-        )
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         
         if response.status_code == 200:
             result = response.json()

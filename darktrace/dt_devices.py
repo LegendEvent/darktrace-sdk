@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import List, Dict, Any
 from .dt_utils import debug_print, BaseEndpoint
 
@@ -100,14 +101,13 @@ class Devices(BaseEndpoint):
         body: Dict[str, Any] = {"did": did}
         body.update(kwargs)
         
-        # Get headers (no params for POST request)
-        headers, _ = self._get_headers(endpoint)
+        # Get headers with JSON body for signature generation
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
         self.client._debug(f"POST {url} body={body}")
         
-        response = requests.post(
-            url, 
-            headers=headers,
-            json=body,
-            verify=False
-        )
+        # Send JSON as raw data with consistent formatting (same as signature generation)
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
         return response.status_code == 200

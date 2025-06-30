@@ -1,7 +1,7 @@
 import hmac
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional, Any
 
 class DarktraceAuth:
@@ -23,6 +23,7 @@ class DarktraceAuth:
             - 'headers': The required authentication headers
             - 'params': The sorted parameters (or original params if none)
         """
+        # UTC Zeit verwenden (Darktrace Server läuft auf UTC)
         date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
         
         # Include query parameters in the signature if provided
@@ -34,13 +35,13 @@ class DarktraceAuth:
             sorted_params = dict(sorted(params.items()))
             query_string = '&'.join(f"{k}={v}" for k, v in sorted_params.items())
             signature_path = f"{request_path}?{query_string}"
-          # For POST requests with JSON body, include the body as a query string parameter
-        # as per Darktrace docs: "add each post parameter into the query string as /postendpoint?{"param1":"value","param2":"value"}"
-        # NOTE: This implementation is currently not working for Advanced Search POST requests.
-        # Multiple attempts following the official documentation result in "API SIGNATURE ERROR".
-        # GET requests work correctly with this authentication method.
+        
+        # For POST requests with JSON body, include the JSON string directly as query parameter
+        # as per Darktrace docs example: "/modelbreaches/101/comments?{"message":"Test Comment"}"
         if json_body:
-            json_string = json.dumps(json_body, separators=(',', ':'))  # Compact JSON without spaces
+            # Convert JSON body to string and append directly as query parameter
+            # IMPORTANT: Must use same separators as in dt_breaches.py!
+            json_string = json.dumps(json_body, separators=(',', ':'))  # No spaces in JSON
             separator = '&' if '?' in signature_path else '?'
             signature_path = f"{signature_path}{separator}{json_string}"
         

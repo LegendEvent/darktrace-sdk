@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Optional, List, Dict, Any, Union
 from .dt_utils import debug_print, BaseEndpoint
 
@@ -112,11 +113,13 @@ class IntelFeed(BaseEndpoint):
         if enable_antigena:
             body['iagn'] = True
         
-        # For POST requests with JSON body, we don't include the body in the signature
-        # But we still need to include any query parameters if present
-        headers, _ = self._get_headers(endpoint)
+        # For POST requests with JSON body, we need to include the body in the signature
+        headers, _ = self._get_headers(endpoint, json_body=body)
+        headers['Content-Type'] = 'application/json'
             
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=False)
+        self.client._debug(f"Response status: {response.status_code}")
+        self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
         return response.json() 

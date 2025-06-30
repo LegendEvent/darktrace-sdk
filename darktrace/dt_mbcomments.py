@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Optional, Dict, Any
 from .dt_utils import debug_print, BaseEndpoint
 
@@ -54,10 +55,13 @@ class MBComments(BaseEndpoint):
         """Add a comment to a model breach."""
         endpoint = '/mbcomments'
         url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
         data: Dict[str, Any] = {'breachid': breach_id, 'comment': comment}
         data.update(params)
+        headers, sorted_params = self._get_headers(endpoint, json_body=data)
+        headers['Content-Type'] = 'application/json'
         self.client._debug(f"POST {url} data={data}")
-        response = requests.post(url, headers=headers, json=data, verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=False)
+        self.client._debug(f"Response status: {response.status_code}")
+        self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
         return response.json() 
