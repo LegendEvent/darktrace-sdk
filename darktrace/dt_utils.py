@@ -26,7 +26,17 @@ class BaseEndpoint:
             - Dict with the required authentication headers
             - Dict with sorted parameters (or None if no params)
         """
+        print(f"DEBUG UTILS: _get_headers called with:")
+        print(f"  - endpoint: '{endpoint}'")
+        print(f"  - params: {params}")
+        print(f"  - json_body: {json_body}")
+        
         result = self.client.auth.get_headers(endpoint, params, json_body)
+        
+        print(f"DEBUG UTILS: Auth returned:")
+        print(f"  - headers: {result['headers']}")
+        print(f"  - params: {result['params']}")
+        
         return result['headers'], result['params']
 
 def encode_query(query: dict) -> str:
