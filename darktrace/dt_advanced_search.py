@@ -1,4 +1,5 @@
 import requests
+import json
 from typing import Dict, Any
 from .dt_utils import debug_print, BaseEndpoint, encode_query
 
@@ -13,30 +14,84 @@ class AdvancedSearch(BaseEndpoint):
             query: Dictionary containing the search query parameters
             post_request: If True, use POST method (6.1+), otherwise GET method
             
-        Note:
-            POST requests are currently not working due to authentication signature issues.
-            The Darktrace API documentation indicates POST parameters should be included
-            in the signature calculation, but the exact format is unclear and multiple
-            attempts following the official documentation have failed with "API SIGNATURE ERROR".
-            Use post_request=False (default) to use GET requests which work correctly.
+        Returns:
+            dict: Search results from Darktrace Advanced Search API
         """
-        if post_request:
-            raise NotImplementedError(
-                "POST requests to Advanced Search API are currently not supported due to "
-                "unresolved authentication signature calculation issues. Use GET requests instead "
-                "by setting post_request=False (default)."
-            )
-            
-        encoded_query = encode_query(query)
         endpoint = '/advancedsearch/api/search'
         
-        # Use GET request (working method)
-        url = f"{self.client.host}{endpoint}/{encoded_query}"
-        headers, sorted_params = self._get_headers(f"{endpoint}/{encoded_query}")
-        self.client._debug(f"GET {url}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
-        response.raise_for_status()
-        return response.json()
+        if post_request:
+            # For POST requests (6.1+), we need to create the full Advanced Search structure
+            # and encode it as base64, then send it as {"hash": "encoded_string"}
+            
+            # Build the complete Advanced Search query structure
+            full_query = {
+                "search": query.get("search", ""),
+                "fields": query.get("fields", []),
+                "offset": query.get("offset", 0),
+                "timeframe": query.get("timeframe", "3600"),  # Default 1 hour
+                "time": query.get("time", {"user_interval": 0})
+            }
+            
+            # If custom timeframe is used, ensure proper time structure
+            if "from" in query and "to" in query:
+                full_query["timeframe"] = "custom"
+                full_query["time"] = {
+                    "from": query["from"],
+                    "to": query["to"],
+                    "user_interval": "0"
+                }
+            elif "starttime" in query and "endtime" in query:
+                full_query["timeframe"] = "custom"
+                full_query["time"] = {
+                    "from": query["starttime"],
+                    "to": query["endtime"], 
+                    "user_interval": "0"
+                }
+            elif "interval" in query:
+                full_query["timeframe"] = str(query["interval"])
+            
+            # Encode the complete query structure
+            encoded_query = encode_query(full_query)
+            
+            # Use POST request with JSON body containing the hash
+            url = f"{self.client.host}{endpoint}"
+            body = {"hash": encoded_query}
+            headers, sorted_params = self._get_headers(endpoint, json_body=body)
+            headers['Content-Type'] = 'application/json'
+            self.client._debug(f"POST {url} body={body}")
+            response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=False)
+            self.client._debug(f"Response status: {response.status_code}")
+            self.client._debug(f"Response text: {response.text}")
+            response.raise_for_status()
+            return response.json()
+        else:
+            # Use GET request (traditional method) - encode the full query structure
+            full_query = {
+                "search": query.get("search", ""),
+                "fields": query.get("fields", []),
+                "offset": query.get("offset", 0),
+                "timeframe": query.get("timeframe", "3600"),
+                "time": query.get("time", {"user_interval": 0})
+            }
+            
+            # Handle custom timeframes for GET as well
+            if "from" in query and "to" in query:
+                full_query["timeframe"] = "custom"
+                full_query["time"] = {
+                    "from": query["from"],
+                    "to": query["to"],
+                    "user_interval": "0"
+                }
+            elif "interval" in query:
+                full_query["timeframe"] = str(query["interval"])
+                
+            encoded_query = encode_query(full_query)
+            url = f"{self.client.host}{endpoint}/{encoded_query}"
+            headers, sorted_params = self._get_headers(f"{endpoint}/{encoded_query}")
+            self.client._debug(f"GET {url}")
+            response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+            response.raise_for_status()
+            return response.json()
 
     def analyze(self, field: str, analysis_type: str, query: Dict[str, Any]):
         """Analyze field data."""

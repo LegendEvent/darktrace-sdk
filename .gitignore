@@ -46,3 +46,6 @@ update_endpoints.py
 check_endpoints.py
 commit_and_push.sh
 generate_docs.py
+
+# Test scripts with credentials
+test_advanced_search_post.py
