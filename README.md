@@ -11,16 +11,13 @@
 
 ---
 
-## 🆕 Latest Updates (v0.8.1)
+## 🆕 Latest Updates (v0.8.3)
 
-- **Enhanced IDE Integration**: Added full IntelliSense support with type hints and parameter documentation
-- **Modern Python Packaging**: Added pyproject.toml and py.typed marker for better tooling support
-- **Improved Type Annotations**: Enhanced constructor documentation with detailed parameter descriptions
-- **Critical Authentication Fix**: Fixed parameter order mismatch between signature calculation and request URLs
-- **Consistent Parameter Ordering**: Ensured parameters are sorted alphabetically in both signature calculation and requests
-- **Improved BaseEndpoint Class**: Updated to handle parameter sorting consistently across all API calls
-- **Fixed AI Analyst Module**: Updated authentication handling in the analyst module
-- **Enhanced Examples**: Added comprehensive examples for Intel Feed module
+- **🎉 FIXED: Advanced Search POST Requests**: Resolved GitHub Issue #1 - Advanced Search POST requests now work correctly
+- **JSON Formatting Fix**: Fixed API signature errors caused by inconsistent JSON formatting between signature generation and HTTP body
+- **Enhanced POST Support**: All POST endpoints now use standardized JSON serialization for consistent authentication
+- **Darktrace 6.1+ Compatibility**: Full support for POST-based Advanced Search queries in Darktrace 6.1 and later
+- **Comprehensive Testing**: Added extensive test coverage for Advanced Search POST functionality
 
 ---
 
@@ -77,8 +74,19 @@ all_devices = devices.get()
 antigena = client.antigena
 actions = antigena.get_actions()
 
+# Use Advanced Search with POST requests (Darktrace 6.1+)
+advanced_search = client.advanced_search
+query = {
+    "search": "@type:\"ssl\" AND @fields.dest_port:\"443\"",
+    "fields": [],
+    "offset": 0,
+    "timeframe": "3600"  # 1 hour
+}
+results = advanced_search.search(query=query, post_request=True)
+
 print(all_devices)
 print(actions)
+print(results)
 ```
 
 ---
@@ -117,13 +125,6 @@ This SDK aims to cover **all endpoints** in the Darktrace API Guide, including:
 ---
 
 ## ⚠️ Known Issues
-
-### Advanced Search POST Requests
-POST requests to the Advanced Search API (`/advancedsearch/api/search`) are currently not working due to unresolved authentication signature calculation issues. The Darktrace API documentation specifies that POST parameters should be included in the signature calculation as query string parameters, but multiple implementation attempts following the official documentation have resulted in "API SIGNATURE ERROR" responses.
-
-**Workaround**: Use GET requests for Advanced Search queries, which work correctly and support all the same functionality. The SDK automatically defaults to GET requests for the Advanced Search module.
-
-**Status**: Tracked as [issue #1](https://github.com/LegendEvent/darktrace-sdk/issues/1). GET requests remain fully functional for all use cases.
 
 ### /devicesummary Endpoint Returns HTTP 500
 The `/devicesummary` endpoint may return a `500 Internal Server Error` when accessed with API tokens, even though it works in the browser or with session/cookie authentication. This is a known limitation of the Darktrace API backend and not a bug in the SDK or your code.
