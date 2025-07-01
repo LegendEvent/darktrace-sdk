@@ -2,11 +2,13 @@
 
 The Advanced Search module provides access to Darktrace's advanced search functionality for querying logs and events.
 
-## ⚠️ Known Issues
+## ✅ POST Request Support (v0.8.3+)
 
-**POST Requests Not Supported**: POST requests to the Advanced Search API are currently not working due to unresolved authentication signature calculation issues. The Darktrace API documentation specifies that POST parameters should be included in the signature calculation, but multiple implementation attempts following the official documentation have resulted in "API SIGNATURE ERROR" responses.
+**RESOLVED**: POST requests to the Advanced Search API now work correctly! This was resolved in v0.8.3 by fixing JSON formatting inconsistencies in the authentication system.
 
-**Workaround**: Use GET requests for Advanced Search queries, which work correctly and support all the same functionality. The SDK automatically defaults to GET requests.
+- **Darktrace 6.1+**: POST requests are recommended for advanced queries
+- **Earlier versions**: GET requests continue to work as before
+- **Both methods supported**: You can choose between GET and POST based on your needs
 
 ## Initialization
 
@@ -30,22 +32,45 @@ advanced_search = client.advanced_search
 Perform advanced search queries on Darktrace logs and events.
 
 ```python
-# Basic search query
+# Basic search query structure
 query = {
+    "search": "@type:\"ssl\" AND @fields.dest_port:\"443\"",
+    "fields": [],
     "offset": 0,
-    "count": 100,
-    "query": "*",
-    "timeframe": "1 hour"
+    "timeframe": "3600"  # 1 hour in seconds
 }
-results = advanced_search.search(query)
 
-# Search with POST request (not recommended - will raise NotImplementedError)
-try:
-    results = advanced_search.search(query, post_request=True)
-except NotImplementedError as e:
-    print(f"POST not supported: {e}")
-    # Use GET instead
-    results = advanced_search.search(query, post_request=False)
+# GET request (traditional method, works with all Darktrace versions)
+results = advanced_search.search(query)
+# or explicitly
+results = advanced_search.search(query, post_request=False)
+
+# POST request (recommended for Darktrace 6.1+)
+results = advanced_search.search(query, post_request=True)
+```
+
+#### Advanced Query Examples
+
+```python
+# Search for SSL connections with custom timeframe
+ssl_query = {
+    "search": "@type:\"ssl\" AND @fields.dest_port:\"443\"",
+    "fields": ["@fields.source_ip", "@fields.dest_ip", "@fields.cipher"],
+    "offset": 0,
+    "timeframe": "7200"  # 2 hours
+}
+results = advanced_search.search(ssl_query, post_request=True)
+
+# Search with custom time range
+custom_time_query = {
+    "search": "@type:\"conn\" AND @fields.proto:\"tcp\"",
+    "fields": [],
+    "offset": 0,
+    "timeframe": "custom",
+    "from": "2025-07-01T09:00:00",
+    "to": "2025-07-01T10:00:00"
+}
+results = advanced_search.search(custom_time_query, post_request=True)
 ```
 
 #### Parameters
@@ -170,19 +195,19 @@ print(f"Graph data points: {len(graph_data.get('data', []))}")
 
 ```python
 try:
-    results = client.advanced_search.search(query)
-except NotImplementedError as e:
-    print(f"Feature not supported: {e}")
+    results = client.advanced_search.search(query, post_request=True)
+    # Process the data
 except requests.exceptions.HTTPError as e:
-    print(f"HTTP error: {e}")
+    print(f"HTTP error occurred: {e}")
 except Exception as e:
-    print(f"Unexpected error: {e}")
+    print(f"An error occurred: {e}")
 ```
 
 ## Notes
 
 - All queries are automatically base64-encoded before being sent to the API
-- GET requests are the recommended method due to POST authentication issues
+- **POST requests now supported** (v0.8.3+) for Darktrace 6.1+ installations
+- **GET requests continue to work** for all Darktrace versions
 - Time intervals for graphs are specified in seconds
 - Query syntax follows Darktrace's advanced search format
 
@@ -200,11 +225,11 @@ query = {
     "time": {"user_interval": 0}
 }
 
-# Execute search (GET request - recommended)
+# Execute search (GET request - traditional method)
 results = advanced_search.search(query)
 
-# POST request (currently not supported - will raise NotImplementedError)
-# results = advanced_search.search(query, post_request=True)
+# Execute search (POST request - recommended for Darktrace 6.1+)
+results = advanced_search.search(query, post_request=True)
 ```
 
 #### Parameters
@@ -215,7 +240,7 @@ results = advanced_search.search(query)
   - `offset` (int): Starting offset for pagination
   - `timeframe` (str): Time range in seconds
   - `time` (dict): Time configuration
-- `post_request` (bool, optional): If True, attempts POST method (currently not supported)
+- `post_request` (bool, optional): If True, uses POST method (supported in v0.8.3+)
 
 #### Response
 
@@ -312,12 +337,8 @@ for bucket in analysis['aggregations']['terms']['buckets'][:5]:
 
 ```python
 try:
-    results = client.advanced_search.search(query)
+    results = client.advanced_search.search(query, post_request=True)
     # Process the data
-except NotImplementedError as e:
-    print(f"POST request not supported: {e}")
-    # Use GET request instead
-    results = client.advanced_search.search(query, post_request=False)
 except requests.exceptions.HTTPError as e:
     print(f"HTTP error occurred: {e}")
 except Exception as e:
