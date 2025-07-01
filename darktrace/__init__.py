@@ -1,4 +1,5 @@
 # Darktrace SDK - Pythonic, modular, and complete API wrapper 
+from ._version import __version__
 from .dt_antigena import Antigena
 from .dt_analyst import Analyst
 from .auth import DarktraceAuth
@@ -62,6 +63,3 @@ __all__ = [
     'AdvancedSearch',
     'debug_print'
 ]
-
-# Version
-__version__ = '0.8.1'

@@ -1,11 +1,19 @@
 from setuptools import setup, find_packages
+import os
+
+# Read version from _version.py
+def get_version():
+    version_file = os.path.join(os.path.dirname(__file__), 'darktrace', '_version.py')
+    with open(version_file) as f:
+        exec(f.read())
+    return locals()['__version__']
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name='darktrace-sdk',
-    version='0.8.3',
+    version=get_version(),
     description='A modern, modular, and complete Python SDK for the Darktrace API',
     long_description=long_description,
     long_description_content_type='text/markdown',

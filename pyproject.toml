@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "darktrace-sdk"
-version = "0.8.3"
+dynamic = ["version"]
 description = "A modern, modular, and complete Python SDK for the Darktrace API"
 readme = "README.md"
 license = "MIT"
@@ -29,6 +29,9 @@ dependencies = [
 "Homepage" = "https://github.com/LegendEvent/darktrace-sdk"
 "Bug Reports" = "https://github.com/LegendEvent/darktrace-sdk/issues"
 "Source" = "https://github.com/LegendEvent/darktrace-sdk"
+
+[tool.setuptools.dynamic]
+version = {attr = "darktrace._version.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["."]

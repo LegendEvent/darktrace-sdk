@@ -49,3 +49,4 @@ generate_docs.py
 
 # Test scripts with credentials
 test_advanced_search_post.py
+update_version.py
