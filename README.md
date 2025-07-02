@@ -11,13 +11,16 @@
 
 ---
 
-## 🆕 Latest Updates (v0.8.3)
+## 🆕 Latest Updates (v0.8.4)
 
 - **🎉 FIXED: Advanced Search POST Requests**: Resolved GitHub Issue #1 - Advanced Search POST requests now work correctly
 - **JSON Formatting Fix**: Fixed API signature errors caused by inconsistent JSON formatting between signature generation and HTTP body
 - **Enhanced POST Support**: All POST endpoints now use standardized JSON serialization for consistent authentication
 - **Darktrace 6.1+ Compatibility**: Full support for POST-based Advanced Search queries in Darktrace 6.1 and later
+- **Centralized Version Management**: Implemented single source of truth for version control with `_version.py`
+- **Production SOAR Integration**: Validated compatibility with Shuffle and other SOAR platforms
 - **Comprehensive Testing**: Added extensive test coverage for Advanced Search POST functionality
+- **PyPI Deployment**: Successfully published to PyPI with automated build and release pipeline
 
 ---
 
