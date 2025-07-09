@@ -84,7 +84,7 @@ class Devices(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def update(self, did: int, **kwargs):
+    def update(self, did: int, **kwargs) -> dict:
         """Update device properties in Darktrace.
         
         Args:
@@ -110,4 +110,5 @@ class Devices(BaseEndpoint):
         response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
