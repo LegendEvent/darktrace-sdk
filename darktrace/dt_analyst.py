@@ -72,8 +72,12 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def acknowledge(self, uuids: Union[str, List[str]]):
-        """Acknowledge AI Analyst incident events."""
+    def acknowledge(self, uuids: Union[str, List[str]]) -> dict:
+        """
+            Acknowledge AI Analyst incident events.
+        
+            Returns: Full Darktrace return JSON
+        """
         if isinstance(uuids, list):
             uuids = ','.join(uuids)
         endpoint = '/aianalyst/acknowledge'
@@ -85,8 +89,12 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def unacknowledge(self, uuids: Union[str, List[str]]):
-        """Unacknowledge AI Analyst incident events."""
+    def unacknowledge(self, uuids: Union[str, List[str]]) -> dict:
+        """
+        Unacknowledge AI Analyst incident events.
+        
+        returns: Full Darktrace return JSON
+        """
         if isinstance(uuids, list):
             uuids = ','.join(uuids)
         endpoint = '/aianalyst/unacknowledge'
@@ -98,8 +106,12 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def pin(self, uuids: Union[str, List[str]]):
-        """Pin AI Analyst incident events."""
+    def pin(self, uuids: Union[str, List[str]]) -> dict:
+        """
+        Pin AI Analyst incident events.
+
+        Returns: Full Darktrace return JSON
+        """
         if isinstance(uuids, list):
             uuids = ','.join(uuids)
         endpoint = '/aianalyst/pin'
@@ -111,8 +123,12 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def unpin(self, uuids: Union[str, List[str]]):
-        """Unpin AI Analyst incident events."""
+    def unpin(self, uuids: Union[str, List[str]]) -> dict:
+        """
+        Unpin AI Analyst incident events.
+
+        Returns: Full Darktrace return JSON
+        """
         if isinstance(uuids, list):
             uuids = ','.join(uuids)
         endpoint = '/aianalyst/unpin'
@@ -142,7 +158,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, incident_id: str, message: str):
+    def add_comment(self, incident_id: str, message: str) -> dict:
         """Add a comment to an AI Analyst incident event.
         
         Parameters:
