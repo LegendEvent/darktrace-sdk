@@ -84,7 +84,7 @@ class Antigena(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def activate_action(self, codeid: int, reason: str = "", duration: Optional[int] = None) -> bool:
+    def activate_action(self, codeid: int, reason: str = "", duration: Optional[int] = None) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
         
@@ -130,9 +130,10 @@ class Antigena(BaseEndpoint):
         response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
-    def extend_action(self, codeid: int, duration: int, reason: str = "") -> bool:
+    def extend_action(self, codeid: int, duration: int, reason: str = "") -> dict:
         """
         Extend an active Darktrace RESPOND action.
         
@@ -178,9 +179,10 @@ class Antigena(BaseEndpoint):
         response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
-    def clear_action(self, codeid: int, reason: str = "") -> bool:
+    def clear_action(self, codeid: int, reason: str = "") -> dict:
         """
         Clear an active, pending or expired Darktrace RESPOND action.
         
@@ -222,9 +224,10 @@ class Antigena(BaseEndpoint):
         response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
-    def reactivate_action(self, codeid: int, duration: int, reason: str = "") -> bool:
+    def reactivate_action(self, codeid: int, duration: int, reason: str = "") -> dict:
         """
         Reactivate a cleared or expired Darktrace RESPOND action.
         
@@ -262,10 +265,11 @@ class Antigena(BaseEndpoint):
         response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
     def create_manual_action(self, did: int, action: str, duration: int, reason: str = "", 
-                           connections: Optional[List[Dict[str, Union[str, int]]]] = None) -> int:
+                           connections: Optional[List[Dict[str, Union[str, int]]]] = None) -> dict:
         """
         Create a manual Darktrace RESPOND/Network action.
         
@@ -341,10 +345,8 @@ class Antigena(BaseEndpoint):
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         
-        if response.status_code == 200:
-            result = response.json()
-            return int(result.get('code', 0))
-        return 0
+        response.raise_for_status()
+        return response.json()
 
     def get_summary(self, **params):
         """
@@ -414,9 +416,30 @@ class Antigena(BaseEndpoint):
         return response.json()
 
     # Backwards compatibility methods (deprecated)
-    def approve_action(self, code_id: int, reason: str = "", duration: int = 0) -> bool:
+    def approve_action(self, code_id: int, reason: str = "", duration: int = 0) -> dict:
         """
         Deprecated: Use activate_action() instead.
         Approve/activate a pending Antigena action.
         """
-        return self.activate_action(code_id, reason, duration if duration > 0 else None)
+        endpoint = '/antigena'
+        url = f"{self.client.host}{endpoint}"
+
+        body: Dict[str, Any] = {
+            "codeid": code_id,
+            "activate": True
+        }
+
+        if reason:
+            body["reason"] = reason
+        if duration > 0:
+            body["duration"] = duration
+
+        headers, sorted_params = self._get_headers(endpoint, json_body=body)
+        self.client._debug(f"POST {url} body={body}")
+
+        json_data = json.dumps(body, separators=(',', ':'))
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        self.client._debug(f"Response Status: {response.status_code}")
+        self.client._debug(f"Response Text: {response.text}")
+        response.raise_for_status()
+        return response.json()
