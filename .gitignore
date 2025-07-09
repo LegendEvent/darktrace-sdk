@@ -1,3 +1,5 @@
+# Ignore VS Code history extension files
+.history/*
 # Python package files
 __pycache__/
 *.py[cod]

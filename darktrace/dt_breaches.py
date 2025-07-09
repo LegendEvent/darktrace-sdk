@@ -91,7 +91,7 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, pbid: int, message: str, **params) -> bool:
+    def add_comment(self, pbid: int, message: str, **params) -> dict:
         """
         Add a comment to a model breach alert.
 
@@ -100,27 +100,27 @@ class ModelBreaches(BaseEndpoint):
             message (str): The comment text to add.
             params: Additional parameters for the API call (future-proofing, e.g., responsedata)
         Returns:
-            bool: True if comment was added successfully, False otherwise.
+            dict: The full JSON response from Darktrace (or error info as dict)
         """
-        print(f"DEBUG BREACHES: add_comment called with:")
-        print(f"  - pbid: {pbid}")
-        print(f"  - message: '{message}'")
-        print(f"  - params: {params}")
+        debug_print(f"BREACHES: add_comment called with:", self.client.debug)
+        debug_print(f"  - pbid: {pbid}", self.client.debug)
+        debug_print(f"  - message: '{message}'", self.client.debug)
+        debug_print(f"  - params: {params}", self.client.debug)
         
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, Any] = {'message': message}
         
-        print(f"DEBUG BREACHES: Calling _get_headers with:")
-        print(f"  - endpoint: '{endpoint}'")
-        print(f"  - params: {params}")
-        print(f"  - body: {body}")
+        debug_print(f"BREACHES: Calling _get_headers with:", self.client.debug)
+        debug_print(f"  - endpoint: '{endpoint}'", self.client.debug)
+        debug_print(f"  - params: {params}", self.client.debug)
+        debug_print(f"  - body: {body}", self.client.debug)
         
         headers, sorted_params = self._get_headers(endpoint, params, body)
         
-        print(f"DEBUG BREACHES: Received from _get_headers:")
-        print(f"  - headers: {headers}")
-        print(f"  - sorted_params: {sorted_params}")
+        debug_print(f"BREACHES: Received from _get_headers:", self.client.debug)
+        debug_print(f"  - headers: {headers}", self.client.debug)
+        debug_print(f"  - sorted_params: {sorted_params}", self.client.debug)
         
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
         
@@ -128,33 +128,26 @@ class ModelBreaches(BaseEndpoint):
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
             json_data = json.dumps(body, separators=(',', ':'))
-            print(f"DEBUG BREACHES: JSON data to send: '{json_data}'")
-            print(f"DEBUG BREACHES: Making POST request to: {url}")
-            print(f"DEBUG BREACHES: With headers: {headers}")
-            print(f"DEBUG BREACHES: With params: {sorted_params}")
-            print(f"DEBUG BREACHES: With data: '{json_data}'")
+            debug_print(f"BREACHES: JSON data to send: '{json_data}'", self.client.debug)
+            debug_print(f"BREACHES: Making POST request to: {url}", self.client.debug)
+            debug_print(f"BREACHES: With headers: {headers}", self.client.debug)
+            debug_print(f"BREACHES: With params: {sorted_params}", self.client.debug)
+            debug_print(f"BREACHES: With data: '{json_data}'", self.client.debug)
             
             response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
-            
-            print(f"DEBUG BREACHES: Response status: {response.status_code}")
-            print(f"DEBUG BREACHES: Response headers: {dict(response.headers)}")
-            print(f"DEBUG BREACHES: Response text: '{response.text}'")
-            
-            if response.status_code == 200:
-                self.client._debug("Comment added successfully")
-                return True
-            else:
-                self.client._debug(f"Failed to add comment. Status: {response.status_code}, Response: {response.text}")
-                return False
-                
+            debug_print(f"BREACHES: Response status: {response.status_code}", self.client.debug)
+            debug_print(f"BREACHES: Response headers: {dict(response.headers)}", self.client.debug)
+            debug_print(f"BREACHES: Response text: '{response.text}'", self.client.debug)
+            response.raise_for_status()
+            return response.json()
         except Exception as e:
             self.client._debug(f"Exception occurred while adding comment: {str(e)}")
-            print(f"DEBUG BREACHES: Exception: {str(e)}")
-            return False
+            debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
+            return {"error": str(e)}
 
-    def acknowledge(self, pbid: int, **params) -> bool:
+    def acknowledge(self, pbid: int, **params) -> dict:
         """
         Acknowledge a model breach alert.
 
@@ -162,7 +155,7 @@ class ModelBreaches(BaseEndpoint):
             pbid (int): Policy breach ID of the model breach.
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            bool: True if acknowledged successfully, False otherwise.
+            dict: The full JSON response from Darktrace (or error info as dict)
         """
         endpoint = f'/modelbreaches/{pbid}/acknowledge'
         url = f"{self.client.host}{endpoint}"
@@ -177,19 +170,13 @@ class ModelBreaches(BaseEndpoint):
             response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
-            
-            if response.status_code == 200:
-                self.client._debug("Breach acknowledged successfully")
-                return True
-            else:
-                self.client._debug(f"Failed to acknowledge breach. Status: {response.status_code}, Response: {response.text}")
-                return False
-                
+            response.raise_for_status()
+            return response.json()
         except Exception as e:
             self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
-            return False
+            return {"error": str(e)}
 
-    def unacknowledge(self, pbid: int, **params) -> bool:
+    def unacknowledge(self, pbid: int, **params) -> dict:
         """
         Unacknowledge a model breach alert.
 
@@ -197,7 +184,7 @@ class ModelBreaches(BaseEndpoint):
             pbid (int): Policy breach ID of the model breach.
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            bool: True if unacknowledged successfully, False otherwise.
+            dict: The full JSON response from Darktrace (or error info as dict)
         """
         endpoint = f'/modelbreaches/{pbid}/unacknowledge'
         url = f"{self.client.host}{endpoint}"
@@ -212,14 +199,8 @@ class ModelBreaches(BaseEndpoint):
             response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
-            
-            if response.status_code == 200:
-                self.client._debug("Breach unacknowledged successfully")
-                return True
-            else:
-                self.client._debug(f"Failed to unacknowledge breach. Status: {response.status_code}, Response: {response.text}")
-                return False
-                
+            response.raise_for_status()
+            return response.json()
         except Exception as e:
             self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
-            return False
+            return {"error": str(e)}
