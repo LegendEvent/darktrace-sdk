@@ -65,7 +65,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def delete(self, tag_id: str):
+    def delete(self, tag_id: str) -> dict:
         """
         Delete a tag by tag ID (tid).
 
@@ -73,17 +73,15 @@ class Tags(BaseEndpoint):
             tag_id (str): Tag ID (tid) to delete (e.g., /tags/5).
 
         Returns:
-            bool: True if deletion was successful, False otherwise.
+            dict: The response from the Darktrace API.
         """
         endpoint = f'/tags/{tag_id}'
         url = f"{self.client.host}{endpoint}"
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"DELETE {url}")
         response = requests.delete(url, headers=headers, verify=False)
-        if response.status_code == 200:
-            return True
         response.raise_for_status()
-        return False
+        return response.json()
 
 
     #TAGS/ENTITIES ENDPOINT   
@@ -141,7 +139,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def delete_entities(self, did: int, tag: str):
+    def delete_entities(self, did: int, tag: str) -> dict:
         """
         Remove a tag from a device via /tags/entities (DELETE).
 
@@ -150,7 +148,7 @@ class Tags(BaseEndpoint):
             tag (str): Name of the tag to remove.
 
         Returns:
-            bool: True if deletion was successful, False otherwise.
+            dict: The response from the Darktrace API.
         """
         endpoint = '/tags/entities'
         url = f"{self.client.host}{endpoint}"
@@ -158,10 +156,8 @@ class Tags(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"DELETE {url} params={sorted_params}")
         response = requests.delete(url, headers=headers, params=sorted_params, verify=False)
-        if response.status_code == 200:
-            return True
         response.raise_for_status()
-        return False
+        return response.json()
     
         # /tags/[tid]/entities ENDPOINT
     def get_tag_entities(self, tid: int, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None):
@@ -213,7 +209,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def delete_tag_entity(self, tid: int, teid: int):
+    def delete_tag_entity(self, tid: int, teid: int) -> dict:
         """
         Remove a tag from an entity via /tags/[tid]/entities/[teid] (DELETE).
 
@@ -222,14 +218,12 @@ class Tags(BaseEndpoint):
             teid (int): Tag entity ID (teid) representing the tag-to-entity relationship.
 
         Returns:
-            bool: True if deletion was successful, False otherwise.
+            dict: The response from the Darktrace API.
         """
         endpoint = f"/tags/{tid}/entities/{teid}"
         url = f"{self.client.host}{endpoint}"
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"DELETE {url}")
         response = requests.delete(url, headers=headers, verify=False)
-        if response.status_code == 200:
-            return True
         response.raise_for_status()
-        return False
+        return response.json()
