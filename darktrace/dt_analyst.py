@@ -82,7 +82,8 @@ class Analyst(BaseEndpoint):
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
         response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
     def unacknowledge(self, uuids: Union[str, List[str]]):
         """Unacknowledge AI Analyst incident events."""
@@ -94,7 +95,8 @@ class Analyst(BaseEndpoint):
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
         response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
     def pin(self, uuids: Union[str, List[str]]):
         """Pin AI Analyst incident events."""
@@ -106,7 +108,8 @@ class Analyst(BaseEndpoint):
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
         response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
     def unpin(self, uuids: Union[str, List[str]]):
         """Unpin AI Analyst incident events."""
@@ -118,7 +121,8 @@ class Analyst(BaseEndpoint):
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
         response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
     def get_comments(self, incident_id: str, response_data: Optional[str] = ""):
         """Get comments for an AI Analyst incident event.
@@ -155,7 +159,8 @@ class Analyst(BaseEndpoint):
         response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
-        return response.status_code == 200
+        response.raise_for_status()
+        return response.json()
 
     def get_stats(self, **params):
         """Get AI Analyst statistics.
