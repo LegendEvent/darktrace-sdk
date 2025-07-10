@@ -204,3 +204,22 @@ class ModelBreaches(BaseEndpoint):
         except Exception as e:
             self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
             return {"error": str(e)}
+        
+    def acknowledge_with_comment(self, pbid: int, message: str, **params) -> dict:
+        """
+        Acknowledge a model breach and add a comment in one call.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+            message (str): The comment text to add.
+            params: Additional parameters for the API call.
+
+        Returns:
+            dict: Contains the responses from both acknowledge and add_comment.
+        """
+        ack_response = self.acknowledge(pbid, **params)
+        comment_response = self.add_comment(pbid, message, **params)
+        return {
+            "acknowledge": ack_response,
+            "add_comment": comment_response
+        }
