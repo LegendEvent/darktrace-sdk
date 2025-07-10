@@ -223,3 +223,22 @@ class ModelBreaches(BaseEndpoint):
             "acknowledge": ack_response,
             "add_comment": comment_response
         }
+    
+    def unacknowledge_with_comment(self, pbid: int, message: str, **params) -> dict:
+        """
+        Unacknowledge a model breach and add a comment in one call.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+            message (str): The comment text to add.
+            params: Additional parameters for the API call.
+
+        Returns:
+            dict: Contains the responses from both unacknowledge and add_comment.
+        """
+        unack_response = self.unacknowledge(pbid, **params)
+        comment_response = self.add_comment(pbid, message, **params)
+        return {
+            "unacknowledge": unack_response,
+            "add_comment": comment_response
+        }
