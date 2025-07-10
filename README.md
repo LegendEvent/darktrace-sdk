@@ -11,8 +11,10 @@
 
 ---
 
-## 🆕 Latest Updates (v0.8.5)
+## 🆕 Latest Updates (v0.8.51)
 
+- **List parametersupport**: Added list as parameter for comments, acknowledge and unacknowledgments. 
+- **Helper functions**: Added unacknowledge_with_comment, acknowledge_with_comment
 - **Response Format Fix**: Some functions didn't return JSON. This is fixed now!
 
 ---
