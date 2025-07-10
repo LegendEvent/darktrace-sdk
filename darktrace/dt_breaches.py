@@ -147,22 +147,23 @@ class ModelBreaches(BaseEndpoint):
             debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
             return {"error": str(e)}
 
-    def acknowledge(self, pbid: int, **params) -> dict:
+    def acknowledge(self, pbid: Union[int, list], **params) -> dict:
         """
         Acknowledge a model breach alert.
 
         Args:
-            pbid (int): Policy breach ID of the model breach.
+            pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict)
+            dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
         """
+        if isinstance(pbid, (list, tuple)):
+            return {single_pbid: self.acknowledge(single_pbid, **params) for single_pbid in pbid}
         endpoint = f'/modelbreaches/{pbid}/acknowledge'
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {'acknowledge': True}
         headers, sorted_params = self._get_headers(endpoint, params, body)
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
@@ -176,22 +177,23 @@ class ModelBreaches(BaseEndpoint):
             self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
             return {"error": str(e)}
 
-    def unacknowledge(self, pbid: int, **params) -> dict:
+    def unacknowledge(self, pbid: Union[int, list], **params) -> dict:
         """
         Unacknowledge a model breach alert.
 
         Args:
-            pbid (int): Policy breach ID of the model breach.
+            pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict)
+            dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
         """
+        if isinstance(pbid, (list, tuple)):
+            return {single_pbid: self.unacknowledge(single_pbid, **params) for single_pbid in pbid}
         endpoint = f'/modelbreaches/{pbid}/unacknowledge'
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {'unacknowledge': True}
         headers, sorted_params = self._get_headers(endpoint, params, body)
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
