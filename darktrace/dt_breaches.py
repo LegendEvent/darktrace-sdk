@@ -73,16 +73,19 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, pbid: int, **params):
+    def get_comments(self, pbid: Union[int, list], **params):
         """
         Get comments for a specific model breach alert.
 
         Args:
-            pbid (int): Policy breach ID of the model breach.
+            pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             responsedata (str, optional): Restrict response to specific fields.
         Returns:
-            list: List of comment objects (see API docs for schema)
+            list or dict: List of comment objects (see API docs for schema), or dict mapping pbid to comments if pbid is a list.
         """
+        if isinstance(pbid, (list, tuple)):
+            # Build dict with string keys for valid JSON
+            return {str(single_pbid): self.get_comments(single_pbid, **params) for single_pbid in pbid}
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
