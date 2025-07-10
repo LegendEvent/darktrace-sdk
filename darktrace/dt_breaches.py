@@ -73,16 +73,19 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, pbid: int, **params):
+    def get_comments(self, pbid: Union[int, list], **params):
         """
         Get comments for a specific model breach alert.
 
         Args:
-            pbid (int): Policy breach ID of the model breach.
+            pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             responsedata (str, optional): Restrict response to specific fields.
         Returns:
-            list: List of comment objects (see API docs for schema)
+            list or dict: List of comment objects (see API docs for schema), or dict mapping pbid to comments if pbid is a list.
         """
+        if isinstance(pbid, (list, tuple)):
+            # Build dict with string keys for valid JSON
+            return {str(single_pbid): self.get_comments(single_pbid, **params) for single_pbid in pbid}
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
@@ -147,22 +150,23 @@ class ModelBreaches(BaseEndpoint):
             debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
             return {"error": str(e)}
 
-    def acknowledge(self, pbid: int, **params) -> dict:
+    def acknowledge(self, pbid: Union[int, list], **params) -> dict:
         """
         Acknowledge a model breach alert.
 
         Args:
-            pbid (int): Policy breach ID of the model breach.
+            pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict)
+            dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
         """
+        if isinstance(pbid, (list, tuple)):
+            return {single_pbid: self.acknowledge(single_pbid, **params) for single_pbid in pbid}
         endpoint = f'/modelbreaches/{pbid}/acknowledge'
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {'acknowledge': True}
         headers, sorted_params = self._get_headers(endpoint, params, body)
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
@@ -176,22 +180,23 @@ class ModelBreaches(BaseEndpoint):
             self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
             return {"error": str(e)}
 
-    def unacknowledge(self, pbid: int, **params) -> dict:
+    def unacknowledge(self, pbid: Union[int, list], **params) -> dict:
         """
         Unacknowledge a model breach alert.
 
         Args:
-            pbid (int): Policy breach ID of the model breach.
+            pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict)
+            dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
         """
+        if isinstance(pbid, (list, tuple)):
+            return {single_pbid: self.unacknowledge(single_pbid, **params) for single_pbid in pbid}
         endpoint = f'/modelbreaches/{pbid}/unacknowledge'
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {'unacknowledge': True}
         headers, sorted_params = self._get_headers(endpoint, params, body)
         self.client._debug(f"POST {url} params={sorted_params} body={body}")
-        
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
@@ -204,3 +209,41 @@ class ModelBreaches(BaseEndpoint):
         except Exception as e:
             self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
             return {"error": str(e)}
+        
+    def acknowledge_with_comment(self, pbid: int, message: str, **params) -> dict:
+        """
+        Acknowledge a model breach and add a comment in one call.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+            message (str): The comment text to add.
+            params: Additional parameters for the API call.
+
+        Returns:
+            dict: Contains the responses from both acknowledge and add_comment.
+        """
+        ack_response = self.acknowledge(pbid, **params)
+        comment_response = self.add_comment(pbid, message, **params)
+        return {
+            "acknowledge": ack_response,
+            "add_comment": comment_response
+        }
+    
+    def unacknowledge_with_comment(self, pbid: int, message: str, **params) -> dict:
+        """
+        Unacknowledge a model breach and add a comment in one call.
+
+        Args:
+            pbid (int): Policy breach ID of the model breach.
+            message (str): The comment text to add.
+            params: Additional parameters for the API call.
+
+        Returns:
+            dict: Contains the responses from both unacknowledge and add_comment.
+        """
+        unack_response = self.unacknowledge(pbid, **params)
+        comment_response = self.add_comment(pbid, message, **params)
+        return {
+            "unacknowledge": unack_response,
+            "add_comment": comment_response
+        }
