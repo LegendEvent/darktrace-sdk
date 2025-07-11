@@ -61,3 +61,101 @@ class DeviceSearch(BaseEndpoint):
         response = requests.get(url, headers=headers, params=sorted_params, verify=False)
         response.raise_for_status()
         return response.json()
+    
+    def get_tag(self, tag: str, **kwargs):
+        """
+        Search for devices with a specific tag.
+
+        Args:
+            tag (str): The tag to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'tag:"{tag}"'
+        return self.get(query=query, **kwargs)
+
+    def get_type(self, type_label: str, **kwargs):
+        """
+        Search for devices with a specific type.
+
+        Args:
+            type_label (str): The type to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'type:"{type_label}"'
+        return self.get(query=query, **kwargs)
+
+    def get_label(self, label: str, **kwargs):
+        """
+        Search for devices with a specific label.
+
+        Args:
+            label (str): The label to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'label:"{label}"'
+        return self.get(query=query, **kwargs)
+
+    def get_vendor(self, vendor: str, **kwargs):
+        """
+        Search for devices with a specific vendor.
+
+        Args:
+            vendor (str): The vendor to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'vendor:"{vendor}"'
+        return self.get(query=query, **kwargs)
+
+    def get_hostname(self, hostname: str, **kwargs):
+        """
+        Search for devices with a specific hostname.
+
+        Args:
+            hostname (str): The hostname to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'hostname:"{hostname}"'
+        return self.get(query=query, **kwargs)
+
+    def get_ip(self, ip: str, **kwargs):
+        """
+        Search for devices with a specific IP address.
+
+        Args:
+            ip (str): The IP address to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'ip:"{ip}"'
+        return self.get(query=query, **kwargs)
+
+    def get_mac(self, mac: str, **kwargs):
+        """
+        Search for devices with a specific MAC address.
+
+        Args:
+            mac (str): The MAC address to search for.
+            **kwargs: Additional parameters for the search.
+
+        Returns:
+            dict: API response
+        """
+        query = f'mac:"{mac}"'
+        return self.get(query=query, **kwargs)
