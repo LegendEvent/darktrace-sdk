@@ -12,14 +12,9 @@
 ---
 
 
-## 🆕 Latest Updates (v0.8.52)
+## 🆕 Latest Updates (v0.8.521)
 
-- **Batch operations for breaches**: `acknowledge`, `unacknowledge`, and `get_comments` now support lists of IDs and return aggregated results.
-- **Helper methods for DeviceSearch**: Added `get_tag`, `get_type`, `get_label`, `get_vendor`, `get_hostname`, `get_ip`, and `get_mac` for easier device filtering.
-- **Direct filter parameters for DeviceSearch**: The `get` method now accepts direct parameters like `tag`, `type`, `hostname`, etc., and auto-builds the query if no explicit query is given.
-- **Improved error handling**: A runtime error is raised if both `query` and filter parameters are set. A Sphinx warning is included in the docstring for better IDE/documentation feedback.
-- **Best practices**: SDK methods return Python objects, not JSON strings.
-- **Bugfixes**: Improved JSON compatibility and response formats.
+- **Fix: ensure host URL includes protocol (default to https if missing)**
 
 ---
 
