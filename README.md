@@ -12,7 +12,7 @@
 ---
 
 
-## 🆕 Latest Updates (v0.8.521)
+## 🆕 Latest Updates (v0.8.53)
 
 - **Fix: ensure host URL includes protocol (default to https if missing)**
 
