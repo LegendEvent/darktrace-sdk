@@ -110,6 +110,12 @@ class DarktraceClient:
             ...     debug=True
             ... )
         """
+
+        # Ensure host has a protocol
+        if not host.startswith("http://") and not host.startswith("https://"):
+            host = f"https://{host}"
+
+
         self.host = host.rstrip('/')
         self.auth = DarktraceAuth(public_token, private_token)
         self.debug = debug
