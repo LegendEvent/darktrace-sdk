@@ -42,9 +42,9 @@ devices = devicesearch.get(
     count=100
 )
 
-# Search by multiple criteria
+# Search by multiple criteria (space-separated = implicit AND)
 devices = devicesearch.get(
-    query="label:critical AND type:server",
+    query="label:critical type:server",
     orderBy="priority",
     order="desc"
 )
@@ -213,8 +213,8 @@ dell_devices = client.devicesearch.get(
 )
 
 # Complex query with multiple conditions
-complex_search = client.devicesearch.get(
-    query='(vendor:Microsoft OR vendor:Dell) AND tag:production',
+complex_search = devicesearch.get(
+    query='vendor:Microsoft vendor:Dell tag:production',
     orderBy="priority",
     order="desc"
 )
