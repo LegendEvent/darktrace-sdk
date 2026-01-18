@@ -1,0 +1,27 @@
+{
+  "totalCount": 1,
+  "devices": [
+    {
+      "did": 12345,
+      "ip": "192.168.1.100",
+      "macaddress": "00:11:22:33:44:55",
+      "vendor": "Dell Inc.",
+      "hostname": "test-laptop-01",
+      "os": "Windows 11",
+      "typename": "laptop",
+      "typelabel": "Laptop",
+      "priority": 3,
+      "firstSeen": 1640995200000,
+      "lastSeen": 1641081600000,
+      "sid": 1,
+      "tags": [
+        {
+          "label": "Test",
+          "count": 5
+        }
+      ]
+    }
+  ],
+  "offset": 0,
+  "count": 100
+}

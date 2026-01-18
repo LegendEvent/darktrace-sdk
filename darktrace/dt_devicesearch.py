@@ -1,6 +1,7 @@
 import requests
 from .dt_utils import debug_print, BaseEndpoint
 
+
 class DeviceSearch(BaseEndpoint):
     """
     Interface for the /devicesearch endpoint.
@@ -19,7 +20,24 @@ class DeviceSearch(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, tag=None, label=None, type=None, vendor=None, hostname=None, ip=None, mac=None, count=None, orderBy=None, order=None, query=None, offset=None, responsedata=None, seensince=None, **kwargs):
+    def get(
+        self,
+        tag=None,
+        label=None,
+        type=None,
+        vendor=None,
+        hostname=None,
+        ip=None,
+        mac=None,
+        count=None,
+        orderBy=None,
+        order=None,
+        query=None,
+        offset=None,
+        responsedata=None,
+        seensince=None,
+        **kwargs,
+    ):
         """
         Search for devices using /devicesearch endpoint.
 
@@ -49,19 +67,21 @@ class DeviceSearch(BaseEndpoint):
         Returns:
             dict: API response
         """
-        endpoint = '/devicesearch'
+        endpoint = "/devicesearch"
         url = f"{self.client.host}{endpoint}"
         params = {}
         if count is not None:
-            params['count'] = count
+            params["count"] = count
         if orderBy is not None:
-            params['orderBy'] = orderBy
+            params["orderBy"] = orderBy
         if order is not None:
-            params['order'] = order
+            params["order"] = order
         # Prevent using query and filter params together
         filter_params = [tag, label, type, vendor, hostname, ip, mac]
         if query is not None and any(p is not None for p in filter_params):
-            raise ValueError("Do not use 'query' together with tag, label, type, vendor, hostname, ip, or mac. Set either 'query' or filter parameters, not both.")
+            raise ValueError(
+                "Do not use 'query' together with tag, label, type, vendor, hostname, ip, or mac. Set either 'query' or filter parameters, not both."
+            )
         # Build query if not provided
         if query is None:
             query_parts = []
@@ -80,24 +100,26 @@ class DeviceSearch(BaseEndpoint):
             if mac is not None:
                 query_parts.append(f'mac:"{mac}"')
             if query_parts:
-                query = ' AND '.join(query_parts)
+                query = " ".join(query_parts)
         if query is not None:
-            params['query'] = query
+            params["query"] = query
         if offset is not None:
-            params['offset'] = offset
+            params["offset"] = offset
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
         if seensince is not None:
-            params['seensince'] = seensince
+            params["seensince"] = seensince
         # Allow for future/undocumented params
         params.update(kwargs)
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(
+            url, headers=headers, params=sorted_params, verify=False
+        )
         response.raise_for_status()
         return response.json()
-    
+
     def get_tag(self, tag: str, **kwargs):
         """
         Search for devices with a specific tag.
