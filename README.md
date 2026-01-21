@@ -12,7 +12,13 @@
 ---
 
 
-## 🆕 Latest Updates (v0.8.54)
+## 🆕 Latest Updates (v0.8.55)
+
+- **Feature: Add 13 missing parameters to devicesummary endpoint** - Added support for `device_name`, `ip_address`, `end_timestamp`, `start_timestamp`, `devicesummary_by`, `devicesummary_by_value`, `device_type`, `network_location`, `network_location_id`, `peer_id`, `source`, and `status` parameters to align with Darktrace API specification
+- **Documentation: Update devicesummary documentation** - Added examples and parameter descriptions for new filtering options
+- **Note: devicesummary HTTP 500 limitation confirmed** - Documentation updated to clarify that all devicesummary parameters return HTTP 500 with API token authentication (Darktrace backend limitation, not SDK bug)
+
+## 📝 Previous Updates (v0.8.54)
 
 - **Fix: Multi-parameter devicesearch query format (fixes #45)** - Changed query parameter joining from explicit ' AND ' to space separation per Darktrace API specification
 - **Fix: ensure host URL includes protocol (default to https if missing)**

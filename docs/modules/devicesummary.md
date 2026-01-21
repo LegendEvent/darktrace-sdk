@@ -44,11 +44,56 @@ network_summary = devicesummary.get(
     did=456,
     responsedata="network_activity"
 )
+
+# Get device summary with time range filter
+import time
+end_time = int(time.time())
+start_time = end_time - (24 * 60 * 60)  # Last 24 hours
+time_filtered_summary = devicesummary.get(
+    did=123,
+    start_timestamp=start_time,
+    end_timestamp=end_time
+)
+
+# Get device summary by device type
+type_filtered_summary = devicesummary.get(
+    did=123,
+    device_type="Workstation",
+    status="active"
+)
+
+# Get device summary grouped by network location
+grouped_summary = devicesummary.get(
+    did=123,
+    devicesummary_by="network_location",
+    devicesummary_by_value="Office Building A"
+)
+
+# Get device summary with multiple filters
+multi_filtered_summary = devicesummary.get(
+    did=123,
+    ip_address="192.168.1.100",
+    device_type="Server",
+    network_location="Default",
+    source="network"
+)
 ```
 
 #### Parameters
 
-- `did` (int, **required**): Device identification number in the Darktrace system
+- `did` (int, **required**): Device identification number in Darktrace system
+- `device_name` (str, optional): Device name
+- `ip_address` (str, optional): IP address
+- `end_timestamp` (int, optional): Epoch time for end of time range
+- `start_timestamp` (int, optional): Epoch time for start of time range
+- `devicesummary_by` (str, optional): Field to group summary by
+- `devicesummary_by_value` (str, optional): Value for grouping
+- `device_type` (str, optional): Device type filter
+- `network_location` (str, optional): Network location filter
+- `network_location_id` (str, optional): Network location ID filter
+- `peer_id` (str, optional): Peer device filter
+- `source` (str, optional): Source filter
+- `status` (str, optional): Device status filter
 - `responsedata` (str, optional): Restrict returned JSON to only this field/object for performance optimization
 
 #### Response Structure
@@ -710,26 +755,27 @@ except Exception as e:
  
  ### Known Limitations
  
- ⚠️ **HTTP 500 Error with API Token Authentication**
- 
- The `/devicesummary` endpoint may return HTTP 500 Internal Server Error when accessed with API tokens, even though it works in the browser or with session/cookie authentication.
- 
- **Root Cause**: This is a Darktrace API backend limitation (not an SDK bug).
- 
- - The SDK implementation is correct and uses the same authentication mechanism as other endpoints (`/devices`, `/details`, `/deviceinfo`) which work properly with API tokens.
- - Only `/devicesummary` returns HTTP 500 when accessed with API token authentication.
- - The endpoint works correctly when accessed via browser or with session cookies.
- 
- **Status**: Confirmed as Darktrace API backend limitation (tested with SDK v0.8.54 on Darktrace v6.3.18). See [issue #37](https://github.com/LegendEvent/darktrace-sdk/issues/37) for details.
- 
- **Workaround**: There is currently no programmatic workaround. If you require this endpoint, please contact Darktrace support or use browser-based access where possible.
- 
- **Alternative**: You can call the underlying endpoints directly and aggregate the data yourself:
- - `/devices` - Device inventory
- - `/similardevices` - Similar device analysis
- - `/modelbreaches` - Breach information
- - `/deviceinfo` - Detailed device information
- - `/details` - Connection details
+  ⚠️ **HTTP 500 Error with API Token Authentication**
+
+  The `/devicesummary` endpoint may return HTTP 500 Internal Server Error when accessed with API tokens, even though it works in the browser or with session/cookie authentication.
+
+  **Root Cause**: This is a Darktrace API backend limitation (not an SDK bug).
+
+  - The SDK implementation is correct and uses the same authentication mechanism as other endpoints (`/devices`, `/details`, `/deviceinfo`) which work properly with API tokens.
+  - Only `/devicesummary` returns HTTP 500 when accessed with API token authentication.
+  - The endpoint works correctly when accessed via browser or with session cookies.
+  - This limitation applies to all parameters, including the newly added filtering options (device_type, status, network_location, etc.).
+
+  **Status**: Confirmed as Darktrace API backend limitation (tested with SDK v0.8.55 on Darktrace v6.3.18). See [issue #37](https://github.com/LegendEvent/darktrace-sdk/issues/37) for details.
+
+  **Workaround**: There is currently no programmatic workaround. If you require this endpoint, please contact Darktrace support or use browser-based access where possible.
+
+  **Alternative**: You can call the underlying endpoints directly and aggregate the data yourself:
+  - `/devices` - Device inventory
+  - `/similardevices` - Similar device analysis
+  - `/modelbreaches` - Breach information
+  - `/deviceinfo` - Detailed device information
+  - `/details` - Connection details
  
  ### Data Aggregation
 - **Multiple sources**: Combines data from devices, similardevices, modelbreaches, deviceinfo, and details endpoints
