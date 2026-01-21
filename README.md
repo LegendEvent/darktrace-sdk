@@ -12,8 +12,9 @@
 ---
 
 
-## 🆕 Latest Updates (v0.8.53)
+## 🆕 Latest Updates (v0.8.54)
 
+- **Fix: Multi-parameter devicesearch query format (fixes #45)** - Changed query parameter joining from explicit ' AND ' to space separation per Darktrace API specification
 - **Fix: ensure host URL includes protocol (default to https if missing)**
 
 ---
