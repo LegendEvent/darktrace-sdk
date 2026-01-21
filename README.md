@@ -125,7 +125,9 @@ This SDK aims to cover **all endpoints** in the Darktrace API Guide, including:
 ## ⚠️ Known Issues
 
 ### /devicesummary Endpoint Returns HTTP 500
-The `/devicesummary` endpoint may return a `500 Internal Server Error` when accessed with API tokens, even though it works in the browser or with session/cookie authentication. This is a known limitation of the Darktrace API backend and not a bug in the SDK or your code.
+The `/devicesummary` endpoint returns a `500 Internal Server Error` when accessed with API tokens, even though it works in the browser or with session/cookie authentication. This is a known limitation of the Darktrace API backend and not a bug in the SDK or your code.
+
+**Status**: Confirmed as Darktrace API backend limitation (tested with SDK v0.8.54 on instance v6.3.18). The SDK implementation is correct and uses the same authentication pattern as other endpoints that work with API tokens.
 
 **Workaround**: There is currently no programmatic workaround. If you require this endpoint, please contact Darktrace support or use browser-based access where possible.
 
