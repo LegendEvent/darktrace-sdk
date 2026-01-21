@@ -707,8 +707,31 @@ except Exception as e:
 ```
 
 ## Notes
-
-### Data Aggregation
+ 
+ ### Known Limitations
+ 
+ ⚠️ **HTTP 500 Error with API Token Authentication**
+ 
+ The `/devicesummary` endpoint may return HTTP 500 Internal Server Error when accessed with API tokens, even though it works in the browser or with session/cookie authentication.
+ 
+ **Root Cause**: This is a Darktrace API backend limitation (not an SDK bug).
+ 
+ - The SDK implementation is correct and uses the same authentication mechanism as other endpoints (`/devices`, `/details`, `/deviceinfo`) which work properly with API tokens.
+ - Only `/devicesummary` returns HTTP 500 when accessed with API token authentication.
+ - The endpoint works correctly when accessed via browser or with session cookies.
+ 
+ **Status**: Confirmed as Darktrace API backend limitation (tested with SDK v0.8.54 on Darktrace v6.3.18). See [issue #37](https://github.com/LegendEvent/darktrace-sdk/issues/37) for details.
+ 
+ **Workaround**: There is currently no programmatic workaround. If you require this endpoint, please contact Darktrace support or use browser-based access where possible.
+ 
+ **Alternative**: You can call the underlying endpoints directly and aggregate the data yourself:
+ - `/devices` - Device inventory
+ - `/similardevices` - Similar device analysis
+ - `/modelbreaches` - Breach information
+ - `/deviceinfo` - Detailed device information
+ - `/details` - Connection details
+ 
+ ### Data Aggregation
 - **Multiple sources**: Combines data from devices, similardevices, modelbreaches, deviceinfo, and details endpoints
 - **Unified view**: Provides comprehensive device context in a single response
 - **Performance optimization**: Single API call instead of multiple separate requests

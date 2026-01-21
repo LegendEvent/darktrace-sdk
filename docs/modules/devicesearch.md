@@ -44,7 +44,7 @@ devices = devicesearch.get(
 
 # Search by multiple criteria (space-separated = implicit AND)
 devices = devicesearch.get(
-    query="label:critical type:server",
+    query="label:critical type:server"  # Space-separated = AND,
     orderBy="priority",
     order="desc"
 )
@@ -182,9 +182,9 @@ for device in all_devices.get('devices', [])[:10]:  # Show first 10
 ### Advanced Search Queries
 
 ```python
-# Search for critical servers
+# Search for critical servers (space-separated = AND)
 critical_servers = client.devicesearch.get(
-    query="label:critical AND type:server",
+    query="label:critical type:server",  # Space-separated = implicit AND
     orderBy="priority",
     order="desc",
     count=100
@@ -575,9 +575,10 @@ except Exception as e:
 
 ### Query Syntax Best Practices
 - **Use wildcards (*) wisely**: `hostname:server*` matches "server01", "server-prod", etc.
-- **Combine filters**: `label:critical AND type:server` for precise targeting
+- **Combine filters** (devicesearch): `label:critical type:server` for precise targeting (space-separated = implicit AND)
 - **Use quotes for exact matches**: `hostname:"web-server-01"` for exact hostname
-- **Leverage boolean operators**: `(vendor:Dell OR vendor:HP) AND tag:production`
+- **Leverage boolean operators**: Advanced Search supports `(vendor:Dell OR vendor:HP) AND tag:production`
+- **Note**: devicesearch uses implicit AND (space separation), not explicit `AND` keyword (that's for advanced_search endpoint)
 
 ### Performance Considerations
 - **Maximum count**: Limited to 300 devices per request
