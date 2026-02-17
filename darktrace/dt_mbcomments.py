@@ -1,7 +1,7 @@
 import requests
 import json
 from typing import Optional, Dict, Any, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class MBComments(BaseEndpoint):
     def __init__(self, client):
@@ -14,7 +14,7 @@ class MBComments(BaseEndpoint):
             responsedata: Optional[str] = None,
             count: Optional[int] = None,
             pbid: Optional[int] = None,
-            timeout: Optional[Union[float, Tuple[float, float]]] = None,
+            timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
             **params
     ):
         """
@@ -54,7 +54,7 @@ class MBComments(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def post(self, breach_id: str, comment: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def post(self, breach_id: str, comment: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Add a comment to a model breach.
 
         Args:

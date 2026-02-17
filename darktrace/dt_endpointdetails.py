@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, Any, Dict, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class EndpointDetails(BaseEndpoint):
     def __init__(self, client):

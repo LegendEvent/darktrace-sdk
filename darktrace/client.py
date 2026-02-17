@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union, Tuple
+from typing import TYPE_CHECKING
 
 from .auth import DarktraceAuth
 from .dt_antigena import Antigena

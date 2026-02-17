@@ -5,19 +5,28 @@ from typing import Dict, Any, Optional, Tuple, Union
 # Type alias for timeout parameter - can be None, float, or tuple of (connect, read)
 TimeoutType = Optional[Union[float, Tuple[float, float]]]
 
+# Sentinel value for unset timeout - allows distinguishing between
+# "not specified" (use client default) and "explicitly None" (no timeout)
+_UNSET = object()
+
 def debug_print(message: str, debug: bool = False):
     if debug:
         print(f"DEBUG: {message}")
 
 class BaseEndpoint:
     """Base class for all Darktrace API endpoint modules."""
-    
+
     def __init__(self, client):
         self.client = client
-    
-    def _resolve_timeout(self, timeout: TimeoutType) -> TimeoutType:
-        """Resolve timeout value, using client default if not specified."""
-        if timeout is not None:
+
+    def _resolve_timeout(self, timeout: TimeoutType = _UNSET) -> TimeoutType:  # type: ignore[assignment]
+        """Resolve timeout value, using client default if not specified.
+
+        Args:
+            timeout: Per-request timeout. _UNSET (default) uses client.timeout.
+                     None means no timeout. Float or tuple sets specific timeout.
+        """
+        if timeout is not _UNSET:
             return timeout
         return getattr(self.client, 'timeout', None)
     

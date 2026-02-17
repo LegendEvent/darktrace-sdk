@@ -1,12 +1,12 @@
 import requests
 from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class Models(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, uuid: Optional[str] = None, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def get(self, uuid: Optional[str] = None, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Get model information from Darktrace.
 

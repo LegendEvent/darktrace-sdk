@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class DeviceInfo(BaseEndpoint):
     def __init__(self, client):
@@ -17,7 +17,7 @@ class DeviceInfo(BaseEndpoint):
         showallgraphdata: bool = True,
         similardevices: Optional[int] = None,
         intervalhours: int = 1,
-        timeout: Optional[Union[float, Tuple[float, float]]] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **params
     ):
         """

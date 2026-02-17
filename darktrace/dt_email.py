@@ -1,13 +1,13 @@
 import requests
 import json
 from typing import Dict, Any, Optional, Union, List, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class DarktraceEmail(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def decode_link(self, link: str, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def decode_link(self, link: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Decode a link using the Darktrace/Email API.
 
@@ -30,7 +30,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_action_summary(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_action_summary(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get action summary from Darktrace/Email API.
 
@@ -58,7 +58,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_dash_stats(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_dash_stats(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get dashboard stats from Darktrace/Email API.
 
@@ -86,7 +86,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_data_loss(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_data_loss(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get data loss information from Darktrace/Email API.
 
@@ -114,7 +114,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_user_anomaly(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_user_anomaly(self, days: Optional[int] = None, limit: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get user anomaly data from Darktrace/Email API.
 
@@ -142,7 +142,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def email_action(self, uuid: str, data: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def email_action(self, uuid: str, data: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Perform an action on an email by UUID in Darktrace/Email API."""
         endpoint = f'/agemail/api/ep/api/v1.0/emails/{uuid}/action'
         url = f"{self.client.host}{endpoint}"
@@ -156,7 +156,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_email(self, uuid: str, include_headers: Optional[bool] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_email(self, uuid: str, include_headers: Optional[bool] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get email details by UUID from Darktrace/Email API.
 
@@ -182,7 +182,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def download_email(self, uuid: str, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> bytes:
+    def download_email(self, uuid: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> bytes:  # type: ignore[assignment]
         """
         Download an email by UUID from Darktrace/Email API.
 
@@ -204,7 +204,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.content
 
-    def search_emails(self, data: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def search_emails(self, data: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Search emails in Darktrace/Email API."""
         endpoint = '/agemail/api/ep/api/v1.0/emails/search'
         url = f"{self.client.host}{endpoint}"
@@ -218,7 +218,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_tags(self, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_tags(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get tags from Darktrace/Email API.
 
@@ -239,7 +239,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get actions from Darktrace/Email API.
 
@@ -260,7 +260,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_filters(self, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_filters(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get filters from Darktrace/Email API.
 
@@ -281,7 +281,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_event_types(self, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_event_types(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get audit event types from Darktrace/Email API.
 
@@ -302,7 +302,7 @@ class DarktraceEmail(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_audit_events(self, event_type: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> Dict[str, Any]:
+    def get_audit_events(self, event_type: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
         """
         Get audit events from Darktrace/Email API.
 

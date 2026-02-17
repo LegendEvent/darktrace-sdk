@@ -1,7 +1,7 @@
 import requests
 import json
 from typing import Optional, List, Dict, Any, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 
 class IntelFeed(BaseEndpoint):
@@ -27,7 +27,7 @@ class IntelFeed(BaseEndpoint):
 
     def get(self, sources: Optional[bool] = None, source: Optional[str] = None,
             fulldetails: Optional[bool] = None, responsedata: Optional[str] = None,
-            timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+            timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """
         Get the intelfeed list, sources, or detailed entries.
 
@@ -77,7 +77,7 @@ class IntelFeed(BaseEndpoint):
                expiry: Optional[str] = None, is_hostname: bool = False,
                remove_entry: Optional[str] = None, remove_all: bool = False,
                enable_antigena: bool = False,
-               timeout: Optional[Union[float, Tuple[float, float]]] = None):
+               timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Update the intel feed (watched domains) in Darktrace.
         
         Args:

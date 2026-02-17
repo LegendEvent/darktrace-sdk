@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class Tags(BaseEndpoint):
     
@@ -42,7 +42,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def create(self, name: str, color: Optional[int] = None, description: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def create(self, name: str, color: Optional[int] = None, description: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Create a new tag in Darktrace.
 
@@ -70,7 +70,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def delete(self, tag_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def delete(self, tag_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Delete a tag by tag ID (tid).
 
@@ -93,7 +93,7 @@ class Tags(BaseEndpoint):
 
     #TAGS/ENTITIES ENDPOINT   
 
-    def get_entities(self, did: Optional[int] = None, tag: Optional[str] = None, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def get_entities(self, did: Optional[int] = None, tag: Optional[str] = None, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Get tags for a device or devices for a tag via /tags/entities.
 
@@ -125,7 +125,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def post_entities(self, did: int, tag: str, duration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def post_entities(self, did: int, tag: str, duration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Add a tag to a device via /tags/entities (POST, form-encoded).
 
@@ -150,7 +150,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def delete_entities(self, did: int, tag: str, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def delete_entities(self, did: int, tag: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Remove a tag from a device via /tags/entities (DELETE).
 
@@ -173,7 +173,7 @@ class Tags(BaseEndpoint):
         return response.json()
     
         # /tags/[tid]/entities ENDPOINT
-    def get_tag_entities(self, tid: int, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def get_tag_entities(self, tid: int, responsedata: Optional[str] = None, fulldevicedetails: Optional[bool] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Get entities (devices or credentials) associated with a specific tag via /tags/[tid]/entities (GET).
 
@@ -200,7 +200,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def post_tag_entities(self, tid: int, entityType: str, entityValue, expiryDuration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def post_tag_entities(self, tid: int, entityType: str, entityValue, expiryDuration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Add a tag to one or more entities (device or credential) via /tags/[tid]/entities (POST, JSON body).
 
@@ -226,7 +226,7 @@ class Tags(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def delete_tag_entity(self, tid: int, teid: int, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def delete_tag_entity(self, tid: int, teid: int, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Remove a tag from an entity via /tags/[tid]/entities/[teid] (DELETE).
 

@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, List, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class MetricData(BaseEndpoint):
     def __init__(self, client):
@@ -26,7 +26,7 @@ class MetricData(BaseEndpoint):
         breachtimes: Optional[bool] = None,
         fulldevicedetails: Optional[bool] = None,
         devices: Optional[List[str]] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **params
     ):
         """

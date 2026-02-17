@@ -2,13 +2,13 @@ import requests
 import json
 from typing import Dict, Any, Optional, Union, Tuple
 from datetime import datetime
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class ModelBreaches(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def get(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """
         Get model breach alerts from the /modelbreaches endpoint.
 
@@ -75,7 +75,7 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def get_comments(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """
         Get comments for a specific model breach alert.
 
@@ -97,7 +97,7 @@ class ModelBreaches(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params) -> dict:
+    def add_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
         Add a comment to a model breach alert.
 
@@ -154,7 +154,7 @@ class ModelBreaches(BaseEndpoint):
             debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
             return {"error": str(e)}
 
-    def acknowledge(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = None, **params) -> dict:
+    def acknowledge(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
         Acknowledge a model breach alert.
 
@@ -185,7 +185,7 @@ class ModelBreaches(BaseEndpoint):
             self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
             return {"error": str(e)}
 
-    def unacknowledge(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = None, **params) -> dict:
+    def unacknowledge(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
         Unacknowledge a model breach alert.
 
@@ -216,7 +216,7 @@ class ModelBreaches(BaseEndpoint):
             self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
             return {"error": str(e)}
         
-    def acknowledge_with_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params) -> dict:
+    def acknowledge_with_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
         Acknowledge a model breach and add a comment in one call.
 
@@ -235,7 +235,7 @@ class ModelBreaches(BaseEndpoint):
             "add_comment": comment_response
         }
     
-    def unacknowledge_with_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params) -> dict:
+    def unacknowledge_with_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
         Unacknowledge a model breach and add a comment in one call.
 

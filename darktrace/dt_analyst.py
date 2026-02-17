@@ -1,13 +1,13 @@
 import requests
 import json
 from typing import Union, List, Dict, Any, Optional, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class Analyst(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get_groups(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def get_groups(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst incident groups.
         
         Available parameters:
@@ -38,7 +38,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_incident_events(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def get_incident_events(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst incident events.
         
         Available parameters:
@@ -74,7 +74,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def acknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def acknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
             Acknowledge AI Analyst incident events.
         
@@ -92,7 +92,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def unacknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def unacknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Unacknowledge AI Analyst incident events.
         
@@ -110,7 +110,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def pin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def pin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Pin AI Analyst incident events.
 
@@ -128,7 +128,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def unpin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def unpin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Unpin AI Analyst incident events.
 
@@ -146,7 +146,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, incident_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, response_data: Optional[str] = ""):
+    def get_comments(self, incident_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, response_data: Optional[str] = ""):  # type: ignore[assignment]
         """Get comments for an AI Analyst incident event.
         
         Parameters:
@@ -165,7 +165,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, incident_id: str, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
+    def add_comment(self, incident_id: str, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """Add a comment to an AI Analyst incident event.
         
         Parameters:
@@ -186,7 +186,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_stats(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def get_stats(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst statistics.
         
         Available parameters:
@@ -212,7 +212,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_investigations(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
+    def get_investigations(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst investigations (GET request).
         
         Available parameters:
@@ -240,7 +240,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def create_investigation(self, investigate_time: str, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def create_investigation(self, investigate_time: str, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Create a new AI Analyst investigation (POST request).
         
         Parameters:

@@ -1,13 +1,13 @@
 import requests
 import json
 from typing import Dict, Any, Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, encode_query
+from .dt_utils import debug_print, BaseEndpoint, encode_query, _UNSET
 
 class AdvancedSearch(BaseEndpoint):    
     def __init__(self, client):
         super().__init__(client)
 
-    def search(self, query: Dict[str, Any], post_request: bool = False, timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def search(self, query: Dict[str, Any], post_request: bool = False, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Perform Advanced Search query.
         
         Parameters:
@@ -95,7 +95,7 @@ class AdvancedSearch(BaseEndpoint):
             response.raise_for_status()
             return response.json()
 
-    def analyze(self, field: str, analysis_type: str, query: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def analyze(self, field: str, analysis_type: str, query: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Analyze field data."""
         encoded_query = encode_query(query)
         endpoint = f'/advancedsearch/api/analyze/{field}/{analysis_type}/{encoded_query}'
@@ -107,7 +107,7 @@ class AdvancedSearch(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def graph(self, graph_type: str, interval: int, query: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = None):
+    def graph(self, graph_type: str, interval: int, query: Dict[str, Any], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get graph data."""
         encoded_query = encode_query(query)
         endpoint = f'/advancedsearch/api/graph/{graph_type}/{interval}/{encoded_query}'

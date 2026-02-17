@@ -116,9 +116,10 @@ results = client.advanced_search.search(query, timeout=(5, 300))
 
 | Format | Description |
 |--------|-------------|
-| `timeout=None` | No timeout (default, waits indefinitely) |
-| `timeout=30` | 30 seconds total (both connect and read) |
-| `timeout=(5, 30)` | 5 seconds to connect, 30 seconds to read |
+| (not passed) | Uses client default timeout |
+| `timeout=None` | No timeout (disables client default) |
+| `timeout=30` | 30 seconds total |
+| `timeout=(5, 30)` | 5 seconds connect, 30 seconds read |
 
 > **Note**: Advanced search queries can take 5-10 minutes for complex queries. Consider using per-request timeouts for these endpoints.
 

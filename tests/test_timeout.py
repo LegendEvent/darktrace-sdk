@@ -104,8 +104,24 @@ class TestPerRequestTimeout:
             call_kwargs = mock_get.call_args[1]
             assert call_kwargs.get("timeout") == (10.0, 60.0)
 
-    def test_per_request_none_uses_client_default(self, mock_response):
-        """Per-request None should use client default."""
+    def test_per_request_none_disables_timeout(self, mock_response):
+        """Per-request None should disable timeout (no timeout)."""
+        client = DarktraceClient(
+            host="https://test.darktrace.com",
+            public_token="test_public",
+            private_token="test_private",
+            timeout=30.0,  # Client default
+        )
+
+        with patch("darktrace.dt_devices.requests.get", return_value=mock_response) as mock_get:
+            # Explicitly passing None should disable timeout
+            client.devices.get(timeout=None)
+
+            call_kwargs = mock_get.call_args[1]
+            assert call_kwargs.get("timeout") is None  # No timeout
+
+    def test_per_request_unset_uses_client_default(self, mock_response):
+        """Not passing timeout should use client default."""
         client = DarktraceClient(
             host="https://test.darktrace.com",
             public_token="test_public",
@@ -114,11 +130,10 @@ class TestPerRequestTimeout:
         )
 
         with patch("darktrace.dt_devices.requests.get", return_value=mock_response) as mock_get:
-            # Explicitly passing None should use client default
-            client.devices.get(timeout=None)
-            
+            client.devices.get()  # No timeout argument
+
             call_kwargs = mock_get.call_args[1]
-            assert call_kwargs.get("timeout") == 30.0
+            assert call_kwargs.get("timeout") == 30.0  # Uses client default
 
 
 class TestTimeoutType:

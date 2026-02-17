@@ -1,7 +1,7 @@
 import requests
 import json
 from typing import List, Dict, Any, Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 
 class Devices(BaseEndpoint):
@@ -21,7 +21,7 @@ class Devices(BaseEndpoint):
         responsedata: str = None,
         cloudsecurity: bool = None,
         saasfilter: Any = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
     ):
         """
         Update a single device.
@@ -87,7 +87,7 @@ class Devices(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def update(self, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs) -> dict:
+    def update(self, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs) -> dict:  # type: ignore[assignment]
         """Update device properties in Darktrace.
 
         Args:
