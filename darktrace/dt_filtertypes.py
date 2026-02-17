@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class FilterTypes(BaseEndpoint):
@@ -22,7 +22,7 @@ class FilterTypes(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, responsedata: Optional[str] = None, **params):
+    def get(self, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
         """
         Get all filter types or restrict to a specific field/object.
 
@@ -41,6 +41,7 @@ class FilterTypes(BaseEndpoint):
         query_params.update(params)
         headers, sorted_params = self._get_headers(endpoint, query_params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

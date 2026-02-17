@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class Subnets(BaseEndpoint):
@@ -10,7 +10,8 @@ class Subnets(BaseEndpoint):
             subnet_id: Optional[int] = None,
             seensince: Optional[str] = None,
             sid: Optional[int] = None,
-            responsedata: Optional[str] = None
+            responsedata: Optional[str] = None,
+            timeout: Optional[Union[float, Tuple[float, float]]] = None
         ):
         """
         Get subnet information from Darktrace.
@@ -21,6 +22,7 @@ class Subnets(BaseEndpoint):
                 Minimum=1 second, Maximum=6 months. Subnets with activity in the specified time period are returned.
             sid (int, optional): Identification number of a subnet modeled in the Darktrace system.
             responsedata (str, optional): Restrict the returned JSON to only the specified top-level field(s) or object(s).
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single float or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             list or dict: Subnet information from Darktrace.
@@ -38,7 +40,8 @@ class Subnets(BaseEndpoint):
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
@@ -53,7 +56,8 @@ class Subnets(BaseEndpoint):
             uniqueHostnames: Optional[bool] = None,
             excluded: Optional[bool] = None,
             modelExcluded: Optional[bool] = None,
-            responsedata: Optional[str] = None
+            responsedata: Optional[str] = None,
+            timeout: Optional[Union[float, Tuple[float, float]]] = None
         ):
         """
         Create or update a subnet in Darktrace.
@@ -70,6 +74,7 @@ class Subnets(BaseEndpoint):
             excluded (bool, optional): Whether traffic in this subnet should not be processed at all.
             modelExcluded (bool, optional): Whether devices within this subnet should be fully modeled. If true, the devices will be added to the Internal Traffic subnet.
             responsedata (str, optional): Restrict the returned JSON to only the specified top-level field(s) or object(s).
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single float or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             dict: Result of the subnet creation or update operation.
@@ -101,6 +106,7 @@ class Subnets(BaseEndpoint):
 
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

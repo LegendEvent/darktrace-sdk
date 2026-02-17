@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class SummaryStatistics(BaseEndpoint):
@@ -13,8 +13,9 @@ class SummaryStatistics(BaseEndpoint):
             to: Optional[str] = None,
             hours: Optional[int] = None,
             csensor: Optional[bool] = None,
-            mitreTactics: Optional[bool] = None
-        ):
+            mitreTactics: Optional[bool] = None,
+            timeout: Optional[Union[float, Tuple[float, float]]] = None
+    ):
         """
         Get summary statistics information from Darktrace.
 
@@ -26,6 +27,7 @@ class SummaryStatistics(BaseEndpoint):
             hours (int, optional): Number of hour intervals from the end time (or current time) to return. Requires eventtype.
             csensor (bool, optional): When true, only bandwidth statistics for cSensor agents are returned. When false, statistics for Darktrace/Network bandwidth.
             mitreTactics (bool, optional): When true, alters the returned data to display MITRE ATT&CK Framework breakdown.
+            timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
 
         Returns:
             dict: Summary statistics information from Darktrace.
@@ -51,6 +53,7 @@ class SummaryStatistics(BaseEndpoint):
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

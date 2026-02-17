@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class Network(BaseEndpoint):
@@ -22,7 +22,8 @@ class Network(BaseEndpoint):
             starttime: Optional[int] = None,
             to: Optional[str] = None,
             viewsubnet: Optional[int] = None,
-            responsedata: Optional[str] = None
+            responsedata: Optional[str] = None,
+            timeout: Optional[Union[float, Tuple[float, float]]] = None
         ):
         """
         Get network connectivity and statistics information from Darktrace.
@@ -85,7 +86,8 @@ class Network(BaseEndpoint):
             params['responsedata'] = responsedata
 
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

@@ -1,6 +1,9 @@
 import base64
 import json
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple, Union
+
+# Type alias for timeout parameter - can be None, float, or tuple of (connect, read)
+TimeoutType = Optional[Union[float, Tuple[float, float]]]
 
 def debug_print(message: str, debug: bool = False):
     if debug:
@@ -11,6 +14,12 @@ class BaseEndpoint:
     
     def __init__(self, client):
         self.client = client
+    
+    def _resolve_timeout(self, timeout: TimeoutType) -> TimeoutType:
+        """Resolve timeout value, using client default if not specified."""
+        if timeout is not None:
+            return timeout
+        return getattr(self.client, 'timeout', None)
     
     def _get_headers(self, endpoint: str, params: Optional[Dict[str, Any]] = None, json_body: Optional[Dict[str, Any]] = None) -> Tuple[Dict[str, str], Optional[Dict[str, Any]]]:
         """

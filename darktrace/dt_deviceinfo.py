@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class DeviceInfo(BaseEndpoint):
@@ -17,6 +17,7 @@ class DeviceInfo(BaseEndpoint):
         showallgraphdata: bool = True,
         similardevices: Optional[int] = None,
         intervalhours: int = 1,
+        timeout: Optional[Union[float, Tuple[float, float]]] = None,
         **params
     ):
         """
@@ -69,7 +70,8 @@ class DeviceInfo(BaseEndpoint):
 
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

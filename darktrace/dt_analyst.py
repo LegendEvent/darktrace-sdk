@@ -1,13 +1,13 @@
 import requests
 import json
-from typing import Union, List, Dict, Any, Optional
+from typing import Union, List, Dict, Any, Optional, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class Analyst(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get_groups(self, **params):
+    def get_groups(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
         """Get AI Analyst incident groups.
         
         Available parameters:
@@ -32,12 +32,13 @@ class Analyst(BaseEndpoint):
         endpoint = '/aianalyst/groups'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def get_incident_events(self, **params):
+    def get_incident_events(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
         """Get AI Analyst incident events.
         
         Available parameters:
@@ -67,12 +68,13 @@ class Analyst(BaseEndpoint):
         endpoint = '/aianalyst/incidentevents'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def acknowledge(self, uuids: Union[str, List[str]]) -> dict:
+    def acknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
         """
             Acknowledge AI Analyst incident events.
         
@@ -84,12 +86,13 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def unacknowledge(self, uuids: Union[str, List[str]]) -> dict:
+    def unacknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
         """
         Unacknowledge AI Analyst incident events.
         
@@ -101,12 +104,13 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def pin(self, uuids: Union[str, List[str]]) -> dict:
+    def pin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
         """
         Pin AI Analyst incident events.
 
@@ -118,12 +122,13 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def unpin(self, uuids: Union[str, List[str]]) -> dict:
+    def unpin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
         """
         Unpin AI Analyst incident events.
 
@@ -135,12 +140,13 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, incident_id: str, response_data: Optional[str] = ""):
+    def get_comments(self, incident_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, response_data: Optional[str] = ""):
         """Get comments for an AI Analyst incident event.
         
         Parameters:
@@ -153,12 +159,13 @@ class Analyst(BaseEndpoint):
             params['responsedata'] = response_data
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, incident_id: str, message: str) -> dict:
+    def add_comment(self, incident_id: str, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = None) -> dict:
         """Add a comment to an AI Analyst incident event.
         
         Parameters:
@@ -169,16 +176,17 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, Any] = {"incident_id": incident_id, "message": message}
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"POST {url} body={body}")
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(',', ':'))
-        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def get_stats(self, **params):
+    def get_stats(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
         """Get AI Analyst statistics.
         
         Available parameters:
@@ -198,12 +206,13 @@ class Analyst(BaseEndpoint):
         endpoint = '/aianalyst/stats'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def get_investigations(self, **params):
+    def get_investigations(self, timeout: Optional[Union[float, Tuple[float, float]]] = None, **params):
         """Get AI Analyst investigations (GET request).
         
         Available parameters:
@@ -225,12 +234,13 @@ class Analyst(BaseEndpoint):
         endpoint = '/aianalyst/investigations'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
+        resolved_timeout = self._resolve_timeout(timeout)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()
 
-    def create_investigation(self, investigate_time: str, did: int):
+    def create_investigation(self, investigate_time: str, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = None):
         """Create a new AI Analyst investigation (POST request).
         
         Parameters:
@@ -248,11 +258,12 @@ class Analyst(BaseEndpoint):
         
         # For POST requests with JSON body, include it in signature
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
+        resolved_timeout = self._resolve_timeout(timeout)
         
         self.client._debug(f"POST {url} json={body}")
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(',', ':'))
-        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()

@@ -1,12 +1,12 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class PCAPs(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, pcap_id: Optional[str] = None, responsedata: Optional[str] = None):
+    def get(self, pcap_id: Optional[str] = None, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
         """
         Retrieve PCAP information or download a specific PCAP file from Darktrace.
 
@@ -24,12 +24,13 @@ class PCAPs(BaseEndpoint):
             params['responsedata'] = responsedata
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         # Return JSON if possible, else return raw content (for PCAP file download)
         return response.json() if 'application/json' in response.headers.get('Content-Type', '') else response.content
 
-    def create(self, ip1: str, start: int, end: int, ip2: Optional[str] = None, port1: Optional[int] = None, port2: Optional[int] = None, protocol: Optional[str] = None):
+    def create(self, ip1: str, start: int, end: int, ip2: Optional[str] = None, port1: Optional[int] = None, port2: Optional[int] = None, protocol: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None):
         """
         Create a new PCAP capture request in Darktrace.
 
@@ -58,6 +59,7 @@ class PCAPs(BaseEndpoint):
             body["protocol"] = protocol
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

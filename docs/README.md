@@ -26,6 +26,7 @@ client = DarktraceClient(
 | `private_token` | str | required | Your Darktrace API private token |
 | `debug` | bool | False | Enable debug logging |
 | `verify_ssl` | bool | True | Enable SSL certificate verification |
+| `timeout` | float \| tuple | None | Request timeout in seconds, or (connect, read) tuple. None = no timeout |
 
 ### SSL Verification
 
@@ -41,6 +42,26 @@ client = DarktraceClient(
 ```
 
 > ⚠️ **Warning**: Disabling SSL verification is not recommended for production environments.
+
+### Request Timeouts
+
+Configure timeouts for API requests. This is especially important for long-running queries like advanced search:
+
+```python
+# Client-level timeout (applies to all requests)
+client = DarktraceClient(
+    host="https://your-darktrace-instance",
+    public_token="YOUR_PUBLIC_TOKEN",
+    private_token="YOUR_PRIVATE_TOKEN",
+    timeout=30  # 30 seconds
+)
+
+# Per-request override for slow queries
+results = client.advanced_search.search(query, timeout=600)  # 10 minutes
+
+# Tuple format: (connect_timeout, read_timeout)
+results = client.advanced_search.search(query, timeout=(5, 300))  # 5s connect, 5min read
+```
 
 ## Available Modules
 

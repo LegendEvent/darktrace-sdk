@@ -1,4 +1,5 @@
 import requests
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 
@@ -36,6 +37,7 @@ class DeviceSearch(BaseEndpoint):
         offset=None,
         responsedata=None,
         seensince=None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = None,
         **kwargs,
     ):
         """
@@ -114,106 +116,114 @@ class DeviceSearch(BaseEndpoint):
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
+        resolved_timeout = self._resolve_timeout(timeout)
         response = requests.get(
-            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl
+            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()
 
-    def get_tag(self, tag: str, **kwargs):
+    def get_tag(self, tag: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific tag.
 
         Args:
             tag (str): The tag to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'tag:"{tag}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_type(self, type: str, **kwargs):
+    def get_type(self, type: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific type.
 
         Args:
             type (str): The type to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'type:"{type}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_label(self, label: str, **kwargs):
+    def get_label(self, label: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific label.
 
         Args:
             label (str): The label to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'label:"{label}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_vendor(self, vendor: str, **kwargs):
+    def get_vendor(self, vendor: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific vendor.
 
         Args:
             vendor (str): The vendor to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'vendor:"{vendor}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_hostname(self, hostname: str, **kwargs):
+    def get_hostname(self, hostname: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific hostname.
 
         Args:
             hostname (str): The hostname to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'hostname:"{hostname}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_ip(self, ip: str, **kwargs):
+    def get_ip(self, ip: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific IP address.
 
         Args:
             ip (str): The IP address to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'ip:"{ip}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_mac(self, mac: str, **kwargs):
+    def get_mac(self, mac: str, timeout: Optional[Union[float, Tuple[float, float]]] = None, **kwargs):
         """
         Search for devices with a specific MAC address.
 
         Args:
             mac (str): The MAC address to search for.
+            timeout (Optional[Union[float, Tuple[float, float]]]): Request timeout in seconds.
             **kwargs: Additional parameters for the search.
 
         Returns:
             dict: API response
         """
         query = f'mac:"{mac}"'
-        return self.get(query=query, **kwargs)
+        return self.get(query=query, timeout=timeout, **kwargs)

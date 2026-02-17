@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint
 
 class CVEs(BaseEndpoint):
@@ -10,6 +10,7 @@ class CVEs(BaseEndpoint):
         self,
         did: Optional[int] = None,
         fulldevicedetails: Optional[bool] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = None,
         **params
     ):
         """
@@ -37,6 +38,7 @@ class CVEs(BaseEndpoint):
         # Use consistent parameter/header handling
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
         response.raise_for_status()
         return response.json()

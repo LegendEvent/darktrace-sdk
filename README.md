@@ -12,16 +12,13 @@
 ---
 
 
-## 🆕 Latest Updates (v0.8.55)
+## 🆕 Latest Updates (v0.8.56)
 
-- **Feature: Add 13 missing parameters to devicesummary endpoint** - Added support for `device_name`, `ip_address`, `end_timestamp`, `start_timestamp`, `devicesummary_by`, `devicesummary_by_value`, `device_type`, `network_location`, `network_location_id`, `peer_id`, `source`, and `status` parameters to align with Darktrace API specification
-- **Documentation: Update devicesummary documentation** - Added examples and parameter descriptions for new filtering options
-- **Note: devicesummary HTTP 500 limitation confirmed** - Documentation updated to clarify that all devicesummary parameters return HTTP 500 with API token authentication (Darktrace backend limitation, not SDK bug)
+- **Feature: Configurable request timeouts** - Added `timeout` parameter to `DarktraceClient` and all endpoint methods. Supports client-level defaults and per-request overrides. Use for long-running queries like advanced search.
+- **Security: Enable SSL certificate verification by default (fixes #47)** - Changed `verify_ssl` default from `False` to `True` for secure-by-default behavior. All endpoint modules now inherit the client's SSL verification setting.
+- **Documentation: Add SSL certificate setup guide** - Added instructions for using self-signed certificates with `verify_ssl=True` via system trust store or environment variable.
 
-## 📝 Previous Updates (v0.8.54)
-
-- **Fix: Multi-parameter devicesearch query format (fixes #45)** - Changed query parameter joining from explicit ' AND ' to space separation per Darktrace API specification
-- **Fix: ensure host URL includes protocol (default to https if missing)**
+> For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases).
 
 ---
 
@@ -32,6 +29,7 @@
 - **Modular & Maintainable**: Each endpoint group is a separate Python module/class.
 - **Easy Authentication**: Secure HMAC-SHA1 signature generation and token management.
 - **SSL Verification**: SSL certificate verification is enabled by default for secure connections.
+- **Configurable Timeouts**: Client-level and per-request timeout support for long-running queries.
 - **Async-Ready**: Designed for easy extension to async workflows.
 - **Type Hints & Docstrings**: Full typing and documentation for all public methods.
 - **Comprehensive Documentation**: Detailed documentation for every module and endpoint.
@@ -54,6 +52,75 @@ client = DarktraceClient(
 ```
 
 > ⚠️ **Warning**: Disabling SSL verification exposes your connection to man-in-the-middle attacks. Never disable in production environments.
+
+### Using Self-Signed Certificates with verify_ssl=True
+
+For production environments with self-signed certificates, add the certificate to your system trust store instead of disabling verification:
+
+```bash
+# 1. Get the certificate from your Darktrace instance
+openssl s_client -showcerts -connect your-darktrace-instance:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > ~/darktrace-cert.pem
+
+# 2. Copy to system CA store (Linux/Ubuntu/Debian)
+sudo cp ~/darktrace-cert.pem /usr/local/share/ca-certificates/darktrace-cert.crt
+sudo update-ca-certificates
+
+# 3. Now verify_ssl=True will work
+```
+
+**Alternative (no sudo required):**
+```bash
+# Create a custom CA bundle and set environment variable
+cat /etc/ssl/certs/ca-certificates.crt ~/darktrace-cert.pem > ~/.custom-ca-bundle.pem
+export REQUESTS_CA_BUNDLE=~/.custom-ca-bundle.pem
+```
+
+---
+
+## ⏱️ Request Timeouts
+
+The SDK supports configurable request timeouts at both client and per-request levels.
+
+### Client-Level Timeout
+
+Set a default timeout for all requests:
+
+```python
+from darktrace import DarktraceClient
+
+# 30 second timeout for all requests
+client = DarktraceClient(
+    host="https://your-darktrace-instance",
+    public_token="YOUR_PUBLIC_TOKEN",
+    private_token="YOUR_PRIVATE_TOKEN",
+    timeout=30
+)
+```
+
+### Per-Request Timeout
+
+Override the timeout for specific requests (e.g., long-running advanced searches):
+
+```python
+# Client default: 30 seconds
+client = DarktraceClient(host="...", public_token="...", private_token="...", timeout=30)
+
+# Override for slow query (5 minutes)
+results = client.advanced_search.search(query, timeout=300)
+
+# Override with tuple format (connect_timeout, read_timeout)
+results = client.advanced_search.search(query, timeout=(5, 300))
+```
+
+### Timeout Format
+
+| Format | Description |
+|--------|-------------|
+| `timeout=None` | No timeout (default, waits indefinitely) |
+| `timeout=30` | 30 seconds total (both connect and read) |
+| `timeout=(5, 30)` | 5 seconds to connect, 30 seconds to read |
+
+> **Note**: Advanced search queries can take 5-10 minutes for complex queries. Consider using per-request timeouts for these endpoints.
 
 ---
 
