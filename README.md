@@ -31,9 +31,29 @@
 - **Extensive API Coverage**: Most endpoints, parameters, and actions from the official Darktrace API Guide are implemented.
 - **Modular & Maintainable**: Each endpoint group is a separate Python module/class.
 - **Easy Authentication**: Secure HMAC-SHA1 signature generation and token management.
+- **SSL Verification**: SSL certificate verification is enabled by default for secure connections.
 - **Async-Ready**: Designed for easy extension to async workflows.
 - **Type Hints & Docstrings**: Full typing and documentation for all public methods.
 - **Comprehensive Documentation**: Detailed documentation for every module and endpoint.
+
+---
+
+## 🔒 SSL Certificate Verification
+
+**SSL verification is enabled by default (`verify_ssl=True`)** for secure connections to your Darktrace instance.
+
+For development or testing environments with self-signed certificates, you can disable verification:
+
+```python
+client = DarktraceClient(
+    host="https://your-darktrace-instance",
+    public_token="YOUR_PUBLIC_TOKEN",
+    private_token="YOUR_PRIVATE_TOKEN",
+    verify_ssl=False  # Only for development/testing
+)
+```
+
+> ⚠️ **Warning**: Disabling SSL verification exposes your connection to man-in-the-middle attacks. Never disable in production environments.
 
 ---
 
@@ -64,12 +84,20 @@ pip install .
 ```python
 from darktrace import DarktraceClient
 
-# Initialize the client
+# Initialize the client (SSL verification enabled by default)
 client = DarktraceClient(
     host="https://your-darktrace-instance",
     public_token="YOUR_PUBLIC_TOKEN",
     private_token="YOUR_PRIVATE_TOKEN"
 )
+
+# For development with self-signed certificates, disable SSL verification:
+# client = DarktraceClient(
+#     host="https://your-darktrace-instance",
+#     public_token="YOUR_PUBLIC_TOKEN",
+#     private_token="YOUR_PRIVATE_TOKEN",
+#     verify_ssl=False  # Not recommended for production
+# )
 
 # Access endpoint groups
 devices = client.devices

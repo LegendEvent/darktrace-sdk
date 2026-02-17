@@ -59,7 +59,7 @@ class AdvancedSearch(BaseEndpoint):
             headers, sorted_params = self._get_headers(endpoint, json_body=body)
             headers['Content-Type'] = 'application/json'
             self.client._debug(f"POST {url} body={body}")
-            response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=False)
+            response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=self.client.verify_ssl)
             self.client._debug(f"Response status: {response.status_code}")
             self.client._debug(f"Response text: {response.text}")
             response.raise_for_status()
@@ -89,7 +89,7 @@ class AdvancedSearch(BaseEndpoint):
             url = f"{self.client.host}{endpoint}/{encoded_query}"
             headers, sorted_params = self._get_headers(f"{endpoint}/{encoded_query}")
             self.client._debug(f"GET {url}")
-            response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+            response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
             response.raise_for_status()
             return response.json()
 
@@ -100,7 +100,7 @@ class AdvancedSearch(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -111,6 +111,6 @@ class AdvancedSearch(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()

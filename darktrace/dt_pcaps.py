@@ -24,7 +24,7 @@ class PCAPs(BaseEndpoint):
             params['responsedata'] = responsedata
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         # Return JSON if possible, else return raw content (for PCAP file download)
         return response.json() if 'application/json' in response.headers.get('Content-Type', '') else response.content
@@ -58,6 +58,6 @@ class PCAPs(BaseEndpoint):
             body["protocol"] = protocol
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()

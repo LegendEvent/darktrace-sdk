@@ -15,7 +15,6 @@ import sys
 import json
 import logging
 from datetime import datetime, timedelta, timezone
-import urllib3
 import requests
 from typing import List, Dict, Any
 
@@ -23,9 +22,6 @@ from typing import List, Dict, Any
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from darktrace import DarktraceClient
-
-# Disable SSL warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

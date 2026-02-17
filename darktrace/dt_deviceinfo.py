@@ -70,6 +70,6 @@ class DeviceInfo(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()

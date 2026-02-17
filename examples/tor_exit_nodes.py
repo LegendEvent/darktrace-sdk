@@ -8,15 +8,12 @@ import os
 import sys
 import json
 from datetime import datetime, timezone
-import urllib3
 
 # Add the parent directory to the path so we can import the darktrace module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from darktrace import DarktraceClient
 
-# Disable SSL warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def main():
     # Configuration
@@ -26,6 +23,7 @@ def main():
     private_token = "your-private-token"
 
     # Initialize the Darktrace client
+    # SSL verification is enabled by default. For development with self-signed certs, use verify_ssl=False
     client = DarktraceClient(
         host=host,
         public_token=public_token,

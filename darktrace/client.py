@@ -64,6 +64,7 @@ class DarktraceClient:
     host: str
     auth: DarktraceAuth
     debug: bool
+    verify_ssl: bool
     advanced_search: 'AdvancedSearch'
     antigena: 'Antigena'
     analyst: 'Analyst'
@@ -92,7 +93,7 @@ class DarktraceClient:
     summarystatistics: 'SummaryStatistics'
     tags: 'Tags'
 
-    def __init__(self, host: str, public_token: str, private_token: str, debug: bool = False) -> None:
+    def __init__(self, host: str, public_token: str, private_token: str, debug: bool = False, verify_ssl: bool = True) -> None:
         """
         Initialize the Darktrace API client.
         
@@ -101,6 +102,8 @@ class DarktraceClient:
             public_token (str): Your Darktrace API public token
             private_token (str): Your Darktrace API private token  
             debug (bool, optional): Enable debug logging. Defaults to False.
+            verify_ssl (bool, optional): Enable SSL certificate verification. Defaults to True.
+                Set to False only for development/testing with self-signed certificates.
             
         Example:
             >>> client = DarktraceClient(
@@ -119,6 +122,7 @@ class DarktraceClient:
         self.host = host.rstrip('/')
         self.auth = DarktraceAuth(public_token, private_token)
         self.debug = debug
+        self.verify_ssl = verify_ssl
 
         # Endpoint groups
         self.advanced_search = AdvancedSearch(self)

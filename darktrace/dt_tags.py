@@ -35,7 +35,7 @@ class Tags(BaseEndpoint):
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -61,7 +61,7 @@ class Tags(BaseEndpoint):
 
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -79,7 +79,7 @@ class Tags(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"DELETE {url}")
-        response = requests.delete(url, headers=headers, verify=False)
+        response = requests.delete(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -112,7 +112,7 @@ class Tags(BaseEndpoint):
             params['fulldevicedetails'] = fulldevicedetails
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -135,7 +135,7 @@ class Tags(BaseEndpoint):
             data['duration'] = duration
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"POST {url} data={data}")
-        response = requests.post(url, headers=headers, data=data, verify=False)
+        response = requests.post(url, headers=headers, data=data, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -155,7 +155,7 @@ class Tags(BaseEndpoint):
         params = {'did': did, 'tag': tag}
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"DELETE {url} params={sorted_params}")
-        response = requests.delete(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.delete(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
     
@@ -181,7 +181,7 @@ class Tags(BaseEndpoint):
             params['fulldevicedetails'] = fulldevicedetails
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -205,7 +205,7 @@ class Tags(BaseEndpoint):
             body["expiryDuration"] = expiryDuration
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -224,6 +224,6 @@ class Tags(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, _ = self._get_headers(endpoint)
         self.client._debug(f"DELETE {url}")
-        response = requests.delete(url, headers=headers, verify=False)
+        response = requests.delete(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
