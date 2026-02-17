@@ -33,7 +33,7 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -68,7 +68,7 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -85,7 +85,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -102,7 +102,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -119,7 +119,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -136,7 +136,7 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -154,7 +154,7 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -172,7 +172,7 @@ class Analyst(BaseEndpoint):
         self.client._debug(f"POST {url} body={body}")
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(',', ':'))
-        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
@@ -199,7 +199,7 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -226,7 +226,7 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -252,7 +252,7 @@ class Analyst(BaseEndpoint):
         self.client._debug(f"POST {url} json={body}")
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(',', ':'))
-        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()

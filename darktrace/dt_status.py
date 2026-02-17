@@ -35,6 +35,6 @@ class Status(BaseEndpoint):
 
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()

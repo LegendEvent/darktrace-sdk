@@ -68,7 +68,7 @@ class ModelBreaches(BaseEndpoint):
             url,
             headers=headers,
             params=sorted_params,
-            verify=False
+            verify=self.client.verify_ssl
         )
         response.raise_for_status()
         return response.json()
@@ -90,7 +90,7 @@ class ModelBreaches(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -137,7 +137,7 @@ class ModelBreaches(BaseEndpoint):
             debug_print(f"BREACHES: With params: {sorted_params}", self.client.debug)
             debug_print(f"BREACHES: With data: '{json_data}'", self.client.debug)
             
-            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
             debug_print(f"BREACHES: Response status: {response.status_code}", self.client.debug)
@@ -171,7 +171,7 @@ class ModelBreaches(BaseEndpoint):
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
             json_data = json.dumps(body, separators=(',', ':'))
-            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
             response.raise_for_status()
@@ -201,7 +201,7 @@ class ModelBreaches(BaseEndpoint):
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
             json_data = json.dumps(body, separators=(',', ':'))
-            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=False)
+            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl)
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
             response.raise_for_status()

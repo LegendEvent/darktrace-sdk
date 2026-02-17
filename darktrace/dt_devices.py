@@ -80,7 +80,7 @@ class Devices(BaseEndpoint):
         self.client._debug(f"GET {url} params={sorted_params}")
 
         response = requests.get(
-            url, headers=headers, params=sorted_params, verify=False
+            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl
         )
         response.raise_for_status()
         return response.json()
@@ -109,7 +109,7 @@ class Devices(BaseEndpoint):
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=False
+            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")

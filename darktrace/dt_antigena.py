@@ -67,7 +67,7 @@ class Antigena(BaseEndpoint):
         self.client._debug(f"GET {url} params={sorted_params}")
 
         response = requests.get(
-            url, headers=headers, params=sorted_params, verify=False
+            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl
         )
         response.raise_for_status()
         return response.json()
@@ -115,7 +115,7 @@ class Antigena(BaseEndpoint):
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=False
+            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -163,7 +163,7 @@ class Antigena(BaseEndpoint):
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=False
+            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -207,7 +207,7 @@ class Antigena(BaseEndpoint):
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=False
+            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -250,7 +250,7 @@ class Antigena(BaseEndpoint):
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=False
+            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -337,7 +337,7 @@ class Antigena(BaseEndpoint):
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=False
+            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -404,7 +404,23 @@ class Antigena(BaseEndpoint):
         self.client._debug(f"GET {url} params={sorted_params}")
 
         response = requests.get(
-            url, headers=headers, params=sorted_params, verify=False
+            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl
         )
         response.raise_for_status()
         return response.json()
+
+    def approve_action(self, codeid: int) -> dict:
+        """
+        Approve a pending Darktrace RESPOND action (backwards compatibility, no-op).
+
+        This method is retained for backwards compatibility only. In modern Darktrace
+        versions, the approve/decline workflow has been replaced by direct action
+        management methods. This method is a no-op that returns a success response.
+
+        Args:
+            codeid (int): Unique numeric identifier of a RESPOND action (ignored).
+
+        Returns:
+            dict: A dummy success response for backwards compatibility.
+        """
+        return {"success": True, "message": "Action approved (no-op for backwards compatibility)"}

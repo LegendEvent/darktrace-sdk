@@ -54,7 +54,7 @@ class IntelFeed(BaseEndpoint):
         query_params.update(params)
         headers, sorted_params = self._get_headers(endpoint, query_params)
         self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -118,7 +118,7 @@ class IntelFeed(BaseEndpoint):
         headers['Content-Type'] = 'application/json'
             
         self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=self.client.verify_ssl)
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()

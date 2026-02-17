@@ -12,9 +12,35 @@ client = DarktraceClient(
     host="https://your-darktrace-instance",
     public_token="YOUR_PUBLIC_TOKEN",
     private_token="YOUR_PRIVATE_TOKEN",
-    debug=False  # Set to True for verbose output
+    debug=False,  # Set to True for verbose output
+    verify_ssl=True  # SSL verification enabled by default
 )
 ```
+
+## Client Options
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `host` | str | required | The Darktrace instance hostname (e.g., 'https://example.darktrace.com') |
+| `public_token` | str | required | Your Darktrace API public token |
+| `private_token` | str | required | Your Darktrace API private token |
+| `debug` | bool | False | Enable debug logging |
+| `verify_ssl` | bool | True | Enable SSL certificate verification |
+
+### SSL Verification
+
+SSL certificate verification is enabled by default for secure connections. For development environments with self-signed certificates:
+
+```python
+client = DarktraceClient(
+    host="https://your-darktrace-instance",
+    public_token="YOUR_PUBLIC_TOKEN",
+    private_token="YOUR_PRIVATE_TOKEN",
+    verify_ssl=False  # Only for development/testing
+)
+```
+
+> ⚠️ **Warning**: Disabling SSL verification is not recommended for production environments.
 
 ## Available Modules
 

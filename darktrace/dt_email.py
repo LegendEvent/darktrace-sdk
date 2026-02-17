@@ -24,7 +24,7 @@ class DarktraceEmail(BaseEndpoint):
         params = {"link": link}
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -50,7 +50,7 @@ class DarktraceEmail(BaseEndpoint):
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -76,7 +76,7 @@ class DarktraceEmail(BaseEndpoint):
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -102,7 +102,7 @@ class DarktraceEmail(BaseEndpoint):
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -128,7 +128,7 @@ class DarktraceEmail(BaseEndpoint):
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -139,7 +139,7 @@ class DarktraceEmail(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint, json_body=data)
         headers['Content-Type'] = 'application/json'
         self.client._debug(f"POST {url} data={data}")
-        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=self.client.verify_ssl)
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
@@ -165,7 +165,7 @@ class DarktraceEmail(BaseEndpoint):
             params["include_headers"] = include_headers
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -185,7 +185,7 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={{}}")
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.content
 
@@ -196,7 +196,7 @@ class DarktraceEmail(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint, json_body=data)
         headers['Content-Type'] = 'application/json'
         self.client._debug(f"POST {url} data={data}")
-        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=False)
+        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=self.client.verify_ssl)
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
@@ -215,7 +215,7 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={{}}")
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -232,7 +232,7 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={{}}")
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -249,7 +249,7 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={{}}")
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -266,7 +266,7 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         self.client._debug(f"GET {url} params={{}}")
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
 
@@ -295,6 +295,6 @@ class DarktraceEmail(BaseEndpoint):
             params["offset"] = offset
         headers, sorted_params = self._get_headers(endpoint, params)
         self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
         response.raise_for_status()
         return response.json()
