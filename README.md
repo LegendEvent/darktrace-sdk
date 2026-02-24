@@ -12,16 +12,13 @@
 ---
 
 
-## 🆕 Latest Updates (v0.8.55)
+## 🆕 Latest Updates (v0.8.56)
 
-- **Feature: Add 13 missing parameters to devicesummary endpoint** - Added support for `device_name`, `ip_address`, `end_timestamp`, `start_timestamp`, `devicesummary_by`, `devicesummary_by_value`, `device_type`, `network_location`, `network_location_id`, `peer_id`, `source`, and `status` parameters to align with Darktrace API specification
-- **Documentation: Update devicesummary documentation** - Added examples and parameter descriptions for new filtering options
-- **Note: devicesummary HTTP 500 limitation confirmed** - Documentation updated to clarify that all devicesummary parameters return HTTP 500 with API token authentication (Darktrace backend limitation, not SDK bug)
+- **Feature: Request timing in debug mode** - API requests now show elapsed time when `debug=True` (e.g., `DEBUG: GET https://instance/endpoint [123ms]`)
+- **⚠️ BREAKING: SSL certificate verification now enabled by default (fixes #47)** - Changed `verify_ssl` default from `False` to `True`. **For self-signed certificates, you must either add the cert to your system trust store OR set `verify_ssl=False` explicitly.** See the SSL section below for instructions.
+- **Documentation: Add SSL certificate setup guide** - Added instructions for using self-signed certificates with `verify_ssl=True` via system trust store or environment variable.
 
-## 📝 Previous Updates (v0.8.54)
-
-- **Fix: Multi-parameter devicesearch query format (fixes #45)** - Changed query parameter joining from explicit ' AND ' to space separation per Darktrace API specification
-- **Fix: ensure host URL includes protocol (default to https if missing)**
+> For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases).
 
 ---
 
@@ -54,6 +51,28 @@ client = DarktraceClient(
 ```
 
 > ⚠️ **Warning**: Disabling SSL verification exposes your connection to man-in-the-middle attacks. Never disable in production environments.
+
+### Using Self-Signed Certificates with verify_ssl=True
+
+For production environments with self-signed certificates, add the certificate to your system trust store instead of disabling verification:
+
+```bash
+# 1. Get the certificate from your Darktrace instance
+openssl s_client -showcerts -connect your-darktrace-instance:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > ~/darktrace-cert.pem
+
+# 2. Copy to system CA store (Linux/Ubuntu/Debian)
+sudo cp ~/darktrace-cert.pem /usr/local/share/ca-certificates/darktrace-cert.crt
+sudo update-ca-certificates
+
+# 3. Now verify_ssl=True will work
+```
+
+**Alternative (no sudo required):**
+```bash
+# Create a custom CA bundle and set environment variable
+cat /etc/ssl/certs/ca-certificates.crt ~/darktrace-cert.pem > ~/.custom-ca-bundle.pem
+export REQUESTS_CA_BUNDLE=~/.custom-ca-bundle.pem
+```
 
 ---
 

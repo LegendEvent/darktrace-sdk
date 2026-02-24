@@ -1,16 +1,52 @@
 import base64
 import json
-from typing import Dict, Any, Optional, Tuple
+import time
+from typing import Dict, Any, Optional, Tuple, Union
+
+import requests
+
+# Type alias for timeout parameter - can be None, float, or tuple of (connect, read)
+TimeoutType = Optional[Union[float, Tuple[float, float]]]
+
+# Sentinel value for unset timeout - allows distinguishing between
+# "not specified" (use client default) and "explicitly None" (no timeout)
+_UNSET = object()
 
 def debug_print(message: str, debug: bool = False):
     if debug:
         print(f"DEBUG: {message}")
 
+def _format_timing(elapsed_seconds: float) -> str:
+    """Format elapsed time as human-readable string.
+    
+    Args:
+        elapsed_seconds: Time elapsed in seconds
+        
+    Returns:
+        Formatted string like "123ms" for <1s or "1.23s" for >=1s
+    """
+    elapsed_ms = elapsed_seconds * 1000
+    if elapsed_ms < 1000:
+        return f"{elapsed_ms:.0f}ms"
+    else:
+        return f"{elapsed_seconds:.2f}s"
+
 class BaseEndpoint:
     """Base class for all Darktrace API endpoint modules."""
-    
+
     def __init__(self, client):
         self.client = client
+
+    def _resolve_timeout(self, timeout: TimeoutType = _UNSET) -> TimeoutType:  # type: ignore[assignment]
+        """Resolve timeout value, using client default if not specified.
+
+        Args:
+            timeout: Per-request timeout. _UNSET (default) uses client.timeout.
+                     None means no timeout. Float or tuple sets specific timeout.
+        """
+        if timeout is not _UNSET:
+            return timeout
+        return getattr(self.client, 'timeout', None)
     
     def _get_headers(self, endpoint: str, params: Optional[Dict[str, Any]] = None, json_body: Optional[Dict[str, Any]] = None) -> Tuple[Dict[str, str], Optional[Dict[str, Any]]]:
         """
@@ -28,6 +64,34 @@ class BaseEndpoint:
         """
         result = self.client.auth.get_headers(endpoint, params, json_body)
         return result['headers'], result['params']
+
+    def _make_request(self, method: str, url: str, **kwargs) -> requests.Response:
+        """Make an HTTP request with timing logged in debug mode.
+        
+        Args:
+            method: HTTP method (GET, POST, DELETE, etc.)
+            url: Full URL to request
+            **kwargs: Additional arguments passed to requests.request()
+            
+        Returns:
+            requests.Response object
+        """
+        start = time.perf_counter()
+        try:
+            response = requests.request(method, url, **kwargs)
+            elapsed = time.perf_counter() - start
+            
+            if self.client.debug:
+                timing_str = _format_timing(elapsed)
+                self.client._debug(f"{method} {url} [{timing_str}]")
+            
+            return response
+        except Exception as e:
+            elapsed = time.perf_counter() - start
+            if self.client.debug:
+                timing_str = _format_timing(elapsed)
+                self.client._debug(f"{method} {url} FAILED [{timing_str}]: {e}")
+            raise
 
 def encode_query(query: dict) -> str:
     query_json = json.dumps(query)

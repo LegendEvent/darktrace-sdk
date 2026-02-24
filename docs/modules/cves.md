@@ -1,5 +1,8 @@
 # CVEs Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The CVEs module provides access to CVE (Common Vulnerabilities and Exposures) information from the Darktrace/OT ICS Vulnerability Tracker. This module allows you to retrieve vulnerability information related to devices in your network infrastructure.
 
 ## Initialization

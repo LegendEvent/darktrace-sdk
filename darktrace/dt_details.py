@@ -1,6 +1,6 @@
 import requests
-from typing import Optional
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, Union, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class Details(BaseEndpoint):
     def __init__(self, client):
@@ -31,6 +31,7 @@ class Details(BaseEndpoint):
         deduplicate: bool = False,
         fulldevicedetails: bool = False,
         responsedata: Optional[str] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **params
     ):
         """
@@ -134,7 +135,11 @@ class Details(BaseEndpoint):
             params['responsedata'] = responsedata
 
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+        resolved_timeout = self._resolve_timeout(timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

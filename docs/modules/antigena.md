@@ -1,5 +1,8 @@
 # Antigena Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Antigena module provides access to Darktrace's RESPOND/Network (formerly Antigena Network) functionality, which includes automated response actions and manual intervention capabilities. This module allows you to manage active and pending RESPOND actions, create manual actions, and get comprehensive summaries.
 
 ## Initialization

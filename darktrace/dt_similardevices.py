@@ -1,6 +1,6 @@
 import requests
-from typing import Optional
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, Union, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class SimilarDevices(BaseEndpoint):
     def __init__(self, client):
@@ -13,6 +13,7 @@ class SimilarDevices(BaseEndpoint):
         fulldevicedetails: Optional[bool] = None,
         token: Optional[str] = None,
         responsedata: Optional[str] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **kwargs
     ):
         """
@@ -24,6 +25,7 @@ class SimilarDevices(BaseEndpoint):
             fulldevicedetails (bool, optional): Whether to include full device details in the response.
             token (str, optional): Pagination token for large result sets.
             responsedata (str, optional): Restrict the returned JSON to only the specified field(s).
+            timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
             **kwargs: Additional parameters for future compatibility.
 
         Returns:
@@ -45,8 +47,12 @@ class SimilarDevices(BaseEndpoint):
         params.update(kwargs)
 
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         try:
             return response.json()

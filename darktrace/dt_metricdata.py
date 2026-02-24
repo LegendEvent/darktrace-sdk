@@ -1,6 +1,6 @@
 import requests
-from typing import Optional, List
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, List, Union, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class MetricData(BaseEndpoint):
     def __init__(self, client):
@@ -26,6 +26,7 @@ class MetricData(BaseEndpoint):
         breachtimes: Optional[bool] = None,
         fulldevicedetails: Optional[bool] = None,
         devices: Optional[List[str]] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **params
     ):
         """
@@ -50,6 +51,7 @@ class MetricData(BaseEndpoint):
             breachtimes (bool, optional): Whether to include breach times.
             fulldevicedetails (bool, optional): Whether to include full device details.
             devices (list of str, optional): List of device IDs or names.
+            timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
             **params: Additional parameters for future compatibility.
 
         Returns:
@@ -102,7 +104,11 @@ class MetricData(BaseEndpoint):
         query_params.update(params)
 
         headers, sorted_params = self._get_headers(endpoint, query_params)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl)
+
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

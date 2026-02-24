@@ -1,7 +1,7 @@
 import requests
 import json
-from typing import Dict, Any, Union, Optional, List
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Dict, Any, Union, Optional, List, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 
 class Antigena(BaseEndpoint):
@@ -20,7 +20,7 @@ class Antigena(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get_actions(self, **params):
+    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """
         Get information about current and past Darktrace RESPOND actions.
 
@@ -28,6 +28,8 @@ class Antigena(BaseEndpoint):
         and all historic actions with an expiry date in the last 14 days.
 
         Args:
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
             fulldevicedetails (bool): Returns the full device detail objects for all devices
                 referenced by data in an API response. Use of this parameter will alter the
                 JSON structure of the API response for certain calls.
@@ -66,14 +68,16 @@ class Antigena(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         self.client._debug(f"GET {url} params={sorted_params}")
 
-        response = requests.get(
-            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()
 
     def activate_action(
-        self, codeid: int, reason: str = "", duration: Optional[int] = None
+        self, codeid: int, reason: str = "", duration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None
     ) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
@@ -88,6 +92,8 @@ class Antigena(BaseEndpoint):
             reason (str, optional): Free text field to specify the action purpose. Required if
                 "Audit Antigena" setting is enabled on the Darktrace System Config page.
             duration (int, optional): Specify how long the action should be active for in seconds.
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             dict: API response containing activation result
@@ -110,19 +116,20 @@ class Antigena(BaseEndpoint):
             body["duration"] = duration
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def extend_action(self, codeid: int, duration: int, reason: str = "") -> dict:
+    def extend_action(self, codeid: int, duration: int, reason: str = "", timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Extend an active Darktrace RESPOND action.
 
@@ -137,6 +144,8 @@ class Antigena(BaseEndpoint):
             duration (int): New total duration for the action in seconds. This should be the
                 current duration plus the amount the action should be extended for.
             reason (str, optional): Free text field to specify the extension purpose.
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             dict: API response containing extension result
@@ -158,19 +167,20 @@ class Antigena(BaseEndpoint):
             body["reason"] = reason
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def clear_action(self, codeid: int, reason: str = "") -> dict:
+    def clear_action(self, codeid: int, reason: str = "", timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Clear an active, pending or expired Darktrace RESPOND action.
 
@@ -185,6 +195,8 @@ class Antigena(BaseEndpoint):
         Args:
             codeid (int): Unique numeric identifier of a RESPOND action.
             reason (str, optional): Free text field to specify the clearing purpose.
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             bool: True if clearing was successful, False otherwise.
@@ -202,19 +214,20 @@ class Antigena(BaseEndpoint):
             body["reason"] = reason
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def reactivate_action(self, codeid: int, duration: int, reason: str = "") -> dict:
+    def reactivate_action(self, codeid: int, duration: int, reason: str = "", timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
         """
         Reactivate a cleared or expired Darktrace RESPOND action.
 
@@ -224,6 +237,8 @@ class Antigena(BaseEndpoint):
             codeid (int): Unique numeric identifier of a RESPOND action.
             duration (int): Duration for the reactivated action in seconds. Required.
             reason (str, optional): Free text field to specify the reactivation purpose.
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             dict: API response containing reactivation result
@@ -245,12 +260,13 @@ class Antigena(BaseEndpoint):
             body["reason"] = reason
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -264,6 +280,7 @@ class Antigena(BaseEndpoint):
         duration: int,
         reason: str = "",
         connections: Optional[List[Dict[str, Union[str, int]]]] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
     ) -> dict:
         """
         Create a manual Darktrace RESPOND/Network action.
@@ -287,6 +304,8 @@ class Antigena(BaseEndpoint):
                 - 'src' (str): IP or hostname of source endpoint
                 - 'dst' (str): IP or hostname of destination endpoint
                 - 'port' (int, optional): Port for destination value
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
         Returns:
             int: The codeid (unique numeric ID) for the created action, or 0 if creation failed.
@@ -332,12 +351,13 @@ class Antigena(BaseEndpoint):
             body["connections"] = connections
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -345,7 +365,7 @@ class Antigena(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_summary(self, **params):
+    def get_summary(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """
         Get a summary of active and pending Darktrace RESPOND actions.
 
@@ -355,6 +375,8 @@ class Antigena(BaseEndpoint):
         will return information about active actions during that time window.
 
         Args:
+            timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
+                float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
             endtime (int): End time of data to return in millisecond format, relative to
                 midnight January 1st 1970 UTC.
             starttime (int): Start time of data to return in millisecond format, relative to
@@ -403,8 +425,10 @@ class Antigena(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         self.client._debug(f"GET {url} params={sorted_params}")
 
-        response = requests.get(
-            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()

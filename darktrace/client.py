@@ -1,10 +1,12 @@
+from typing import TYPE_CHECKING
+
 from .auth import DarktraceAuth
 from .dt_antigena import Antigena
 from .dt_analyst import Analyst
 from .dt_breaches import ModelBreaches
 from .dt_devices import Devices
 from .dt_email import DarktraceEmail
-from .dt_utils import debug_print
+from .dt_utils import debug_print, TimeoutType
 from .dt_advanced_search import AdvancedSearch
 from .dt_components import Components
 from .dt_cves import CVEs
@@ -27,8 +29,6 @@ from .dt_status import Status
 from .dt_subnets import Subnets
 from .dt_summarystatistics import SummaryStatistics
 from .dt_tags import Tags
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .dt_antigena import Antigena
@@ -65,6 +65,7 @@ class DarktraceClient:
     auth: DarktraceAuth
     debug: bool
     verify_ssl: bool
+    timeout: TimeoutType
     advanced_search: 'AdvancedSearch'
     antigena: 'Antigena'
     analyst: 'Analyst'
@@ -93,7 +94,15 @@ class DarktraceClient:
     summarystatistics: 'SummaryStatistics'
     tags: 'Tags'
 
-    def __init__(self, host: str, public_token: str, private_token: str, debug: bool = False, verify_ssl: bool = True) -> None:
+    def __init__(
+        self, 
+        host: str, 
+        public_token: str, 
+        private_token: str, 
+        debug: bool = False, 
+        verify_ssl: bool = True,
+        timeout: TimeoutType = None
+    ) -> None:
         """
         Initialize the Darktrace API client.
         
@@ -104,6 +113,8 @@ class DarktraceClient:
             debug (bool, optional): Enable debug logging. Defaults to False.
             verify_ssl (bool, optional): Enable SSL certificate verification. Defaults to True.
                 Set to False only for development/testing with self-signed certificates.
+            timeout (float|tuple, optional): Request timeout in seconds. Can be a single float
+                or a tuple of (connect_timeout, read_timeout). None means no timeout (default).
             
         Example:
             >>> client = DarktraceClient(
@@ -111,6 +122,14 @@ class DarktraceClient:
             ...     public_token="your_public_token",
             ...     private_token="your_private_token",
             ...     debug=True
+            ... )
+            
+            >>> # With timeout
+            >>> client = DarktraceClient(
+            ...     host="https://your-instance.darktrace.com",
+            ...     public_token="your_public_token",
+            ...     private_token="your_private_token",
+            ...     timeout=30  # 30 second timeout for all requests
             ... )
         """
 
@@ -123,6 +142,7 @@ class DarktraceClient:
         self.auth = DarktraceAuth(public_token, private_token)
         self.debug = debug
         self.verify_ssl = verify_ssl
+        self.timeout = timeout
 
         # Endpoint groups
         self.advanced_search = AdvancedSearch(self)

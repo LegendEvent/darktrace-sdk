@@ -27,6 +27,9 @@ client = DarktraceClient(
 | `debug` | bool | False | Enable debug logging |
 | `verify_ssl` | bool | True | Enable SSL certificate verification |
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 ### SSL Verification
 
 SSL certificate verification is enabled by default for secure connections. For development environments with self-signed certificates:
@@ -41,7 +44,6 @@ client = DarktraceClient(
 ```
 
 > ⚠️ **Warning**: Disabling SSL verification is not recommended for production environments.
-
 ## Available Modules
 
 The Darktrace SDK provides access to all Darktrace API endpoints through the following modules:

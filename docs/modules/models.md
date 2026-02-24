@@ -1,5 +1,8 @@
 # Models Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Models module provides access to Darktrace AI models and their configurations. This module allows you to retrieve information about the AI models that power Darktrace's threat detection capabilities, including model metadata, configurations, and parameters.
 
 ## Initialization

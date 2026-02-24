@@ -1,5 +1,8 @@
 # Network Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Network module provides access to network connectivity and traffic statistics from Darktrace. This module allows you to analyze network flows, connections, protocols, and traffic patterns across your infrastructure.
 
 ## Initialization
