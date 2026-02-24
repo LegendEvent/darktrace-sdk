@@ -15,7 +15,7 @@
 ## 🆕 Latest Updates (v0.8.56)
 
 - **Feature: Request timing in debug mode** - API requests now show elapsed time when `debug=True` (e.g., `DEBUG: GET https://instance/endpoint [123ms]`)
-- **Security: Enable SSL certificate verification by default (fixes #47)** - Changed `verify_ssl` default from `False` to `True` for secure-by-default behavior. All endpoint modules now inherit the client's SSL verification setting.
+- **⚠️ BREAKING: SSL certificate verification now enabled by default (fixes #47)** - Changed `verify_ssl` default from `False` to `True`. **For self-signed certificates, you must either add the cert to your system trust store OR set `verify_ssl=False` explicitly.** See the SSL section below for instructions.
 - **Documentation: Add SSL certificate setup guide** - Added instructions for using self-signed certificates with `verify_ssl=True` via system trust store or environment variable.
 
 > For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases).
