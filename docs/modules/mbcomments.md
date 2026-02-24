@@ -1,5 +1,8 @@
 # MBComments Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The MBComments (Model Breach Comments) module provides access to comments associated with model breaches in Darktrace. This module allows you to retrieve existing comments and add new comments to model breaches for investigation tracking, analysis notes, and collaborative incident response.
 
 ## Initialization
