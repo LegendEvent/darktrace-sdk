@@ -33,8 +33,11 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params or params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -69,8 +72,11 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params or params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -87,8 +93,11 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -105,8 +114,11 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -123,8 +135,11 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -141,8 +156,11 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"POST {url} data=uuid={uuids}")
-        response = requests.post(url, headers=headers, params=sorted_params, data={'uuid': uuids}, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -160,8 +178,11 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params or params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -177,10 +198,13 @@ class Analyst(BaseEndpoint):
         body: Dict[str, Any] = {"incident_id": incident_id, "message": message}
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"POST {url} body={body}")
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(',', ':'))
-        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
@@ -207,8 +231,11 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params or params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -235,8 +262,11 @@ class Analyst(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params or params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -260,10 +290,13 @@ class Analyst(BaseEndpoint):
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
         resolved_timeout = self._resolve_timeout(timeout)
         
-        self.client._debug(f"POST {url} json={body}")
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(',', ':'))
-        response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()

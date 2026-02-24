@@ -69,8 +69,9 @@ class Antigena(BaseEndpoint):
         self.client._debug(f"GET {url} params={sorted_params}")
 
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(
-            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()
@@ -115,13 +116,13 @@ class Antigena(BaseEndpoint):
             body["duration"] = duration
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -166,13 +167,13 @@ class Antigena(BaseEndpoint):
             body["reason"] = reason
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -213,13 +214,13 @@ class Antigena(BaseEndpoint):
             body["reason"] = reason
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -259,13 +260,13 @@ class Antigena(BaseEndpoint):
             body["reason"] = reason
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -350,13 +351,13 @@ class Antigena(BaseEndpoint):
             body["connections"] = connections
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
-        self.client._debug(f"POST {url} body={body}")
 
         # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(
-            url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "POST", url, headers=headers, params=sorted_params, data=json_data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -425,8 +426,9 @@ class Antigena(BaseEndpoint):
         self.client._debug(f"GET {url} params={sorted_params}")
 
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(
-            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()

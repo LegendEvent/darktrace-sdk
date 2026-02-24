@@ -36,9 +36,11 @@ class Tags(BaseEndpoint):
             params['responsedata'] = responsedata
 
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -64,9 +66,11 @@ class Tags(BaseEndpoint):
             body["data"]["description"] = description
 
         headers, _ = self._get_headers(endpoint)
-        self.client._debug(f"POST {url} body={body}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, json=body,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -84,9 +88,11 @@ class Tags(BaseEndpoint):
         endpoint = f'/tags/{tag_id}'
         url = f"{self.client.host}{endpoint}"
         headers, _ = self._get_headers(endpoint)
-        self.client._debug(f"DELETE {url}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.delete(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "DELETE", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -119,9 +125,11 @@ class Tags(BaseEndpoint):
         if fulldevicedetails is not None:
             params['fulldevicedetails'] = fulldevicedetails
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -144,9 +152,11 @@ class Tags(BaseEndpoint):
         if duration is not None:
             data['duration'] = duration
         headers, _ = self._get_headers(endpoint)
-        self.client._debug(f"POST {url} data={data}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(url, headers=headers, data=data, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, data=data,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -166,9 +176,11 @@ class Tags(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         params = {'did': did, 'tag': tag}
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"DELETE {url} params={sorted_params}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.delete(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "DELETE", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
     
@@ -194,9 +206,11 @@ class Tags(BaseEndpoint):
         if fulldevicedetails is not None:
             params['fulldevicedetails'] = fulldevicedetails
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -220,9 +234,11 @@ class Tags(BaseEndpoint):
         if expiryDuration is not None:
             body["expiryDuration"] = expiryDuration
         headers, _ = self._get_headers(endpoint)
-        self.client._debug(f"POST {url} body={body}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(url, headers=headers, json=body, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, json=body,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -241,8 +257,10 @@ class Tags(BaseEndpoint):
         endpoint = f"/tags/{tid}/entities/{teid}"
         url = f"{self.client.host}{endpoint}"
         headers, _ = self._get_headers(endpoint)
-        self.client._debug(f"DELETE {url}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.delete(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "DELETE", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

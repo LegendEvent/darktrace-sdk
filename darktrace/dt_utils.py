@@ -1,6 +1,9 @@
 import base64
 import json
+import time
 from typing import Dict, Any, Optional, Tuple, Union
+
+import requests
 
 # Type alias for timeout parameter - can be None, float, or tuple of (connect, read)
 TimeoutType = Optional[Union[float, Tuple[float, float]]]
@@ -12,6 +15,21 @@ _UNSET = object()
 def debug_print(message: str, debug: bool = False):
     if debug:
         print(f"DEBUG: {message}")
+
+def _format_timing(elapsed_seconds: float) -> str:
+    """Format elapsed time as human-readable string.
+    
+    Args:
+        elapsed_seconds: Time elapsed in seconds
+        
+    Returns:
+        Formatted string like "123ms" for <1s or "1.23s" for >=1s
+    """
+    elapsed_ms = elapsed_seconds * 1000
+    if elapsed_ms < 1000:
+        return f"{elapsed_ms:.0f}ms"
+    else:
+        return f"{elapsed_seconds:.2f}s"
 
 class BaseEndpoint:
     """Base class for all Darktrace API endpoint modules."""
@@ -46,6 +64,34 @@ class BaseEndpoint:
         """
         result = self.client.auth.get_headers(endpoint, params, json_body)
         return result['headers'], result['params']
+
+    def _make_request(self, method: str, url: str, **kwargs) -> requests.Response:
+        """Make an HTTP request with timing logged in debug mode.
+        
+        Args:
+            method: HTTP method (GET, POST, DELETE, etc.)
+            url: Full URL to request
+            **kwargs: Additional arguments passed to requests.request()
+            
+        Returns:
+            requests.Response object
+        """
+        start = time.perf_counter()
+        try:
+            response = requests.request(method, url, **kwargs)
+            elapsed = time.perf_counter() - start
+            
+            if self.client.debug:
+                timing_str = _format_timing(elapsed)
+                self.client._debug(f"{method} {url} [{timing_str}]")
+            
+            return response
+        except Exception as e:
+            elapsed = time.perf_counter() - start
+            if self.client.debug:
+                timing_str = _format_timing(elapsed)
+                self.client._debug(f"{method} {url} FAILED [{timing_str}]: {e}")
+            raise
 
 def encode_query(query: dict) -> str:
     query_json = json.dumps(query)

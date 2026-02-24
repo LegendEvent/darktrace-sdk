@@ -24,9 +24,12 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         params = {"link": link}
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -52,9 +55,12 @@ class DarktraceEmail(BaseEndpoint):
         if limit is not None:
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -80,9 +86,12 @@ class DarktraceEmail(BaseEndpoint):
         if limit is not None:
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -108,9 +117,12 @@ class DarktraceEmail(BaseEndpoint):
         if limit is not None:
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -136,9 +148,12 @@ class DarktraceEmail(BaseEndpoint):
         if limit is not None:
             params["limit"] = limit
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -148,9 +163,12 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, json_body=data)
         headers['Content-Type'] = 'application/json'
-        self.client._debug(f"POST {url} data={data}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, data=json.dumps(data, separators=(',', ':')),
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
@@ -176,9 +194,12 @@ class DarktraceEmail(BaseEndpoint):
         if include_headers is not None:
             params["include_headers"] = include_headers
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -198,9 +219,12 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = f'/agemail/api/ep/api/v1.0/emails/{uuid}/download'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        self.client._debug(f"GET {url} params={{}}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.content
 
@@ -210,9 +234,12 @@ class DarktraceEmail(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, json_body=data)
         headers['Content-Type'] = 'application/json'
-        self.client._debug(f"POST {url} data={data}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.post(url, headers=headers, data=json.dumps(data, separators=(',', ':')), verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, data=json.dumps(data, separators=(',', ':')),
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
@@ -233,9 +260,12 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = '/agemail/api/ep/api/v1.0/resources/tags'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        self.client._debug(f"GET {url} params={{}}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -254,9 +284,12 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = '/agemail/api/ep/api/v1.0/resources/actions'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        self.client._debug(f"GET {url} params={{}}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -275,9 +308,12 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = '/agemail/api/ep/api/v1.0/resources/filters'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        self.client._debug(f"GET {url} params={{}}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -296,9 +332,12 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = '/agemail/api/ep/api/v1.0/system/audit/eventTypes'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        self.client._debug(f"GET {url} params={{}}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -327,8 +366,11 @@ class DarktraceEmail(BaseEndpoint):
         if offset is not None:
             params["offset"] = offset
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

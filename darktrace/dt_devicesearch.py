@@ -115,10 +115,11 @@ class DeviceSearch(BaseEndpoint):
         params.update(kwargs)
 
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
+
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(
-            url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()

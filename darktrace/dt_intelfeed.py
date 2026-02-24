@@ -55,8 +55,11 @@ class IntelFeed(BaseEndpoint):
         query_params.update(params)
         headers, sorted_params = self._get_headers(endpoint, query_params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -121,8 +124,11 @@ class IntelFeed(BaseEndpoint):
         headers['Content-Type'] = 'application/json'
 
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, data=json.dumps(body, separators=(',', ':')),
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()

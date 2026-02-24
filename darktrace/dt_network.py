@@ -87,7 +87,10 @@ class Network(BaseEndpoint):
 
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

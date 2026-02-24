@@ -62,15 +62,11 @@ class ModelBreaches(BaseEndpoint):
 
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, dict(params_list))
-        self.client._debug(f"GET {url} params={sorted_params}")
 
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
         )
         response.raise_for_status()
         return response.json()
@@ -91,9 +87,11 @@ class ModelBreaches(BaseEndpoint):
         endpoint = f'/modelbreaches/{pbid}/comments'
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
         resolved_timeout = self._resolve_timeout(timeout)
-        response = requests.get(url, headers=headers, params=sorted_params, verify=self.client.verify_ssl, timeout=resolved_timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -124,12 +122,6 @@ class ModelBreaches(BaseEndpoint):
         
         headers, sorted_params = self._get_headers(endpoint, params, body)
         
-        debug_print(f"BREACHES: Received from _get_headers:", self.client.debug)
-        debug_print(f"  - headers: {headers}", self.client.debug)
-        debug_print(f"  - sorted_params: {sorted_params}", self.client.debug)
-        
-        self.client._debug(f"POST {url} params={sorted_params} body={body}")
-
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
@@ -141,7 +133,10 @@ class ModelBreaches(BaseEndpoint):
             debug_print(f"BREACHES: With data: '{json_data}'", self.client.debug)
 
             resolved_timeout = self._resolve_timeout(timeout)
-            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
+            response = self._make_request(
+                "POST", url, headers=headers, params=sorted_params, data=json_data,
+                verify=self.client.verify_ssl, timeout=resolved_timeout
+            )
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
             debug_print(f"BREACHES: Response status: {response.status_code}", self.client.debug)
@@ -170,13 +165,15 @@ class ModelBreaches(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {'acknowledge': True}
         headers, sorted_params = self._get_headers(endpoint, params, body)
-        self.client._debug(f"POST {url} params={sorted_params} body={body}")
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
             json_data = json.dumps(body, separators=(',', ':'))
             resolved_timeout = self._resolve_timeout(timeout)
-            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
+            response = self._make_request(
+                "POST", url, headers=headers, params=sorted_params, data=json_data,
+                verify=self.client.verify_ssl, timeout=resolved_timeout
+            )
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
             response.raise_for_status()
@@ -201,13 +198,15 @@ class ModelBreaches(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {'unacknowledge': True}
         headers, sorted_params = self._get_headers(endpoint, params, body)
-        self.client._debug(f"POST {url} params={sorted_params} body={body}")
         try:
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
             json_data = json.dumps(body, separators=(',', ':'))
             resolved_timeout = self._resolve_timeout(timeout)
-            response = requests.post(url, headers=headers, params=sorted_params, data=json_data, verify=self.client.verify_ssl, timeout=resolved_timeout)
+            response = self._make_request(
+                "POST", url, headers=headers, params=sorted_params, data=json_data,
+                verify=self.client.verify_ssl, timeout=resolved_timeout
+            )
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
             response.raise_for_status()
