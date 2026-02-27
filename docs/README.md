@@ -28,7 +28,7 @@ client = DarktraceClient(
 | `verify_ssl` | bool | True | Enable SSL certificate verification |
 | `timeout` | int/float | None | Request timeout in seconds (None = no timeout) |
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 ### v0.9.0 Features
 
@@ -50,6 +50,8 @@ with DarktraceClient(
     devices = client.devices.get()
     # Connection automatically closed when exiting block
 ```
+
+### SSL Verification
 > ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 

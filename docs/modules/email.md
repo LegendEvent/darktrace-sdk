@@ -1,6 +1,6 @@
 # Email Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The Email module provides comprehensive access to Darktrace/Email security features, including email threat detection, analysis, dashboard statistics, user anomaly monitoring, audit events, and email management capabilities. This module is specifically designed for Darktrace/Email deployments.

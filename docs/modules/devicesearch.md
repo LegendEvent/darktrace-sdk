@@ -1,6 +1,6 @@
 # Device Search Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The Device Search module provides highly filterable search functionality for devices seen by Darktrace. This module offers advanced querying capabilities with field-specific filters, sorting, and pagination for efficient device discovery and analysis.

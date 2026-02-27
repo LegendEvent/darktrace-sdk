@@ -1,6 +1,6 @@
 # DeviceSummary Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The DeviceSummary module provides comprehensive contextual information for specific devices, aggregating data from multiple sources including devices, similar devices, model breaches, device info, and connection details. This module creates a unified view of device status, behavior, and security posture.

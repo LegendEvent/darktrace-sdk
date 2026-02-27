@@ -1,6 +1,6 @@
 # MetricData Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The MetricData module provides access to time-series metric data from Darktrace. This module allows you to retrieve actual metric values over time for analysis, monitoring, and reporting purposes. It works closely with the Metrics module to provide quantitative data for the metrics defined in your Darktrace deployment.

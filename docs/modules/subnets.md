@@ -1,6 +1,6 @@
 # Subnets Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The Subnets module provides comprehensive subnet information management capabilities, allowing you to retrieve, create, and update subnet configurations within the Darktrace system. This module is essential for network topology management, device organization, and traffic processing configuration.

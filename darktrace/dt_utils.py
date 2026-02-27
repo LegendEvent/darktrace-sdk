@@ -127,23 +127,6 @@ class BaseEndpoint:
         
         return response  # type: ignore[unreachable]
 
-    def _safe_json(self, response: requests.Response) -> Any:
-        """Parse JSON response with proper error handling.
-        
-        Args:
-            response: The HTTP response object
-            
-        Returns:
-            Parsed JSON data (dict or list)
-            
-        Raises:
-            json.JSONDecodeError: If response body is not valid JSON
-        """
-        try:
-            return response.json()
-        except json.JSONDecodeError as e:
-            self.client._debug(f"JSON decode error: {e}")
-            raise
 
 def encode_query(query: dict) -> str:
     query_json = json.dumps(query)

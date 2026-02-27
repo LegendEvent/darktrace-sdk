@@ -1,6 +1,6 @@
 # Model Breaches Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The Model Breaches module provides comprehensive access to model breach alerts in the Darktrace platform. This module allows you to retrieve, acknowledge, comment on, and manage model breach alerts with extensive filtering capabilities.

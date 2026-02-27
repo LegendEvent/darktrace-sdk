@@ -63,18 +63,15 @@ class IntelFeed(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_sources(self):
+    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get a list of sources for entries on the intelfeed list."""
-        return self.get(sources=True)
-        
-    def get_by_source(self, source: str):
+        return self.get(sources=True, timeout=timeout)
+    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get the intel feed list for all entries under a specific source."""
-        return self.get(source=source)
-        
-    def get_with_details(self):
+        return self.get(source=source, timeout=timeout)
+    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get intel feed with full details about expiry time and description for each entry."""
-        return self.get(fulldetails=True)
-
+        return self.get(fulldetails=True, timeout=timeout)
     def update(self, add_entry: Optional[str] = None, add_list: Optional[List[str]] = None,
                description: Optional[str] = None, source: Optional[str] = None,
                expiry: Optional[str] = None, is_hostname: bool = False,

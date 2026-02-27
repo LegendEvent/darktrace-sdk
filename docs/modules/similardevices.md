@@ -1,6 +1,6 @@
 # SimilarDevices Module
 
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
 The SimilarDevices module provides comprehensive similar device detection and analysis capabilities, helping identify devices with comparable characteristics, behavior patterns, and network usage profiles. This module is essential for device clustering, baseline establishment, and anomaly detection through device similarity analysis.

@@ -1,8 +1,8 @@
 import requests
 import json
+import warnings
 from typing import Dict, Any, Union, Optional, List, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
-
 
 class Antigena(BaseEndpoint):
     """
@@ -77,7 +77,7 @@ class Antigena(BaseEndpoint):
         return response.json()
 
     def activate_action(
-        self, codeid: int, reason: str = "", duration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = None
+        self, codeid: int, reason: str = "", duration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET  # type: ignore[assignment]
     ) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
@@ -437,6 +437,9 @@ class Antigena(BaseEndpoint):
         """
         Approve a pending Darktrace RESPOND action (backwards compatibility, no-op).
 
+        .. deprecated:: 0.9.0
+            This method is deprecated. Use :meth:`activate_action` instead.
+
         This method is retained for backwards compatibility only. In modern Darktrace
         versions, the approve/decline workflow has been replaced by direct action
         management methods. This method is a no-op that returns a success response.
@@ -447,4 +450,9 @@ class Antigena(BaseEndpoint):
         Returns:
             dict: A dummy success response for backwards compatibility.
         """
+        warnings.warn(
+            "approve_action() is deprecated. Use activate_action() instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         return {"success": True, "message": "Action approved (no-op for backwards compatibility)"}
