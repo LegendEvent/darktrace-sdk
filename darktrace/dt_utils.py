@@ -12,6 +12,11 @@ TimeoutType = Optional[Union[float, Tuple[float, float]]]
 # "not specified" (use client default) and "explicitly None" (no timeout)
 _UNSET = object()
 
+# Retry configuration
+_MAX_RETRIES = 3
+_RETRY_WAIT_SECONDS = 10
+_RETRY_STATUS_CODES = frozenset({429, 500, 502, 503, 504})  # Rate limit + 5xx
+
 def debug_print(message: str, debug: bool = False):
     if debug:
         print(f"DEBUG: {message}")
@@ -66,7 +71,7 @@ class BaseEndpoint:
         return result['headers'], result['params']
 
     def _make_request(self, method: str, url: str, **kwargs) -> requests.Response:
-        """Make an HTTP request with timing logged in debug mode.
+        """Make an HTTP request with retry logic and timing logged in debug mode.
         
         Args:
             method: HTTP method (GET, POST, DELETE, etc.)
@@ -75,22 +80,69 @@ class BaseEndpoint:
             
         Returns:
             requests.Response object
+            
+        Raises:
+            requests.RequestException: After max retries exhausted
         """
-        start = time.perf_counter()
+        last_exception: Optional[Exception] = None
+        
+        for attempt in range(_MAX_RETRIES + 1):  # 1 initial + 3 retries
+            start = time.perf_counter()
+            try:
+                response = self.client._session.request(method, url, **kwargs)
+                elapsed = time.perf_counter() - start
+                
+                if self.client.debug:
+                    timing_str = _format_timing(elapsed)
+                    self.client._debug(f"{method} {url} [{timing_str}]")
+                
+                # Check if we should retry based on status code
+                if response.status_code in _RETRY_STATUS_CODES and attempt < _MAX_RETRIES:
+                    if self.client.debug:
+                        self.client._debug(f"Retry {attempt + 1}/{_MAX_RETRIES}: HTTP {response.status_code}")
+                    time.sleep(_RETRY_WAIT_SECONDS)
+                    continue
+                
+                return response
+                
+            except (requests.ConnectionError, requests.Timeout) as e:
+                elapsed = time.perf_counter() - start
+                last_exception = e
+                
+                if self.client.debug:
+                    timing_str = _format_timing(elapsed)
+                    self.client._debug(f"{method} {url} FAILED [{timing_str}]: {e}")
+                
+                if attempt < _MAX_RETRIES:
+                    if self.client.debug:
+                        self.client._debug(f"Retry {attempt + 1}/{_MAX_RETRIES}: Connection error")
+                    time.sleep(_RETRY_WAIT_SECONDS)
+                    continue
+                else:
+                    raise
+        
+        # Should not reach here, but raise last exception if we do
+        if last_exception:
+            raise last_exception
+        
+        return response  # type: ignore[unreachable]
+
+    def _safe_json(self, response: requests.Response) -> Any:
+        """Parse JSON response with proper error handling.
+        
+        Args:
+            response: The HTTP response object
+            
+        Returns:
+            Parsed JSON data (dict or list)
+            
+        Raises:
+            json.JSONDecodeError: If response body is not valid JSON
+        """
         try:
-            response = requests.request(method, url, **kwargs)
-            elapsed = time.perf_counter() - start
-            
-            if self.client.debug:
-                timing_str = _format_timing(elapsed)
-                self.client._debug(f"{method} {url} [{timing_str}]")
-            
-            return response
-        except Exception as e:
-            elapsed = time.perf_counter() - start
-            if self.client.debug:
-                timing_str = _format_timing(elapsed)
-                self.client._debug(f"{method} {url} FAILED [{timing_str}]: {e}")
+            return response.json()
+        except json.JSONDecodeError as e:
+            self.client._debug(f"JSON decode error: {e}")
             raise
 
 def encode_query(query: dict) -> str:

@@ -73,7 +73,7 @@ class IntelFeed(BaseEndpoint):
         
     def get_with_details(self):
         """Get intel feed with full details about expiry time and description for each entry."""
-        return self.get(full_details=True)
+        return self.get(fulldetails=True)
 
     def update(self, add_entry: Optional[str] = None, add_list: Optional[List[str]] = None,
                description: Optional[str] = None, source: Optional[str] = None,

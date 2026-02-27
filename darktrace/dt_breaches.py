@@ -147,7 +147,7 @@ class ModelBreaches(BaseEndpoint):
         except Exception as e:
             self.client._debug(f"Exception occurred while adding comment: {str(e)}")
             debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
-            return {"error": str(e)}
+            raise
 
     def acknowledge(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
@@ -180,7 +180,7 @@ class ModelBreaches(BaseEndpoint):
             return response.json()
         except Exception as e:
             self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
-            return {"error": str(e)}
+            raise
 
     def unacknowledge(self, pbid: Union[int, list], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
@@ -213,7 +213,7 @@ class ModelBreaches(BaseEndpoint):
             return response.json()
         except Exception as e:
             self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
-            return {"error": str(e)}
+            raise
         
     def acknowledge_with_comment(self, pbid: int, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> dict:  # type: ignore[assignment]
         """
