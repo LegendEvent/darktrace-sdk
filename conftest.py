@@ -14,4 +14,3 @@ def pytest_configure(config):
     # Follow SDK's default of verify_ssl=True
     if config.getoption('no_verify', default=False):
         warnings.filterwarnings("ignore", category=InsecureRequestWarning)
-    warnings.filterwarnings("ignore", category=InsecureRequestWarning)

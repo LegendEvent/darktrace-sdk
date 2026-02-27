@@ -1,19 +1,16 @@
-from .dt_tags import Tags
-
 from .auth import DarktraceAuth
-from .dt_antigena import Antigena
-from .dt_analyst import Analyst
-from .dt_breaches import ModelBreaches
-from .dt_devices import Devices
-from .dt_email import DarktraceEmail
-from .dt_utils import debug_print, TimeoutType
 from .dt_advanced_search import AdvancedSearch
+from .dt_analyst import Analyst
+from .dt_antigena import Antigena
+from .dt_breaches import ModelBreaches
 from .dt_components import Components
 from .dt_cves import CVEs
 from .dt_details import Details
+from .dt_devices import Devices
 from .dt_deviceinfo import DeviceInfo
 from .dt_devicesearch import DeviceSearch
 from .dt_devicesummary import DeviceSummary
+from .dt_email import DarktraceEmail
 from .dt_endpointdetails import EndpointDetails
 from .dt_enums import Enums
 from .dt_filtertypes import FilterTypes
@@ -28,10 +25,9 @@ from .dt_similardevices import SimilarDevices
 from .dt_status import Status
 from .dt_subnets import Subnets
 from .dt_summarystatistics import SummaryStatistics
+from .dt_tags import Tags
+from .dt_utils import debug_print, TimeoutType
 
-import requests
-from urllib.parse import urlparse
-from typing import Optional
 import requests
 from urllib.parse import urlparse
 from typing import Optional
