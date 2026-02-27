@@ -82,7 +82,7 @@ def main():
         
         if sources and len(sources) > 0:
             source = sources[0]  # Use the first source as an example
-            detailed_source_domains = client.intelfeed.get(source=source, full_details=True)
+            detailed_source_domains = client.intelfeed.get(source=source, fulldetails=True)
             logger.info(f"Detailed domains from source '{source}':")
             pprint(detailed_source_domains[:5] if len(detailed_source_domains) > 5 else detailed_source_domains)
         

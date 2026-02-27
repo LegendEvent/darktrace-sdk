@@ -21,7 +21,7 @@ Error accessing API: 400 Client Error: Bad request for URL: https://instance/int
 The issue was fixed by:
 
 1. Properly handling the `sources` parameter in the Intel Feed module:
-   - Added explicit parameters for `sources`, `source`, and `full_details` in the `get()` method
+   - Added explicit parameters for `sources`, `source`, and `fulldetails` in the `get()` method
    - Fixed parameter handling to convert boolean values to lowercase strings (`'true'` or `'false'`)
    - Added convenience methods for common operations
 

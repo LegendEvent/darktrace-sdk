@@ -33,7 +33,7 @@ python tor_exit_nodes.py
 
 This example uses two query parameters:
 - `source="Threat Intel::Tor::Exit Node"`
-- `full_details=True`
+- `fulldetails=True`
 
 The fixed authentication mechanism ensures that these parameters are:
 1. Sorted alphabetically for the signature calculation

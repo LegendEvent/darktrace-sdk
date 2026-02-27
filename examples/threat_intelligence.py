@@ -52,7 +52,7 @@ def get_threat_intelligence(client: DarktraceClient) -> List[Dict[str, Any]]:
     # This uses our fixed authentication with multiple query parameters
     entries = client.intelfeed.get(
         source=THREAT_INTEL_SOURCE,
-        full_details=True
+        fulldetails=True
     )
     
     # Format entries into consistent structure

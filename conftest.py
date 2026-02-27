@@ -10,4 +10,8 @@ import warnings
 from urllib3.exceptions import InsecureRequestWarning
 
 def pytest_configure(config):
+    # Only suppress SSL warnings when --no-verify is passed
+    # Follow SDK's default of verify_ssl=True
+    if config.getoption('no_verify', default=False):
+        warnings.filterwarnings("ignore", category=InsecureRequestWarning)
     warnings.filterwarnings("ignore", category=InsecureRequestWarning)

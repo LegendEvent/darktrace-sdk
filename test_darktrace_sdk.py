@@ -53,14 +53,14 @@ def test_intel_feed(dt_client):
     entries = dt_client.intelfeed.get()
     assert isinstance(entries, list)
 
-    detailed_entries = dt_client.intelfeed.get(full_details=True)
+    detailed_entries = dt_client.intelfeed.get(fulldetails=True)
     assert isinstance(detailed_entries, list)
 
     if sources:
         source = sources[0]
         source_entries = dt_client.intelfeed.get(source=source)
         assert isinstance(source_entries, list)
-        detailed_source_entries = dt_client.intelfeed.get(source=source, full_details=True)
+        detailed_source_entries = dt_client.intelfeed.get(source=source, fulldetails=True)
         assert isinstance(detailed_source_entries, list)
 
 @pytest.mark.usefixtures("dt_client")

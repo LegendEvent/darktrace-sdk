@@ -15,7 +15,7 @@ This example showcases the fixed authentication mechanism that properly handles 
 
 ## Key Features Demonstrated
 
-- **Intel Feed Module**: Using the fixed authentication with multiple query parameters (`source` and `full_details`)
+- **Intel Feed Module**: Using the fixed authentication with multiple query parameters (`source` and `fulldetails`)
 - **Devices Module**: Retrieving device information
 - **Model Breaches Module**: Fetching breaches with time-based filtering and device filtering
 - **Multiple Parameter Handling**: Proper parameter ordering in API requests
@@ -51,7 +51,7 @@ This example uses multiple query parameters in different API calls:
 
 1. Intel Feed module:
    - `source="Threat Intel::Tor::Exit Node"`
-   - `full_details=True`
+   - `fulldetails=True`
 
 2. Model Breaches module:
    - `from_time=<timestamp>`
