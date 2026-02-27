@@ -26,7 +26,30 @@ client = DarktraceClient(
 | `private_token` | str | required | Your Darktrace API private token |
 | `debug` | bool | False | Enable debug logging |
 | `verify_ssl` | bool | True | Enable SSL certificate verification |
+| `timeout` | int/float | None | Request timeout in seconds (None = no timeout) |
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+### v0.9.0 Features
+
+The SDK now includes several reliability and security features:
+
+- **Connection Pooling**: HTTP connections are pooled via `requests.Session()` for better performance
+- **Context Manager**: Use `with DarktraceClient(...) as client:` for proper resource cleanup
+- **Automatic Retry**: Transient failures (5xx, 429, connection errors) are retried up to 3 times with 10s wait
+- **SSRF Protection**: Dangerous URL schemes (`file://`, `ftp://`, `data://`) are blocked; private IPs allowed
+
+```python
+# Context manager usage (recommended)
+with DarktraceClient(
+    host="https://your-darktrace-instance",
+    public_token="YOUR_PUBLIC_TOKEN",
+    private_token="YOUR_PRIVATE_TOKEN",
+    timeout=30  # Optional: 30 second timeout
+) as client:
+    devices = client.devices.get()
+    # Connection automatically closed when exiting block
+```
 > ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 

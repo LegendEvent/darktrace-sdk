@@ -444,9 +444,9 @@ def test_devicesearch_basic(dt_client):
 @pytest.mark.usefixtures("dt_client")
 def test_devicesummary_basic(dt_client):
     """Test /devicesummary endpoint: basic retrieval and parameter coverage."""
-    # 1. Get a device summary for a known device (did=4336 as example, replace with real did if needed)
+    # 1. Get a device summary for a known device (did=1 as example, replace with real did if needed)
     try:
-        result = dt_client.devicesummary.get(did=4336)
+        result = dt_client.devicesummary.get(did=1)
         assert isinstance(result, dict)
         assert 'data' in result
     except requests.exceptions.HTTPError as e:
@@ -457,7 +457,7 @@ def test_devicesummary_basic(dt_client):
 
     # 2. Get device summary with responsedata filter
     try:
-        result_resp = dt_client.devicesummary.get(did=4336, responsedata='devices')
+        result_resp = dt_client.devicesummary.get(did=1, responsedata='devices')
         assert isinstance(result_resp, dict)
         assert 'data' in result_resp
     except requests.exceptions.HTTPError as e:
@@ -468,7 +468,7 @@ def test_devicesummary_basic(dt_client):
 
     # 3. Edge case: non-existent did (should return empty or error handled gracefully)
     try:
-        result_none = dt_client.devicesummary.get(did=4336)
+        result_none = dt_client.devicesummary.get(did=1)
         assert isinstance(result_none, dict)
     except requests.exceptions.HTTPError as e:
         if e.response is not None and e.response.status_code == 500:

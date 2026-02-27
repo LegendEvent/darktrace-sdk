@@ -1,24 +1,30 @@
-
 # 🚀 Darktrace Python SDK
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/darktrace-sdk)
 ![GitHub License](https://img.shields.io/github/license/LegendEvent/darktrace-sdk)
 ![GitHub Repo stars](https://img.shields.io/github/stars/LegendEvent/darktrace-sdk?style=social)
 
-
 > **A modern, Pythonic SDK for the Darktrace Threat Visualizer API.**
-
 
 ---
 
+## 🆕 Latest Updates (v0.9.0)
 
-## 🆕 Latest Updates (v0.8.56)
+### New Features
+- **Connection Pooling**: Automatic HTTP connection pooling via `requests.Session()` for 4x faster requests on reused connections
+- **Context Manager Support**: Use `with DarktraceClient(...) as client:` for proper resource cleanup
+- **Automatic Retry Logic**: Transient failures (5xx, 429, connection errors) are automatically retried (3 retries, 10s wait)
+- **SSRF Protection**: URL scheme validation blocks dangerous schemes (`file://`, `ftp://`, `data://`, `javascript://`)
+- **Configurable Timeout**: New `timeout` parameter on `DarktraceClient`
 
-- **Feature: Request timing in debug mode** - API requests now show elapsed time when `debug=True` (e.g., `DEBUG: GET https://instance/endpoint [123ms]`)
-- **⚠️ BREAKING: SSL certificate verification now enabled by default (fixes #47)** - Changed `verify_ssl` default from `False` to `True`. **For self-signed certificates, you must either add the cert to your system trust store OR set `verify_ssl=False` explicitly.** See the SSL section below for instructions.
-- **Documentation: Add SSL certificate setup guide** - Added instructions for using self-signed certificates with `verify_ssl=True` via system trust store or environment variable.
+### Improvements
+- **Error Handling**: `ModelBreaches` methods now properly re-raise exceptions instead of returning error dicts
+- **SSL Verification**: Enabled by default for security (verify_ssl=True)
 
-> For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases).
+### Bug Fixes
+- Fixed IntelFeed `fulldetails` parameter name in examples
+
+> For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases) or [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
