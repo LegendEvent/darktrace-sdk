@@ -45,7 +45,7 @@ class TestSDKCompilation:
         )
         assert BaseEndpoint is not None
         assert _MAX_RETRIES == 3
-        assert _RETRY_WAIT_SECONDS == 10
+        assert _INITIAL_RETRY_WAIT_SECONDS == 3
 
     def test_client_module(self):
         """Test client module has DarktraceClient with all endpoints."""

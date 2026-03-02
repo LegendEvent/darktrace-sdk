@@ -14,7 +14,7 @@ _UNSET = object()
 
 # Retry configuration
 _MAX_RETRIES = 3
-_RETRY_WAIT_SECONDS = 10
+_INITIAL_RETRY_WAIT_SECONDS = 3  # Exponential backoff: 3s, 6s, 12s
 _RETRY_STATUS_CODES = frozenset({429, 500, 502, 503, 504})  # Rate limit + 5xx
 
 def debug_print(message: str, debug: bool = False):
@@ -98,10 +98,10 @@ class BaseEndpoint:
                 
                 # Check if we should retry based on status code
                 if response.status_code in _RETRY_STATUS_CODES and attempt < _MAX_RETRIES:
+                    wait_time = _INITIAL_RETRY_WAIT_SECONDS * (2 ** attempt)  # 3s, 6s, 12s
                     if self.client.debug:
-                        self.client._debug(f"Retry {attempt + 1}/{_MAX_RETRIES}: HTTP {response.status_code}")
-                    time.sleep(_RETRY_WAIT_SECONDS)
-                    continue
+                        self.client._debug(f"Retry {attempt + 1}/{_MAX_RETRIES}: HTTP {response.status_code}, waiting {wait_time}s")
+                    time.sleep(wait_time)
                 
                 return response
                 
@@ -114,10 +114,10 @@ class BaseEndpoint:
                     self.client._debug(f"{method} {url} FAILED [{timing_str}]: {e}")
                 
                 if attempt < _MAX_RETRIES:
+                    wait_time = _INITIAL_RETRY_WAIT_SECONDS * (2 ** attempt)  # 3s, 6s, 12s
                     if self.client.debug:
-                        self.client._debug(f"Retry {attempt + 1}/{_MAX_RETRIES}: Connection error")
-                    time.sleep(_RETRY_WAIT_SECONDS)
-                    continue
+                        self.client._debug(f"Retry {attempt + 1}/{_MAX_RETRIES}: Connection error, waiting {wait_time}s")
+                    time.sleep(wait_time)
                 else:
                     raise
         
