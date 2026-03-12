@@ -20,15 +20,19 @@ class TestSDKCompilation:
     def test_version_module(self):
         """Test _version module exists and has __version__."""
         from darktrace._version import __version__
+
         assert isinstance(__version__, str)
         assert len(__version__) > 0
         # Should be semantic version format
         parts = __version__.split(".")
-        assert len(parts) >= 2, f"Version should have at least major.minor: {__version__}"
+        assert len(parts) >= 2, (
+            f"Version should have at least major.minor: {__version__}"
+        )
 
     def test_auth_module(self):
         """Test auth module imports and has DarktraceAuth class."""
         from darktrace.auth import DarktraceAuth
+
         assert DarktraceAuth is not None
 
     def test_utils_module(self):
@@ -40,9 +44,10 @@ class TestSDKCompilation:
             TimeoutType,
             _UNSET,
             _MAX_RETRIES,
-            _RETRY_WAIT_SECONDS,
+            _INITIAL_RETRY_WAIT_SECONDS,
             _RETRY_STATUS_CODES,
         )
+
         assert BaseEndpoint is not None
         assert _MAX_RETRIES == 3
         assert _INITIAL_RETRY_WAIT_SECONDS == 3
