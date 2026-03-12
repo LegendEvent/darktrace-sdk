@@ -2,29 +2,31 @@ import requests
 from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
+
 class Network(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self,
-            applicationprotocol: Optional[str] = None,
-            destinationport: Optional[int] = None,
-            did: Optional[int] = None,
-            endtime: Optional[int] = None,
-            from_: Optional[str] = None,
-            fulldevicedetails: Optional[bool] = None,
-            intext: Optional[str] = None,
-            ip: Optional[str] = None,
-            metric: Optional[str] = None,
-            port: Optional[int] = None,
-            protocol: Optional[str] = None,
-            sourceport: Optional[int] = None,
-            starttime: Optional[int] = None,
-            to: Optional[str] = None,
-            viewsubnet: Optional[int] = None,
-            responsedata: Optional[str] = None,
-            timeout: Optional[Union[float, Tuple[float, float]]] = None
-        ):
+    def get(
+        self,
+        applicationprotocol: Optional[str] = None,
+        destinationport: Optional[int] = None,
+        did: Optional[int] = None,
+        endtime: Optional[int] = None,
+        from_: Optional[str] = None,
+        fulldevicedetails: Optional[bool] = None,
+        intext: Optional[str] = None,
+        ip: Optional[str] = None,
+        metric: Optional[str] = None,
+        port: Optional[int] = None,
+        protocol: Optional[str] = None,
+        sourceport: Optional[int] = None,
+        starttime: Optional[int] = None,
+        to: Optional[str] = None,
+        viewsubnet: Optional[int] = None,
+        responsedata: Optional[str] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+    ):
         """
         Get network connectivity and statistics information from Darktrace.
 
@@ -49,48 +51,52 @@ class Network(BaseEndpoint):
         Returns:
             dict: Network connectivity/statistics information from Darktrace.
         """
-        endpoint = '/network'
+        endpoint = "/network"
         url = f"{self.client.host}{endpoint}"
         params = dict()
         if applicationprotocol is not None:
-            params['applicationprotocol'] = applicationprotocol
+            params["applicationprotocol"] = applicationprotocol
         if destinationport is not None:
-            params['destinationport'] = destinationport
+            params["destinationport"] = destinationport
         if did is not None:
-            params['did'] = did
+            params["did"] = did
         if endtime is not None:
-            params['endtime'] = endtime
+            params["endtime"] = endtime
         if from_ is not None:
-            params['from'] = from_
+            params["from"] = from_
         if fulldevicedetails is not None:
-            params['fulldevicedetails'] = fulldevicedetails
+            params["fulldevicedetails"] = fulldevicedetails
         if intext is not None:
-            params['intext'] = intext
+            params["intext"] = intext
         if ip is not None:
-            params['ip'] = ip
+            params["ip"] = ip
         if metric is not None:
-            params['metric'] = metric
+            params["metric"] = metric
         if port is not None:
-            params['port'] = port
+            params["port"] = port
         if protocol is not None:
-            params['protocol'] = protocol
+            params["protocol"] = protocol
         if sourceport is not None:
-            params['sourceport'] = sourceport
+            params["sourceport"] = sourceport
         if starttime is not None:
-            params['starttime'] = starttime
+            params["starttime"] = starttime
         if to is not None:
-            params['to'] = to
+            params["to"] = to
         if viewsubnet is not None:
-            params['viewsubnet'] = viewsubnet
+            params["viewsubnet"] = viewsubnet
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
 
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()

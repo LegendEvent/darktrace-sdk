@@ -2,19 +2,21 @@ import requests
 from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
+
 class SummaryStatistics(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self,
-            responsedata: Optional[str] = None,
-            eventtype: Optional[str] = None,
-            endtime: Optional[int] = None,
-            to: Optional[str] = None,
-            hours: Optional[int] = None,
-            csensor: Optional[bool] = None,
-            mitreTactics: Optional[bool] = None,
-            timeout: Optional[Union[float, Tuple[float, float]]] = None
+    def get(
+        self,
+        responsedata: Optional[str] = None,
+        eventtype: Optional[str] = None,
+        endtime: Optional[int] = None,
+        to: Optional[str] = None,
+        hours: Optional[int] = None,
+        csensor: Optional[bool] = None,
+        mitreTactics: Optional[bool] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
     ):
         """
         Get summary statistics information from Darktrace.
@@ -32,31 +34,35 @@ class SummaryStatistics(BaseEndpoint):
         Returns:
             dict: Summary statistics information from Darktrace.
         """
-        endpoint = '/summarystatistics'
+        endpoint = "/summarystatistics"
         url = f"{self.client.host}{endpoint}"
 
         params = dict()
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
         if eventtype is not None:
-            params['eventtype'] = eventtype
+            params["eventtype"] = eventtype
         if endtime is not None:
-            params['endtime'] = endtime
+            params["endtime"] = endtime
         if to is not None:
-            params['to'] = to
+            params["to"] = to
         if hours is not None:
-            params['hours'] = hours
+            params["hours"] = hours
         if csensor is not None:
-            params['csensor'] = csensor
+            params["csensor"] = csensor
         if mitreTactics is not None:
-            params['mitreTactics'] = mitreTactics
+            params["mitreTactics"] = mitreTactics
 
         headers, sorted_params = self._get_headers(endpoint, params)
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()

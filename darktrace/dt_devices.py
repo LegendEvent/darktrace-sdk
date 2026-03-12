@@ -24,26 +24,23 @@ class Devices(BaseEndpoint):
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
     ):
         """
-        Update a single device.
+        Get device(s) from Darktrace.
 
         Args:
             did (int, optional): Device ID
-            ip (str, optional): New IP address
+            ip (str, optional): Filter by IP address
             iptime (str, optional): IP time
-            mac (str, optional): New MAC address
+            mac (str, optional): Filter by MAC address
             sid (int, optional): Subnet ID
             seensince (str, optional): Relative offset for activity
             count (int, optional): Number of devices to return
             includetags (bool, optional): Include tags in response
             cloudsecurity (bool, optional): Cloud security status
             responsedata (str, optional): Restrict returned JSON to only this field/object
-            label (str, optional): Device label
-            priority (int, optional): Device priority (-5 to 5)
-            type (str, optional): Device type
-            **kwargs: Additional parameters.
+            saasfilter (Any, optional): SaaS filter
 
         Returns:
-            dict: API response containing update result
+            list or dict: API response containing device information
         """
         endpoint = "/devices"
         url = f"{self.client.host}{endpoint}"
@@ -81,13 +78,22 @@ class Devices(BaseEndpoint):
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def update(self, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs) -> dict:  # type: ignore[assignment]
+    def update(
+        self,
+        did: int,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **kwargs,
+    ) -> dict:  # type: ignore[assignment]
         """Update device properties in Darktrace.
 
         Args:
@@ -111,8 +117,13 @@ class Devices(BaseEndpoint):
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")

@@ -116,6 +116,7 @@ class BaseEndpoint:
                         self.client._debug(
                             f"Retry {attempt + 1}/{_MAX_RETRIES}: HTTP {response.status_code}, waiting {wait_time}s"
                         )
+                    response.close()  # Free connection before sleeping
                     time.sleep(wait_time)
                     continue
 

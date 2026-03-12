@@ -36,7 +36,7 @@ The SDK now includes several reliability and security features:
 
 - **Connection Pooling**: HTTP connections are pooled via `requests.Session()` for better performance
 - **Context Manager**: Use `with DarktraceClient(...) as client:` for proper resource cleanup
-- **Automatic Retry**: Transient failures (5xx, 429, connection errors) are retried up to 3 times with 10s wait
+- **Automatic Retry**: Transient failures (5xx, 429, connection errors) are retried up to 3 times with exponential backoff (3s, 6s, 12s)
 - **SSRF Protection**: Dangerous URL schemes (`file://`, `ftp://`, `data://`) are blocked; private IPs allowed
 
 ```python
@@ -50,10 +50,6 @@ with DarktraceClient(
     devices = client.devices.get()
     # Connection automatically closed when exiting block
 ```
-
-### SSL Verification
-> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.8.56. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
-
 
 ### SSL Verification
 

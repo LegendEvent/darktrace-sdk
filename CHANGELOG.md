@@ -15,11 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       client.devices.get()
   ```
 - **Automatic Retry Logic**: Transient failures (5xx, 429, connection errors) are automatically retried
-  - Max 3 retries with 10 second wait between attempts
+  - Max 3 retries with exponential backoff (3s, 6s, 12s between attempts)
   - Client errors (4xx) are NOT retried
 - **SSRF Protection**: URL scheme validation blocks dangerous schemes (`file://`, `ftp://`, `data://`, `javascript://`)
   - Note: Private IPs are explicitly ALLOWED for enterprise baremetal deployments
-- **`_safe_json()` Helper**: Added to `BaseEndpoint` for JSON parsing with proper error handling
 - **Configurable Request Timeout**: Added `timeout` parameter to `DarktraceClient` (default: None, uses requests default)
 - **Compilation Test**: Added `tests/test_compilation.py` for full SDK validation without network calls
 - **Read-Only Test**: Added `tests/test_sdk_readonly.py` for comprehensive testing against real Darktrace instances
@@ -49,4 +48,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.55] - Previous Release
 
-Initial stable release with 28 endpoint modules.
+Initial stable release with 27 endpoint modules.

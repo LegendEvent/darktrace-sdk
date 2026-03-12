@@ -13,7 +13,7 @@
 ### New Features
 - **Connection Pooling**: Automatic HTTP connection pooling via `requests.Session()` for 4x faster requests on reused connections
 - **Context Manager Support**: Use `with DarktraceClient(...) as client:` for proper resource cleanup
-- **Automatic Retry Logic**: Transient failures (5xx, 429, connection errors) are automatically retried (3 retries, 10s wait)
+- **Automatic Retry Logic**: Transient failures (5xx, 429, connection errors) are automatically retried (3 retries with exponential backoff: 3s, 6s, 12s)
 - **SSRF Protection**: URL scheme validation blocks dangerous schemes (`file://`, `ftp://`, `data://`, `javascript://`)
 - **Configurable Timeout**: New `timeout` parameter on `DarktraceClient`
 
