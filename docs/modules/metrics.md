@@ -1,5 +1,8 @@
 # Metrics Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Metrics module provides access to available metrics and their metadata from Darktrace. This module allows you to discover what metrics are available for analysis, including their names, descriptions, data types, and configuration parameters.
 
 ## Initialization

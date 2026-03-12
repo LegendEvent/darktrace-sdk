@@ -1,5 +1,8 @@
 # Advanced Search Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Advanced Search module provides access to Darktrace's advanced search functionality for querying logs and events.
 
 ## ✅ POST Request Support (v0.8.3+)

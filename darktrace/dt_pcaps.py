@@ -1,12 +1,12 @@
 import requests
-from typing import Optional
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, Union, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class PCAPs(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self, pcap_id: Optional[str] = None, responsedata: Optional[str] = None):
+    def get(self, pcap_id: Optional[str] = None, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Retrieve PCAP information or download a specific PCAP file from Darktrace.
 
@@ -23,13 +23,17 @@ class PCAPs(BaseEndpoint):
         if responsedata is not None:
             params['responsedata'] = responsedata
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         # Return JSON if possible, else return raw content (for PCAP file download)
         return response.json() if 'application/json' in response.headers.get('Content-Type', '') else response.content
 
-    def create(self, ip1: str, start: int, end: int, ip2: Optional[str] = None, port1: Optional[int] = None, port2: Optional[int] = None, protocol: Optional[str] = None):
+    def create(self, ip1: str, start: int, end: int, ip2: Optional[str] = None, port1: Optional[int] = None, port2: Optional[int] = None, protocol: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """
         Create a new PCAP capture request in Darktrace.
 
@@ -57,7 +61,11 @@ class PCAPs(BaseEndpoint):
         if protocol is not None:
             body["protocol"] = protocol
         headers, _ = self._get_headers(endpoint)
-        self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, json=body, verify=False)
+
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "POST", url, headers=headers, json=body,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

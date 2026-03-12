@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 """
 Example script demonstrating how to fetch Tor exit nodes from the Darktrace Intel Feed.
-This script shows how to use the fixed authentication mechanism with the source and full_details parameters.
+This script shows how to use the fixed authentication mechanism with the source and fulldetails parameters.
 """
 
 import os
 import sys
 import json
 from datetime import datetime, timezone
-import urllib3
 
 # Add the parent directory to the path so we can import the darktrace module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from darktrace import DarktraceClient
 
-# Disable SSL warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def main():
     # Configuration
@@ -26,6 +23,7 @@ def main():
     private_token = "your-private-token"
 
     # Initialize the Darktrace client
+    # SSL verification is enabled by default. For development with self-signed certs, use verify_ssl=False
     client = DarktraceClient(
         host=host,
         public_token=public_token,
@@ -35,10 +33,10 @@ def main():
 
     try:
         print("Fetching Tor exit nodes from intel feed...")
-        # This demonstrates the fixed authentication with both source and full_details parameters
+        # This demonstrates the fixed authentication with both source and fulldetails parameters
         entries = client.intelfeed.get(
             source="Threat Intel::Tor::Exit Node",
-            full_details=True
+            fulldetails=True
         )
 
         # Format entries into consistent structure

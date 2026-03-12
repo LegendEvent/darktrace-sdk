@@ -1,5 +1,8 @@
 # PCAPs Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The PCAPs module provides comprehensive packet capture functionality, allowing you to retrieve information about available packet captures, download PCAP files, and create new packet capture requests. This module is essential for detailed network forensics, incident investigation, and traffic analysis.
 
 ## Initialization

@@ -1,5 +1,8 @@
 # AI Analyst Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The AI Analyst module provides comprehensive access to Darktrace's AI Analyst endpoints including incidents, investigations, groups, statistics, and comments. This module has been enhanced with full parameter support based on the official API documentation.
 
 ## Initialization

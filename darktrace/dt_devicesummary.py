@@ -1,6 +1,6 @@
 import requests
-from typing import Optional, Dict, Any
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, Union, Tuple, Dict, Any
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class DeviceSummary(BaseEndpoint):
     """
@@ -44,6 +44,7 @@ class DeviceSummary(BaseEndpoint):
         source: Optional[str] = None,
         status: Optional[str] = None,
         responsedata: Optional[str] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **kwargs
     ) -> Dict[str, Any]:
         """
@@ -100,7 +101,11 @@ class DeviceSummary(BaseEndpoint):
             params['responsedata'] = responsedata
         params.update(kwargs)
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        resolved_timeout = self._resolve_timeout(timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

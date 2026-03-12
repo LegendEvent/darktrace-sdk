@@ -1,5 +1,8 @@
 # FilterTypes Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The FilterTypes module provides access to internal Darktrace filter definitions used in the Model Editor. This module returns information about available filters, their data types, and supported comparators, which is essential for building custom models and understanding the Darktrace filtering system.
 
 ## Initialization

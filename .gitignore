@@ -1,3 +1,21 @@
 # API Guide PDF (for reference only, not to be committed)
 *.pdf
 *.pdf:Zone.Identifier
+
+# AI agent knowledge base files
+AGENTS.md
+
+# Certificates
+*.crt
+*.pem
+*.cer
+*.pfx
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+dist/
+build/

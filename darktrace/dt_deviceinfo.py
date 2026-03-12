@@ -1,6 +1,6 @@
 import requests
-from typing import Optional
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, Union, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 class DeviceInfo(BaseEndpoint):
     def __init__(self, client):
@@ -17,6 +17,7 @@ class DeviceInfo(BaseEndpoint):
         showallgraphdata: bool = True,
         similardevices: Optional[int] = None,
         intervalhours: int = 1,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
         **params
     ):
         """
@@ -69,7 +70,11 @@ class DeviceInfo(BaseEndpoint):
 
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
-        self.client._debug(f"GET {url} params={params}")
-        response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+        resolved_timeout = self._resolve_timeout(timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params or params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()

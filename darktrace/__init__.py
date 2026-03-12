@@ -22,7 +22,7 @@ from .dt_status import Status
 from .dt_subnets import Subnets
 from .dt_summarystatistics import SummaryStatistics
 from .dt_tags import Tags
-from .dt_utils import debug_print
+from .dt_utils import debug_print, TimeoutType
 from .dt_components import Components
 from .dt_cves import CVEs
 from .dt_details import Details
@@ -61,5 +61,6 @@ __all__ = [
     'DeviceSearch',
     'ModelBreaches',
     'AdvancedSearch',
-    'debug_print'
+    'debug_print',
+    'TimeoutType',
 ]

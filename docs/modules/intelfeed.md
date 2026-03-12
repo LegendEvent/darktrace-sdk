@@ -1,5 +1,8 @@
 # IntelFeed Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The IntelFeed module provides programmatic access to Darktrace's Watched Domains feature, allowing you to manage threat intelligence feeds including domains, IP addresses, and hostnames. This module integrates with Darktrace's threat detection capabilities and can be used for automated threat intelligence management, STIX/TAXII integration, and custom watchlist management.
 
 ## Initialization

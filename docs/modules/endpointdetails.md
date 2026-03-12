@@ -1,5 +1,8 @@
 # EndpointDetails Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The EndpointDetails module provides comprehensive information about external endpoints that devices in your network have communicated with. This includes details about remote IP addresses and hostnames, their characteristics, reputation data, device interaction history, and rarity scoring.
 
 ## Initialization

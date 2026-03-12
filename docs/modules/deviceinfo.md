@@ -1,5 +1,8 @@
 # DeviceInfo Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The DeviceInfo module provides detailed connection information and communication patterns for specific devices in your network. This module allows you to analyze device connections, data transfer patterns, external communications, and compare similar devices for baseline analysis.
 
 ## Initialization

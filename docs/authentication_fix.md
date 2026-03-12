@@ -16,7 +16,7 @@ The Darktrace API requires that query parameters be included in the signature ca
 
 2. But using the original unsorted parameters in the actual request:
    ```python
-   response = requests.get(url, headers=headers, params=query_params, verify=False)
+   response = requests.get(url, headers=headers, params=query_params, verify=self.client.verify_ssl)
    ```
 
 This caused a mismatch between the signature calculation and the actual request, resulting in API signature errors.
@@ -86,7 +86,7 @@ The fix ensures that the same sorted parameters are used in both the signature c
        endpoint = '/devices'
        url = f"{self.client.host}{endpoint}"
        headers, sorted_params = self._get_headers(endpoint, params)
-       response = requests.get(url, headers=headers, params=sorted_params or params, verify=False)
+       response = requests.get(url, headers=headers, params=sorted_params or params, verify=self.client.verify_ssl)
        response.raise_for_status()
        return response.json()
    ```

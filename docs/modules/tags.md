@@ -1,5 +1,8 @@
 # Tags Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Tags module provides comprehensive tag management functionality for devices, credentials, and other entities within your Darktrace deployment. Tags enable you to organize, categorize, and manage your assets for better security operations and incident response.
 
 ## Initialization

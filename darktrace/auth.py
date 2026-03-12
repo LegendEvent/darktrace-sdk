@@ -1,7 +1,7 @@
 import hmac
 import hashlib
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from typing import Dict, Optional, Any
 
 class DarktraceAuth:
@@ -23,7 +23,7 @@ class DarktraceAuth:
             - 'headers': The required authentication headers
             - 'params': The sorted parameters (or original params if none)
         """
-        # UTC Zeit verwenden (Darktrace Server läuft auf UTC)
+        # Use UTC time (Darktrace Server runs on UTC)
         date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
         
         # Include query parameters in the signature if provided

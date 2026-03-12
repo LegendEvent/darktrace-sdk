@@ -1,7 +1,7 @@
 import requests
 import json
-from typing import Optional, List, Dict, Any, Union
-from .dt_utils import debug_print, BaseEndpoint
+from typing import Optional, List, Dict, Any, Union, Tuple
+from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
 
 class IntelFeed(BaseEndpoint):
@@ -26,7 +26,8 @@ class IntelFeed(BaseEndpoint):
         super().__init__(client)
 
     def get(self, sources: Optional[bool] = None, source: Optional[str] = None,
-            fulldetails: Optional[bool] = None, responsedata: Optional[str] = None, **params):
+            fulldetails: Optional[bool] = None, responsedata: Optional[str] = None,
+            timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """
         Get the intelfeed list, sources, or detailed entries.
 
@@ -53,28 +54,30 @@ class IntelFeed(BaseEndpoint):
             query_params['responsedata'] = responsedata
         query_params.update(params)
         headers, sorted_params = self._get_headers(endpoint, query_params)
-        self.client._debug(f"GET {url} params={sorted_params}")
-        response = requests.get(url, headers=headers, params=sorted_params, verify=False)
+        resolved_timeout = self._resolve_timeout(timeout)
+
+        response = self._make_request(
+            "GET", url, headers=headers, params=sorted_params,
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         response.raise_for_status()
         return response.json()
 
-    def get_sources(self):
+    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get a list of sources for entries on the intelfeed list."""
-        return self.get(sources=True)
-        
-    def get_by_source(self, source: str):
+        return self.get(sources=True, timeout=timeout)
+    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get the intel feed list for all entries under a specific source."""
-        return self.get(source=source)
-        
-    def get_with_details(self):
+        return self.get(source=source, timeout=timeout)
+    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get intel feed with full details about expiry time and description for each entry."""
-        return self.get(full_details=True)
-
-    def update(self, add_entry: Optional[str] = None, add_list: Optional[List[str]] = None, 
-               description: Optional[str] = None, source: Optional[str] = None, 
-               expiry: Optional[str] = None, is_hostname: bool = False, 
-               remove_entry: Optional[str] = None, remove_all: bool = False, 
-               enable_antigena: bool = False):
+        return self.get(fulldetails=True, timeout=timeout)
+    def update(self, add_entry: Optional[str] = None, add_list: Optional[List[str]] = None,
+               description: Optional[str] = None, source: Optional[str] = None,
+               expiry: Optional[str] = None, is_hostname: bool = False,
+               remove_entry: Optional[str] = None, remove_all: bool = False,
+               enable_antigena: bool = False,
+               timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Update the intel feed (watched domains) in Darktrace.
         
         Args:
@@ -116,9 +119,13 @@ class IntelFeed(BaseEndpoint):
         # For POST requests with JSON body, we need to include the body in the signature
         headers, _ = self._get_headers(endpoint, json_body=body)
         headers['Content-Type'] = 'application/json'
-            
-        self.client._debug(f"POST {url} body={body}")
-        response = requests.post(url, headers=headers, data=json.dumps(body, separators=(',', ':')), verify=False)
+
+        resolved_timeout = self._resolve_timeout(timeout)
+
+        response = self._make_request(
+            "POST", url, headers=headers, data=json.dumps(body, separators=(',', ':')),
+            verify=self.client.verify_ssl, timeout=resolved_timeout
+        )
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()

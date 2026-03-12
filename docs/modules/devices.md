@@ -1,5 +1,8 @@
 # Devices Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Devices module provides comprehensive access to device information and management functionality in the Darktrace platform. This module allows you to retrieve, filter, and update device information with extensive filtering capabilities.
 
 ## Initialization

@@ -1,5 +1,8 @@
 # Status Module
 
+> ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
+
+
 The Status module provides comprehensive system health and status information from the Darktrace platform, including appliance status, probe connectivity, system performance metrics, and operational health indicators.
 
 ## Initialization
