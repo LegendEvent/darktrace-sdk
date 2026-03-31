@@ -288,7 +288,7 @@ class Tags(BaseEndpoint):
         Args:
             tid (int): Tag ID (tid) to apply.
             entityType (str): The type of entity to be tagged. Valid values: 'Device', 'Credential'.
-            entityValue (str or list): For devices, the did (as string or list of strings). For credentials, the credential value(s).
+            entityValue: str | list: For devices, the did (as string or list of strings). For credentials, the credential value(s).
             expiryDuration (int, optional): Duration in seconds the tag should be applied for.
             timeout (float or tuple, optional): Request timeout in seconds.
 

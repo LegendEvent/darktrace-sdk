@@ -2,16 +2,20 @@
 Real-environment tests for DeviceSearch module.
 
 These tests require a live Darktrace instance with valid credentials.
-They are skipped by default and only run on work machines with access.
+They are skipped by default and only run on work machines with API access.
 
 To run these tests:
-    pytest tests/real/test_devicesearch_real.py \\
-        --host=https://your-darktrace-instance \\
-        --public-token=YOUR_PUBLIC_TOKEN \\
-        --private-token=YOUR_PRIVATE_TOKEN
+```bash
+pytest tests/real/test_devicesearch_real.py \\
+    --host=https://your-darktrace-instance \\
+    --public-token=YOUR_PUBLIC_TOKEN \\
+    --private-token=YOUR_PRIVATE_TOKEN
+```
 
-These tests validate that the fix for Issue #45 works correctly
-against a real Darktrace API instance.
+NOTE: This is a stub test file intended for future real-environment testing.
+The stub tests were added to validate the fix for Issue #45 in the codebase.
+As we don't have a live Darktrace instance available in CI/CD, these stub tests will remain skipped.
+
 """
 
 import pytest
