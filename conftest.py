@@ -1,16 +1,18 @@
 def pytest_addoption(parser):
-    parser.addoption('--host', action='store', help='Darktrace instance URL')
-    parser.addoption('--public-token', action='store', help='Public API token')
-    parser.addoption('--private-token', action='store', help='Private API token')
-    parser.addoption('--no-verify', action='store_true', help='Disable SSL verification')
+    parser.addoption("--host", action="store", help="Darktrace instance URL")
+    parser.addoption("--public-token", action="store", help="Public API token")
+    parser.addoption("--private-token", action="store", help="Private API token")
+    parser.addoption("--no-verify", action="store_true", help="Disable SSL verification")
 
 
 # Suppress InsecureRequestWarning globally for all tests
-import warnings
-from urllib3.exceptions import InsecureRequestWarning
+import warnings  # noqa: E402
+
+from urllib3.exceptions import InsecureRequestWarning  # noqa: E402
+
 
 def pytest_configure(config):
     # Only suppress SSL warnings when --no-verify is passed
     # Follow SDK's default of verify_ssl=True
-    if config.getoption('no_verify', default=False):
+    if config.getoption("no_verify", default=False):
         warnings.filterwarnings("ignore", category=InsecureRequestWarning)

@@ -1,7 +1,7 @@
-import requests
 import json
-from typing import Dict, Any, Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, encode_query, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint, encode_query
 
 
 class AdvancedSearch(BaseEndpoint):
@@ -124,9 +124,7 @@ class AdvancedSearch(BaseEndpoint):
     ):  # type: ignore[assignment]
         """Analyze field data."""
         encoded_query = encode_query(query)
-        endpoint = (
-            f"/advancedsearch/api/analyze/{field}/{analysis_type}/{encoded_query}"
-        )
+        endpoint = f"/advancedsearch/api/analyze/{field}/{analysis_type}/{encoded_query}"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
         resolved_timeout = self._resolve_timeout(timeout)

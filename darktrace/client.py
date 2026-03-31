@@ -1,4 +1,3 @@
-from typing import Optional
 from urllib.parse import urlparse
 
 import requests
@@ -11,8 +10,8 @@ from .dt_breaches import ModelBreaches
 from .dt_components import Components
 from .dt_cves import CVEs
 from .dt_details import Details
-from .dt_devices import Devices
 from .dt_deviceinfo import DeviceInfo
+from .dt_devices import Devices
 from .dt_devicesearch import DeviceSearch
 from .dt_devicesummary import DeviceSummary
 from .dt_email import DarktraceEmail
@@ -31,7 +30,7 @@ from .dt_status import Status
 from .dt_subnets import Subnets
 from .dt_summarystatistics import SummaryStatistics
 from .dt_tags import Tags
-from .dt_utils import debug_print, TimeoutType
+from .dt_utils import TimeoutType, debug_print
 
 # Allowed URL schemes - block dangerous ones for SSRF protection
 # Note: Private IPs are ALLOWED because Darktrace runs on baremetal in enterprises
@@ -177,11 +176,7 @@ class DarktraceClient:
 
         if scheme not in _ALLOWED_SCHEMES:
             allowed = ", ".join(sorted(_ALLOWED_SCHEMES))
-            raise ValueError(
-                f"Invalid URL scheme '{scheme}'. "
-                f"Allowed schemes: {allowed}. "
-                f"Host must use HTTP or HTTPS."
-            )
+            raise ValueError(f"Invalid URL scheme '{scheme}'. Allowed schemes: {allowed}. Host must use HTTP or HTTPS.")
 
         return host.rstrip("/")
 

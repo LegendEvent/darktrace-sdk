@@ -47,9 +47,7 @@ class DarktraceAuth:
         if json_body:
             # Convert JSON body to string and append directly as query parameter
             # IMPORTANT: Must use same separators as in dt_breaches.py!
-            json_string = json.dumps(
-                json_body, separators=(",", ":")
-            )  # No spaces in JSON
+            json_string = json.dumps(json_body, separators=(",", ":"))  # No spaces in JSON
             separator = "&" if "?" in signature_path else "?"
             signature_path = f"{signature_path}{separator}{json_string}"
 
@@ -77,7 +75,5 @@ class DarktraceAuth:
             The HMAC-SHA1 signature as a hexadecimal string
         """
         message = f"{request_path}\n{self.public_token}\n{date}"
-        signature = hmac.new(
-            self.private_token.encode("ASCII"), message.encode("ASCII"), hashlib.sha1
-        ).hexdigest()
+        signature = hmac.new(self.private_token.encode("ASCII"), message.encode("ASCII"), hashlib.sha1).hexdigest()
         return signature

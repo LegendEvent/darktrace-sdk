@@ -1,16 +1,14 @@
-import requests
 import json
-from typing import Union, List, Dict, Any, Optional, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class Analyst(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get_groups(
-        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    def get_groups(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> Dict[str, Any]:  # type: ignore[assignment]
         """Get AI Analyst incident groups.
 
         Available parameters:
@@ -48,9 +46,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_incident_events(
-        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
-    ):  # type: ignore[assignment]
+    def get_incident_events(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst incident events.
 
         Available parameters:
@@ -278,9 +274,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_stats(
-        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
-    ):  # type: ignore[assignment]
+    def get_stats(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst statistics.
 
         Available parameters:
@@ -313,9 +307,7 @@ class Analyst(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_investigations(
-        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
-    ):  # type: ignore[assignment]
+    def get_investigations(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
         """Get AI Analyst investigations (GET request).
 
         Available parameters:

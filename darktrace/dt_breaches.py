@@ -1,7 +1,7 @@
 import json
-from datetime import datetime
-from typing import Dict, Any, Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint, debug_print
 
 
 class ModelBreaches(BaseEndpoint):
@@ -60,9 +60,7 @@ class ModelBreaches(BaseEndpoint):
         if "saasfilter" in params and isinstance(params["saasfilter"], list):
             # requests will handle repeated params if passed as a list of tuples
             saasfilters = params.pop("saasfilter")
-            params_list = list(params.items()) + [
-                ("saasfilter", v) for v in saasfilters
-            ]
+            params_list = list(params.items()) + [("saasfilter", v) for v in saasfilters]
         else:
             params_list = list(params.items())
 
@@ -98,12 +96,7 @@ class ModelBreaches(BaseEndpoint):
         """
         if isinstance(pbid, (list, tuple)):
             # Build dict with string keys for valid JSON
-            return {
-                str(single_pbid): self.get_comments(
-                    single_pbid, timeout=timeout, **params
-                )
-                for single_pbid in pbid
-            }
+            return {str(single_pbid): self.get_comments(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/comments"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
@@ -136,7 +129,7 @@ class ModelBreaches(BaseEndpoint):
         Returns:
             dict: The full JSON response from Darktrace (or error info as dict)
         """
-        debug_print(f"BREACHES: add_comment called with:", self.client.debug)
+        debug_print("BREACHES: add_comment called with:", self.client.debug)
         debug_print(f"  - pbid: {pbid}", self.client.debug)
         debug_print(f"  - message: '{message}'", self.client.debug)
         debug_print(f"  - params: {params}", self.client.debug)
@@ -145,7 +138,7 @@ class ModelBreaches(BaseEndpoint):
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, Any] = {"message": message}
 
-        debug_print(f"BREACHES: Calling _get_headers with:", self.client.debug)
+        debug_print("BREACHES: Calling _get_headers with:", self.client.debug)
         debug_print(f"  - endpoint: '{endpoint}'", self.client.debug)
         debug_print(f"  - params: {params}", self.client.debug)
         debug_print(f"  - body: {body}", self.client.debug)
@@ -156,9 +149,7 @@ class ModelBreaches(BaseEndpoint):
             # Send JSON as raw data, not as json parameter (as per Darktrace docs)
             # IMPORTANT: Must use same JSON formatting as in signature generation!
             json_data = json.dumps(body, separators=(",", ":"))
-            debug_print(
-                f"BREACHES: JSON data to send: '{json_data}'", self.client.debug
-            )
+            debug_print(f"BREACHES: JSON data to send: '{json_data}'", self.client.debug)
             debug_print(f"BREACHES: Making POST request to: {url}", self.client.debug)
             debug_print(f"BREACHES: With headers: {headers}", self.client.debug)
             debug_print(f"BREACHES: With params: {sorted_params}", self.client.debug)
@@ -176,16 +167,12 @@ class ModelBreaches(BaseEndpoint):
             )
             self.client._debug(f"Response Status: {response.status_code}")
             self.client._debug(f"Response Text: {response.text}")
-            debug_print(
-                f"BREACHES: Response status: {response.status_code}", self.client.debug
-            )
+            debug_print(f"BREACHES: Response status: {response.status_code}", self.client.debug)
             debug_print(
                 f"BREACHES: Response headers: {dict(response.headers)}",
                 self.client.debug,
             )
-            debug_print(
-                f"BREACHES: Response text: '{response.text}'", self.client.debug
-            )
+            debug_print(f"BREACHES: Response text: '{response.text}'", self.client.debug)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -209,10 +196,7 @@ class ModelBreaches(BaseEndpoint):
             dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
         """
         if isinstance(pbid, (list, tuple)):
-            return {
-                single_pbid: self.acknowledge(single_pbid, timeout=timeout, **params)
-                for single_pbid in pbid
-            }
+            return {single_pbid: self.acknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/acknowledge"
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {"acknowledge": True}
@@ -236,9 +220,7 @@ class ModelBreaches(BaseEndpoint):
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            self.client._debug(
-                f"Exception occurred while acknowledging breach: {str(e)}"
-            )
+            self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
             raise
 
     def unacknowledge(
@@ -257,10 +239,7 @@ class ModelBreaches(BaseEndpoint):
             dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
         """
         if isinstance(pbid, (list, tuple)):
-            return {
-                single_pbid: self.unacknowledge(single_pbid, timeout=timeout, **params)
-                for single_pbid in pbid
-            }
+            return {single_pbid: self.unacknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/unacknowledge"
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {"unacknowledge": True}
@@ -284,9 +263,7 @@ class ModelBreaches(BaseEndpoint):
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            self.client._debug(
-                f"Exception occurred while unacknowledging breach: {str(e)}"
-            )
+            self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
             raise
 
     def acknowledge_with_comment(
