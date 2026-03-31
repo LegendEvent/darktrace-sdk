@@ -1,4 +1,4 @@
-# Darktrace SDK - Pythonic, modular, and complete API wrapper 
+# Darktrace SDK - Pythonic, modular, and complete API wrapper
 from ._version import __version__
 from .dt_antigena import Antigena
 from .dt_analyst import Analyst
@@ -29,38 +29,38 @@ from .dt_details import Details
 from .dt_deviceinfo import DeviceInfo
 from .dt_devicesearch import DeviceSearch
 from .dt_breaches import ModelBreaches
-from .dt_advanced_search import AdvancedSearch 
+from .dt_advanced_search import AdvancedSearch
 
 __all__ = [
-    'Antigena',
-    'Analyst',
-    'DarktraceAuth',
-    'DarktraceClient',
-    'Devices',
-    'DeviceSummary',
-    'DarktraceEmail',
-    'Enums',
-    'EndpointDetails',
-    'FilterTypes',
-    'IntelFeed',
-    'MBComments',
-    'MetricData',
-    'Metrics',
-    'Models',
-    'Network',
-    'PCAPs',
-    'SimilarDevices',
-    'Status',
-    'Subnets',
-    'SummaryStatistics',
-    'Tags',
-    'Components',
-    'CVEs',
-    'Details',
-    'DeviceInfo',
-    'DeviceSearch',
-    'ModelBreaches',
-    'AdvancedSearch',
-    'debug_print',
-    'TimeoutType',
+    "Antigena",
+    "Analyst",
+    "DarktraceAuth",
+    "DarktraceClient",
+    "Devices",
+    "DeviceSummary",
+    "DarktraceEmail",
+    "Enums",
+    "EndpointDetails",
+    "FilterTypes",
+    "IntelFeed",
+    "MBComments",
+    "MetricData",
+    "Metrics",
+    "Models",
+    "Network",
+    "PCAPs",
+    "SimilarDevices",
+    "Status",
+    "Subnets",
+    "SummaryStatistics",
+    "Tags",
+    "Components",
+    "CVEs",
+    "Details",
+    "DeviceInfo",
+    "DeviceSearch",
+    "ModelBreaches",
+    "AdvancedSearch",
+    "debug_print",
+    "TimeoutType",
 ]

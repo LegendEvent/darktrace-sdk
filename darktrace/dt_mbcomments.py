@@ -1,21 +1,22 @@
-import requests
 import json
 from typing import Optional, Dict, Any, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
+
 
 class MBComments(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get(self,
-            comment_id: Optional[str] = None,
-            starttime: Optional[int] = None,
-            endtime: Optional[int] = None,
-            responsedata: Optional[str] = None,
-            count: Optional[int] = None,
-            pbid: Optional[int] = None,
-            timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-            **params
+    def get(
+        self,
+        comment_id: Optional[str] = None,
+        starttime: Optional[int] = None,
+        endtime: Optional[int] = None,
+        responsedata: Optional[str] = None,
+        count: Optional[int] = None,
+        pbid: Optional[int] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        **params,
     ):
         """
         Get model breach comments or details for a specific comment.
@@ -33,31 +34,41 @@ class MBComments(BaseEndpoint):
         Returns:
             list or dict: Comments or comment details from Darktrace.
         """
-        endpoint = f'/mbcomments{f"/{comment_id}" if comment_id else ""}'
+        endpoint = f"/mbcomments{f'/{comment_id}' if comment_id else ''}"
         url = f"{self.client.host}{endpoint}"
         query_params = dict()
         if starttime is not None:
-            query_params['starttime'] = starttime
+            query_params["starttime"] = starttime
         if endtime is not None:
-            query_params['endtime'] = endtime
+            query_params["endtime"] = endtime
         if responsedata is not None:
-            query_params['responsedata'] = responsedata
+            query_params["responsedata"] = responsedata
         if count is not None:
-            query_params['count'] = count
+            query_params["count"] = count
         if pbid is not None:
-            query_params['pbid'] = pbid
+            query_params["pbid"] = pbid
         query_params.update(params)
         headers, sorted_params = self._get_headers(endpoint, query_params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def post(self, breach_id: str, comment: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def post(
+        self,
+        breach_id: str,
+        comment: str,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        **params,
+    ):
         """Add a comment to a model breach.
 
         Args:
@@ -66,19 +77,23 @@ class MBComments(BaseEndpoint):
             timeout (float or tuple, optional): Timeout for the request in seconds.
             **params: Additional parameters.
         """
-        endpoint = '/mbcomments'
+        endpoint = "/mbcomments"
         url = f"{self.client.host}{endpoint}"
-        data: Dict[str, Any] = {'breachid': breach_id, 'comment': comment}
+        data: Dict[str, Any] = {"breachid": breach_id, "comment": comment}
         data.update(params)
         headers, sorted_params = self._get_headers(endpoint, json_body=data)
-        headers['Content-Type'] = 'application/json'
+        headers["Content-Type"] = "application/json"
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "POST", url, headers=headers, data=json.dumps(data, separators=(',', ':')),
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            data=json.dumps(data, separators=(",", ":")),
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response status: {response.status_code}")
         self.client._debug(f"Response text: {response.text}")
         response.raise_for_status()
-        return response.json() 
+        return response.json()

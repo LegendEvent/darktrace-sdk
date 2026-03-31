@@ -1,8 +1,8 @@
-import requests
 import json
 import warnings
 from typing import Dict, Any, Union, Optional, List, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
+
 
 class Antigena(BaseEndpoint):
     """
@@ -20,7 +20,11 @@ class Antigena(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get_actions(
+        self,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **params,
+    ):  # type: ignore[assignment]
         """
         Get information about current and past Darktrace RESPOND actions.
 
@@ -70,14 +74,22 @@ class Antigena(BaseEndpoint):
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
     def activate_action(
-        self, codeid: int, reason: str = "", duration: Optional[int] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET  # type: ignore[assignment]
+        self,
+        codeid: int,
+        reason: str = "",
+        duration: Optional[int] = None,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
     ) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
@@ -121,15 +133,26 @@ class Antigena(BaseEndpoint):
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def extend_action(self, codeid: int, duration: int, reason: str = "", timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def extend_action(
+        self,
+        codeid: int,
+        duration: int,
+        reason: str = "",
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
         Extend an active Darktrace RESPOND action.
 
@@ -172,15 +195,25 @@ class Antigena(BaseEndpoint):
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def clear_action(self, codeid: int, reason: str = "", timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def clear_action(
+        self,
+        codeid: int,
+        reason: str = "",
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
         Clear an active, pending or expired Darktrace RESPOND action.
 
@@ -219,15 +252,26 @@ class Antigena(BaseEndpoint):
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def reactivate_action(self, codeid: int, duration: int, reason: str = "", timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def reactivate_action(
+        self,
+        codeid: int,
+        duration: int,
+        reason: str = "",
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
         Reactivate a cleared or expired Darktrace RESPOND action.
 
@@ -265,8 +309,13 @@ class Antigena(BaseEndpoint):
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -356,8 +405,13 @@ class Antigena(BaseEndpoint):
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
@@ -365,7 +419,11 @@ class Antigena(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_summary(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get_summary(
+        self,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **params,
+    ):  # type: ignore[assignment]
         """
         Get a summary of active and pending Darktrace RESPOND actions.
 
@@ -427,8 +485,12 @@ class Antigena(BaseEndpoint):
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
@@ -453,6 +515,9 @@ class Antigena(BaseEndpoint):
         warnings.warn(
             "approve_action() is deprecated. Use activate_action() instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
-        return {"success": True, "message": "Action approved (no-op for backwards compatibility)"}
+        return {
+            "success": True,
+            "message": "Action approved (no-op for backwards compatibility)",
+        }

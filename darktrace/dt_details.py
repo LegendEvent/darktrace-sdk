@@ -1,6 +1,6 @@
-import requests
 from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
+
 
 class Details(BaseEndpoint):
     def __init__(self, client):
@@ -32,7 +32,7 @@ class Details(BaseEndpoint):
         fulldevicedetails: bool = False,
         responsedata: Optional[str] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **params
+        **params,
     ):
         """
         Get detailed connection and event information for a device or entity.
@@ -68,12 +68,14 @@ class Details(BaseEndpoint):
             - Time parameters must always be specified in pairs.
             - If from_ or starttime is used, count must not be used.
         """
-        endpoint = '/details'
+        endpoint = "/details"
         url = f"{self.client.host}{endpoint}"
         # --- Parameter validation logic ---
         # At least one of did, pbid, msg, or blockedconnections is required
         if not any([did, pbid, msg, blockedconnections]):
-            raise ValueError("At least one of did, pbid, msg, or blockedconnections must be specified.")
+            raise ValueError(
+                "At least one of did, pbid, msg, or blockedconnections must be specified."
+            )
 
         # Time parameter validation
         # starttime/endtime must be both present or both absent
@@ -88,58 +90,62 @@ class Details(BaseEndpoint):
 
         # Map all parameters to API names
         if did is not None:
-            params['did'] = did
+            params["did"] = did
         if pbid is not None:
-            params['pbid'] = pbid
+            params["pbid"] = pbid
         if msg is not None:
-            params['msg'] = msg
+            params["msg"] = msg
         if blockedconnections is not None:
-            params['blockedconnections'] = blockedconnections
+            params["blockedconnections"] = blockedconnections
         if eventtype is not None:
-            params['eventtype'] = eventtype
+            params["eventtype"] = eventtype
         if count is not None:
-            params['count'] = count
+            params["count"] = count
         if starttime is not None:
-            params['starttime'] = starttime
+            params["starttime"] = starttime
         if endtime is not None:
-            params['endtime'] = endtime
+            params["endtime"] = endtime
         if from_ is not None:
-            params['from'] = from_
+            params["from"] = from_
         if to is not None:
-            params['to'] = to
+            params["to"] = to
         if applicationprotocol is not None:
-            params['applicationprotocol'] = applicationprotocol
+            params["applicationprotocol"] = applicationprotocol
         if destinationport is not None:
-            params['destinationport'] = destinationport
+            params["destinationport"] = destinationport
         if sourceport is not None:
-            params['sourceport'] = sourceport
+            params["sourceport"] = sourceport
         if port is not None:
-            params['port'] = port
+            params["port"] = port
         if protocol is not None:
-            params['protocol'] = protocol
+            params["protocol"] = protocol
         if ddid is not None:
-            params['ddid'] = ddid
+            params["ddid"] = ddid
         if odid is not None:
-            params['odid'] = odid
+            params["odid"] = odid
         if externalhostname is not None:
-            params['externalhostname'] = externalhostname
+            params["externalhostname"] = externalhostname
         if intext is not None:
-            params['intext'] = intext
+            params["intext"] = intext
         if uid is not None:
-            params['uid'] = uid
+            params["uid"] = uid
         if deduplicate:
-            params['deduplicate'] = str(deduplicate).lower()
+            params["deduplicate"] = str(deduplicate).lower()
         if fulldevicedetails:
-            params['fulldevicedetails'] = str(fulldevicedetails).lower()
+            params["fulldevicedetails"] = str(fulldevicedetails).lower()
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
 
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
