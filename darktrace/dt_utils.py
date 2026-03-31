@@ -1,16 +1,40 @@
 import base64
 import json
 import time
-from typing import Dict, Any, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import requests
 
 # Type alias for timeout parameter - can be None, float, or tuple of (connect, read)
 TimeoutType = Optional[Union[float, Tuple[float, float]]]
 
-# Sentinel value for unset timeout - allows distinguishing between
-# "not specified" (use client default) and "explicitly None" (no timeout)
-_UNSET = object()
+
+class _Unset:
+    """Sentinel value for unset timeout parameters.
+
+    Allows distinguishing between 'not specified' (use client default)
+    and 'explicitly None' (no timeout). This class is a singleton -
+    use the _UNSET module-level instance.
+    """
+
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __repr__(self) -> str:
+        return "<UNSET>"
+
+    def __bool__(self) -> bool:
+        return False
+
+
+_UNSET = _Unset()
+
+# Internal type alias that includes _Unset sentinel for _resolve_timeout's parameter
+_InternalTimeoutType = Union[_Unset, None, float, Tuple[float, float]]
 
 # Retry configuration
 _MAX_RETRIES = 3
@@ -45,7 +69,7 @@ class BaseEndpoint:
     def __init__(self, client):
         self.client = client
 
-    def _resolve_timeout(self, timeout: TimeoutType = _UNSET) -> TimeoutType:  # type: ignore[assignment]
+    def _resolve_timeout(self, timeout: _InternalTimeoutType = _UNSET) -> TimeoutType:
         """Resolve timeout value, using client default if not specified.
 
         Args:
@@ -105,13 +129,8 @@ class BaseEndpoint:
                     self.client._debug(f"{method} {url} [{timing_str}]")
 
                 # Check if we should retry based on status code
-                if (
-                    response.status_code in _RETRY_STATUS_CODES
-                    and attempt < _MAX_RETRIES
-                ):
-                    wait_time = _INITIAL_RETRY_WAIT_SECONDS * (
-                        2**attempt
-                    )  # 3s, 6s, 12s
+                if response.status_code in _RETRY_STATUS_CODES and attempt < _MAX_RETRIES:
+                    wait_time = _INITIAL_RETRY_WAIT_SECONDS * (2**attempt)  # 3s, 6s, 12s
                     if self.client.debug:
                         self.client._debug(
                             f"Retry {attempt + 1}/{_MAX_RETRIES}: HTTP {response.status_code}, waiting {wait_time}s"
@@ -131,9 +150,7 @@ class BaseEndpoint:
                     self.client._debug(f"{method} {url} FAILED [{timing_str}]: {e}")
 
                 if attempt < _MAX_RETRIES:
-                    wait_time = _INITIAL_RETRY_WAIT_SECONDS * (
-                        2**attempt
-                    )  # 3s, 6s, 12s
+                    wait_time = _INITIAL_RETRY_WAIT_SECONDS * (2**attempt)  # 3s, 6s, 12s
                     if self.client.debug:
                         self.client._debug(
                             f"Retry {attempt + 1}/{_MAX_RETRIES}: Connection error, waiting {wait_time}s"

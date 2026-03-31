@@ -1,7 +1,8 @@
 import json
 import warnings
-from typing import Dict, Any, Union, Optional, List, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class Antigena(BaseEndpoint):
@@ -89,7 +90,7 @@ class Antigena(BaseEndpoint):
         codeid: int,
         reason: str = "",
         duration: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
@@ -329,7 +330,7 @@ class Antigena(BaseEndpoint):
         duration: int,
         reason: str = "",
         connections: Optional[List[Dict[str, Union[str, int]]]] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ) -> dict:
         """
         Create a manual Darktrace RESPOND/Network action.

@@ -19,13 +19,9 @@ As we don't have a live Darktrace instance available in CI/CD, these stub tests 
 """
 
 import pytest
-import requests
-from darktrace import DarktraceClient
 
 
-@pytest.mark.skip(
-    reason="Requires live Darktrace instance - run with --host and credentials"
-)
+@pytest.mark.skip(reason="Requires live Darktrace instance - run with --host and credentials")
 def test_real_multi_param_search():
     """
     Test multi-parameter search against real Darktrace API.

@@ -1,6 +1,6 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class Subnets(BaseEndpoint):
@@ -13,7 +13,7 @@ class Subnets(BaseEndpoint):
         seensince: Optional[str] = None,
         sid: Optional[int] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Get subnet information from Darktrace.
@@ -67,7 +67,7 @@ class Subnets(BaseEndpoint):
         excluded: Optional[bool] = None,
         modelExcluded: Optional[bool] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Create or update a subnet in Darktrace.

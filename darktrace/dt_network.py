@@ -1,5 +1,6 @@
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class Network(BaseEndpoint):
@@ -24,7 +25,7 @@ class Network(BaseEndpoint):
         to: Optional[str] = None,
         viewsubnet: Optional[int] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Get network connectivity and statistics information from Darktrace.

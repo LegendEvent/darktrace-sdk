@@ -1,5 +1,6 @@
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class PCAPs(BaseEndpoint):
@@ -10,7 +11,7 @@ class PCAPs(BaseEndpoint):
         self,
         pcap_id: Optional[str] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Retrieve PCAP information or download a specific PCAP file from Darktrace.
@@ -40,11 +41,7 @@ class PCAPs(BaseEndpoint):
         )
         response.raise_for_status()
         # Return JSON if possible, else return raw content (for PCAP file download)
-        return (
-            response.json()
-            if "application/json" in response.headers.get("Content-Type", "")
-            else response.content
-        )
+        return response.json() if "application/json" in response.headers.get("Content-Type", "") else response.content
 
     def create(
         self,
@@ -55,7 +52,7 @@ class PCAPs(BaseEndpoint):
         port1: Optional[int] = None,
         port2: Optional[int] = None,
         protocol: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Create a new PCAP capture request in Darktrace.

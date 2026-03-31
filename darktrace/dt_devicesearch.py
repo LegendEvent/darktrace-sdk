@@ -1,5 +1,6 @@
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class DeviceSearch(BaseEndpoint):
@@ -36,7 +37,7 @@ class DeviceSearch(BaseEndpoint):
         offset=None,
         responsedata=None,
         seensince=None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
     ):
         """
@@ -266,4 +267,3 @@ class DeviceSearch(BaseEndpoint):
         """
         query = f'mac:"{mac}"'
         return self.get(query=query, timeout=timeout, **kwargs)
-

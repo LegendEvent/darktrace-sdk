@@ -1,7 +1,7 @@
-import requests
 import json
-from typing import List, Dict, Any, Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class Devices(BaseEndpoint):
@@ -21,7 +21,7 @@ class Devices(BaseEndpoint):
         responsedata: Optional[str] = None,
         cloudsecurity: Optional[bool] = None,
         saasfilter: Optional[Any] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Get device(s) from Darktrace.

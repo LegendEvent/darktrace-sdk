@@ -1,5 +1,6 @@
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class CVEs(BaseEndpoint):
@@ -10,7 +11,7 @@ class CVEs(BaseEndpoint):
         self,
         did: Optional[int] = None,
         fulldevicedetails: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
     ):
         """

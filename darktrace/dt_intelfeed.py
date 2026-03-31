@@ -1,6 +1,7 @@
 import json
-from typing import Optional, List, Dict, Any, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class IntelFeed(BaseEndpoint):
@@ -31,7 +32,7 @@ class IntelFeed(BaseEndpoint):
         source: Optional[str] = None,
         fulldetails: Optional[bool] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
     ):
         """
@@ -73,21 +74,15 @@ class IntelFeed(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
-    def get_sources(
-        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET
-    ):  # type: ignore[assignment]
+    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get a list of sources for entries on the intelfeed list."""
         return self.get(sources=True, timeout=timeout)
 
-    def get_by_source(
-        self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET
-    ):  # type: ignore[assignment]
+    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get the intel feed list for all entries under a specific source."""
         return self.get(source=source, timeout=timeout)
 
-    def get_with_details(
-        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET
-    ):  # type: ignore[assignment]
+    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
         """Get intel feed with full details about expiry time and description for each entry."""
         return self.get(fulldetails=True, timeout=timeout)
 
@@ -102,7 +97,7 @@ class IntelFeed(BaseEndpoint):
         remove_entry: Optional[str] = None,
         remove_all: bool = False,
         enable_antigena: bool = False,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """Update the intel feed (watched domains) in Darktrace.
 

@@ -1,6 +1,6 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class SimilarDevices(BaseEndpoint):
@@ -14,7 +14,7 @@ class SimilarDevices(BaseEndpoint):
         fulldevicedetails: Optional[bool] = None,
         token: Optional[str] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
     ):
         """

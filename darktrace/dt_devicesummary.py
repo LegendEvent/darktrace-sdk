@@ -1,6 +1,6 @@
-import requests
-from typing import Optional, Union, Tuple, Dict, Any
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class DeviceSummary(BaseEndpoint):
@@ -45,7 +45,7 @@ class DeviceSummary(BaseEndpoint):
         source: Optional[str] = None,
         status: Optional[str] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
     ) -> Dict[str, Any]:
         """

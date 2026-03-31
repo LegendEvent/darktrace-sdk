@@ -1,5 +1,6 @@
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class Details(BaseEndpoint):
@@ -31,7 +32,7 @@ class Details(BaseEndpoint):
         deduplicate: bool = False,
         fulldevicedetails: bool = False,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
     ):
         """
@@ -73,9 +74,7 @@ class Details(BaseEndpoint):
         # --- Parameter validation logic ---
         # At least one of did, pbid, msg, or blockedconnections is required
         if not any([did, pbid, msg, blockedconnections]):
-            raise ValueError(
-                "At least one of did, pbid, msg, or blockedconnections must be specified."
-            )
+            raise ValueError("At least one of did, pbid, msg, or blockedconnections must be specified.")
 
         # Time parameter validation
         # starttime/endtime must be both present or both absent

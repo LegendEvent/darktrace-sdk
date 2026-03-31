@@ -1,5 +1,6 @@
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class SummaryStatistics(BaseEndpoint):
@@ -15,7 +16,7 @@ class SummaryStatistics(BaseEndpoint):
         hours: Optional[int] = None,
         csensor: Optional[bool] = None,
         mitreTactics: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ):
         """
         Get summary statistics information from Darktrace.

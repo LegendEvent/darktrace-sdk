@@ -1,6 +1,7 @@
 import json
-from typing import Optional, Dict, Any, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class MBComments(BaseEndpoint):
@@ -15,7 +16,7 @@ class MBComments(BaseEndpoint):
         responsedata: Optional[str] = None,
         count: Optional[int] = None,
         pbid: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
     ):
         """
@@ -66,7 +67,7 @@ class MBComments(BaseEndpoint):
         self,
         breach_id: str,
         comment: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
     ):
         """Add a comment to a model breach.

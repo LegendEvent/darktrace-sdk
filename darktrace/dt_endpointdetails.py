@@ -1,5 +1,6 @@
-from typing import Optional, Any, Dict, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
 
 
 class EndpointDetails(BaseEndpoint):
@@ -14,7 +15,7 @@ class EndpointDetails(BaseEndpoint):
         devices: Optional[bool] = None,
         score: Optional[bool] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ) -> Dict[str, Any]:
         """
         Get endpoint details from Darktrace.
