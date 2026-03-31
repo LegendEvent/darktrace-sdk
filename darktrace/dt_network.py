@@ -1,4 +1,3 @@
-import requests
 from typing import Optional, Union, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
 

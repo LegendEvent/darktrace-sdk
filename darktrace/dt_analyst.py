@@ -3,13 +3,16 @@ import json
 from typing import Union, List, Dict, Any, Optional, Tuple
 from .dt_utils import debug_print, BaseEndpoint, _UNSET
 
+
 class Analyst(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def get_groups(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get_groups(
+        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
+    ) -> Dict[str, Any]:  # type: ignore[assignment]
         """Get AI Analyst incident groups.
-        
+
         Available parameters:
         - includeacknowledged (bool): Include acknowledged events in the data
         - includeonlypinned (bool): False by default. Used to only return pinned incident events
@@ -29,21 +32,27 @@ class Analyst(BaseEndpoint):
         - saasonly (bool): Restricts returned incidents to only those with SaaS activity
         - groupid (str): Unique identifier of an AI Analyst incident
         """
-        endpoint = '/aianalyst/groups'
+        endpoint = "/aianalyst/groups"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params or params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params or params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def get_incident_events(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get_incident_events(
+        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
+    ):  # type: ignore[assignment]
         """Get AI Analyst incident events.
-        
+
         Available parameters:
         - includeacknowledged (bool): Include acknowledged events in the data
         - includeallpinned (bool): True by default. Controls whether pinned events are returned
@@ -68,151 +77,212 @@ class Analyst(BaseEndpoint):
         - groupid (str): Unique identifier of an AI Analyst incident
         - uuid (str): Unique identifier of an AI Analyst incident event
         """
-        endpoint = '/aianalyst/incidentevents'
+        endpoint = "/aianalyst/incidentevents"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params or params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params or params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def acknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def acknowledge(
+        self,
+        uuids: Union[str, List[str]],
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
-            Acknowledge AI Analyst incident events.
-        
-            Returns: Full Darktrace return JSON
+        Acknowledge AI Analyst incident events.
+
+        Returns: Full Darktrace return JSON
         """
         if isinstance(uuids, list):
-            uuids = ','.join(uuids)
-        endpoint = '/aianalyst/acknowledge'
+            uuids = ",".join(uuids)
+        endpoint = "/aianalyst/acknowledge"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data={"uuid": uuids},
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def unacknowledge(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def unacknowledge(
+        self,
+        uuids: Union[str, List[str]],
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
         Unacknowledge AI Analyst incident events.
-        
+
         returns: Full Darktrace return JSON
         """
         if isinstance(uuids, list):
-            uuids = ','.join(uuids)
-        endpoint = '/aianalyst/unacknowledge'
+            uuids = ",".join(uuids)
+        endpoint = "/aianalyst/unacknowledge"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data={"uuid": uuids},
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def pin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def pin(
+        self,
+        uuids: Union[str, List[str]],
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
         Pin AI Analyst incident events.
 
         Returns: Full Darktrace return JSON
         """
         if isinstance(uuids, list):
-            uuids = ','.join(uuids)
-        endpoint = '/aianalyst/pin'
+            uuids = ",".join(uuids)
+        endpoint = "/aianalyst/pin"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data={"uuid": uuids},
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def unpin(self, uuids: Union[str, List[str]], timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def unpin(
+        self,
+        uuids: Union[str, List[str]],
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """
         Unpin AI Analyst incident events.
 
         Returns: Full Darktrace return JSON
         """
         if isinstance(uuids, list):
-            uuids = ','.join(uuids)
-        endpoint = '/aianalyst/unpin'
+            uuids = ",".join(uuids)
+        endpoint = "/aianalyst/unpin"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data={'uuid': uuids},
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data={"uuid": uuids},
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, incident_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, response_data: Optional[str] = ""):  # type: ignore[assignment]
+    def get_comments(
+        self,
+        incident_id: str,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        response_data: Optional[str] = "",
+    ):  # type: ignore[assignment]
         """Get comments for an AI Analyst incident event.
-        
+
         Parameters:
         - incident_id (str): Unique identifier for the AI Analyst event to return comments for
         - response_data (str): When given the name of a top-level field or object, restricts the returned JSON to only that field or object
         """
-        endpoint = '/aianalyst/incident/comments'
-        params = {'incident_id': incident_id}
+        endpoint = "/aianalyst/incident/comments"
+        params = {"incident_id": incident_id}
         if response_data:
-            params['responsedata'] = response_data
+            params["responsedata"] = response_data
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params or params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params or params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def add_comment(self, incident_id: str, message: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> dict:  # type: ignore[assignment]
+    def add_comment(
+        self,
+        incident_id: str,
+        message: str,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ) -> dict:  # type: ignore[assignment]
         """Add a comment to an AI Analyst incident event.
-        
+
         Parameters:
         - incident_id (str): Unique identifier for the AI Analyst event
         - message (str): Text that should be added as a comment to the AI Analyst incident event
         """
-        endpoint = '/aianalyst/incident/comments'
+        endpoint = "/aianalyst/incident/comments"
         url = f"{self.client.host}{endpoint}"
         body: Dict[str, Any] = {"incident_id": incident_id, "message": message}
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
         resolved_timeout = self._resolve_timeout(timeout)
         # Send JSON as raw data with consistent formatting (same as signature generation)
-        json_data = json.dumps(body, separators=(',', ':'))
+        json_data = json.dumps(body, separators=(",", ":"))
 
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def get_stats(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get_stats(
+        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
+    ):  # type: ignore[assignment]
         """Get AI Analyst statistics.
-        
+
         Available parameters:
         - includeacknowledged (bool): Include acknowledged events in the data
         - endtime (int): End time in millisecond format, relative to midnight January 1st 1970 UTC
@@ -227,21 +297,27 @@ class Analyst(BaseEndpoint):
         - master (int): Master instance ID under Unified View
         - saasonly (bool): Restricts returned events to only those with SaaS activity
         """
-        endpoint = '/aianalyst/stats'
+        endpoint = "/aianalyst/stats"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params or params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params or params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def get_investigations(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get_investigations(
+        self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params
+    ):  # type: ignore[assignment]
         """Get AI Analyst investigations (GET request).
-        
+
         Available parameters:
         - includeacknowledged (bool): Include acknowledged events in the data
         - endtime (int): End time in millisecond format, relative to midnight January 1st 1970 UTC
@@ -258,44 +334,55 @@ class Analyst(BaseEndpoint):
         - includefirstreports (bool): Include first reports along with the investigation data
         - investigationid (str): Unique identifier of an AI Analyst investigation
         """
-        endpoint = '/aianalyst/investigations'
+        endpoint = "/aianalyst/investigations"
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params or params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params or params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()
 
-    def create_investigation(self, investigate_time: str, did: int, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def create_investigation(
+        self,
+        investigate_time: str,
+        did: int,
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+    ):  # type: ignore[assignment]
         """Create a new AI Analyst investigation (POST request).
-        
+
         Parameters:
         - investigate_time (str): The time that the investigation should focus around (epoch timestamp)
         - did (int): The device that an investigation should be created for
         """
-        endpoint = '/aianalyst/investigations'
+        endpoint = "/aianalyst/investigations"
         url = f"{self.client.host}{endpoint}"
-        
+
         # Prepare the JSON body
-        body = {
-            "investigateTime": investigate_time,
-            "did": did
-        }
-        
+        body = {"investigateTime": investigate_time, "did": did}
+
         # For POST requests with JSON body, include it in signature
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
         resolved_timeout = self._resolve_timeout(timeout)
-        
+
         # Send JSON as raw data with consistent formatting (same as signature generation)
-        json_data = json.dumps(body, separators=(',', ':'))
+        json_data = json.dumps(body, separators=(",", ":"))
 
         response = self._make_request(
-            "POST", url, headers=headers, params=sorted_params, data=json_data,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "POST",
+            url,
+            headers=headers,
+            params=sorted_params,
+            data=json_data,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         self.client._debug(f"Response Status: {response.status_code}")
         self.client._debug(f"Response Text: {response.text}")

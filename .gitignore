@@ -19,3 +19,6 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# Desloppify local state
+.desloppify/

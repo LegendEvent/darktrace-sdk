@@ -92,7 +92,7 @@ class Subnets(BaseEndpoint):
         endpoint = "/subnets"
         url = f"{self.client.host}{endpoint}"
 
-        body = {"sid": sid}
+        body: Dict[str, Any] = {"sid": sid}
         if label is not None:
             body["label"] = label
         if network is not None:

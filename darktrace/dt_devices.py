@@ -10,17 +10,17 @@ class Devices(BaseEndpoint):
 
     def get(
         self,
-        did: int = None,
-        ip: str = None,
-        iptime: str = None,
-        mac: str = None,
-        seensince: str = None,
-        sid: int = None,
-        count: int = None,
-        includetags: bool = None,
-        responsedata: str = None,
-        cloudsecurity: bool = None,
-        saasfilter: Any = None,
+        did: Optional[int] = None,
+        ip: Optional[str] = None,
+        iptime: Optional[str] = None,
+        mac: Optional[str] = None,
+        seensince: Optional[str] = None,
+        sid: Optional[int] = None,
+        count: Optional[int] = None,
+        includetags: Optional[bool] = None,
+        responsedata: Optional[str] = None,
+        cloudsecurity: Optional[bool] = None,
+        saasfilter: Optional[Any] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
     ):
         """
@@ -67,12 +67,9 @@ class Devices(BaseEndpoint):
             params["responsedata"] = responsedata
         if cloudsecurity is not None:
             params["cloudsecurity"] = cloudsecurity
-        # saasfilter can be a string or list of strings; only wrap in list if input is a list/tuple
+        # saasfilter can be a string or list of strings
         if saasfilter is not None:
-            if isinstance(saasfilter, (list, tuple)):
-                params["saasfilter"] = saasfilter
-            else:
-                params["saasfilter"] = saasfilter
+            params["saasfilter"] = saasfilter
 
         headers, sorted_params = self._get_headers(endpoint, params)
 
