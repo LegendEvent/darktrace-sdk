@@ -1,6 +1,8 @@
 import json
 from typing import Any, Dict, Optional, Tuple, Union
 
+import requests
+
 from .dt_utils import _UNSET, BaseEndpoint, debug_print
 
 
@@ -175,7 +177,7 @@ class ModelBreaches(BaseEndpoint):
             debug_print(f"BREACHES: Response text: '{response.text}'", self.client.debug)
             response.raise_for_status()
             return response.json()
-        except Exception as e:
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
             self.client._debug(f"Exception occurred while adding comment: {str(e)}")
             debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
             raise
@@ -219,7 +221,7 @@ class ModelBreaches(BaseEndpoint):
             self.client._debug(f"Response Text: {response.text}")
             response.raise_for_status()
             return response.json()
-        except Exception as e:
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
             self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
             raise
 
@@ -262,7 +264,7 @@ class ModelBreaches(BaseEndpoint):
             self.client._debug(f"Response Text: {response.text}")
             response.raise_for_status()
             return response.json()
-        except Exception as e:
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
             self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
             raise
 

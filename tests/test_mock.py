@@ -391,7 +391,6 @@ class TestEndpointSignatures:
         assert hasattr(client.antigena, "clear_action")
         assert hasattr(client.antigena, "reactivate_action")
         assert hasattr(client.antigena, "create_manual_action")
-        assert hasattr(client.antigena, "approve_action")  # Deprecated
 
     def test_breaches_methods(self, client):
         """Test ModelBreaches endpoint methods exist."""
@@ -841,23 +840,6 @@ class TestSSLVerification:
             verify_ssl=False,
         )
         assert client.verify_ssl is False
-
-
-# ==============================================================================
-# Deprecation Tests
-# ==============================================================================
-class TestDeprecations:
-    """Test deprecation warnings."""
-
-    def test_approve_action_deprecated(self, client):
-        """Test that approve_action emits de deprecation warning."""
-        import warnings
-
-        with warnings.catch_warnings(record=True) as w:
-            client.antigena.approve_action(123)
-            assert len(w) == 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "deprecated" in str(w[0].message).lower()
 
 
 if __name__ == "__main__":

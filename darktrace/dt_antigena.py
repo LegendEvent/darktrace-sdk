@@ -1,5 +1,4 @@
 import json
-import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
@@ -495,30 +494,3 @@ class Antigena(BaseEndpoint):
         )
         response.raise_for_status()
         return response.json()
-
-    def approve_action(self, codeid: int) -> dict:
-        """
-        Approve a pending Darktrace RESPOND action (backwards compatibility, no-op).
-
-        .. deprecated:: 0.9.0
-            This method is deprecated. Use :meth:`activate_action` instead.
-
-        This method is retained for backwards compatibility only. In modern Darktrace
-        versions, the approve/decline workflow has been replaced by direct action
-        management methods. This method is a no-op that returns a success response.
-
-        Args:
-            codeid (int): Unique numeric identifier of a RESPOND action (ignored).
-
-        Returns:
-            dict: A dummy success response for backwards compatibility.
-        """
-        warnings.warn(
-            "approve_action() is deprecated. Use activate_action() instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return {
-            "success": True,
-            "message": "Action approved (no-op for backwards compatibility)",
-        }
