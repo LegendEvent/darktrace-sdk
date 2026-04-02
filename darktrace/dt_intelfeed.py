@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
+__all__ = ["IntelFeed"]
+
 
 class IntelFeed(BaseEndpoint):
     """

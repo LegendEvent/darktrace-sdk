@@ -2,6 +2,8 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
+__all__ = ["EndpointDetails"]
+
 
 class EndpointDetails(BaseEndpoint):
     def __init__(self, client):

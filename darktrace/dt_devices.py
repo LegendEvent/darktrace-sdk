@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
+__all__ = ["Devices"]
+
 
 class Devices(BaseEndpoint):
     def __init__(self, client):

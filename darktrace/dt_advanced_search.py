@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint, encode_query
 
+__all__ = ["AdvancedSearch"]
+
 
 class AdvancedSearch(BaseEndpoint):
     def __init__(self, client):

@@ -2,6 +2,8 @@ from typing import Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
+__all__ = ["CVEs"]
+
 
 class CVEs(BaseEndpoint):
     def __init__(self, client):
