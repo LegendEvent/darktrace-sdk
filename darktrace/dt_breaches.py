@@ -3,12 +3,16 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 import requests
 
-from .dt_utils import _UNSET, BaseEndpoint, debug_print
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["ModelBreaches"]
 
 
 class ModelBreaches(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
+    """Model breach alerts endpoint (/modelbreaches).
+
+    Retrieve, acknowledge, unacknowledge, and comment on Darktrace model breach alerts.
+    """
 
     def get(
         self,
@@ -52,7 +56,6 @@ class ModelBreaches(BaseEndpoint):
         """
         endpoint = "/modelbreaches"
 
-        # Handle special parameter names for API compatibility
         if "from_time" in params:
             params["from"] = params.pop("from_time")
         if "to_time" in params:
@@ -60,15 +63,13 @@ class ModelBreaches(BaseEndpoint):
 
         # Support multiple saasfilter values
         if "saasfilter" in params and isinstance(params["saasfilter"], list):
-            # requests will handle repeated params if passed as a list of tuples
             saasfilters = params.pop("saasfilter")
             params_list = list(params.items()) + [("saasfilter", v) for v in saasfilters]
         else:
             params_list = list(params.items())
 
-        url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, dict(params_list))
-
+        url = f"{self.client.host}{endpoint}"
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
             "GET",
@@ -97,22 +98,9 @@ class ModelBreaches(BaseEndpoint):
             list or dict: List of comment objects (see API docs for schema), or dict mapping pbid to comments if pbid is a list.
         """
         if isinstance(pbid, (list, tuple)):
-            # Build dict with string keys for valid JSON
             return {str(single_pbid): self.get_comments(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/comments"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def add_comment(
         self,
@@ -129,57 +117,14 @@ class ModelBreaches(BaseEndpoint):
             message (str): The comment text to add.
             params: Additional parameters for the API call (future-proofing, e.g., responsedata)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict)
+            dict: The full JSON response from Darktrace
         """
-        debug_print("BREACHES: add_comment called with:", self.client.debug)
-        debug_print(f"  - pbid: {pbid}", self.client.debug)
-        debug_print(f"  - message: '{message}'", self.client.debug)
-        debug_print(f"  - params: {params}", self.client.debug)
-
         endpoint = f"/modelbreaches/{pbid}/comments"
-        url = f"{self.client.host}{endpoint}"
         body: Dict[str, Any] = {"message": message}
-
-        debug_print("BREACHES: Calling _get_headers with:", self.client.debug)
-        debug_print(f"  - endpoint: '{endpoint}'", self.client.debug)
-        debug_print(f"  - params: {params}", self.client.debug)
-        debug_print(f"  - body: {body}", self.client.debug)
-
-        headers, sorted_params = self._get_headers(endpoint, params, body)
-
         try:
-            # Send JSON as raw data, not as json parameter (as per Darktrace docs)
-            # IMPORTANT: Must use same JSON formatting as in signature generation!
-            json_data = json.dumps(body, separators=(",", ":"))
-            debug_print(f"BREACHES: JSON data to send: '{json_data}'", self.client.debug)
-            debug_print(f"BREACHES: Making POST request to: {url}", self.client.debug)
-            debug_print(f"BREACHES: With headers: {headers}", self.client.debug)
-            debug_print(f"BREACHES: With params: {sorted_params}", self.client.debug)
-            debug_print(f"BREACHES: With data: '{json_data}'", self.client.debug)
-
-            resolved_timeout = self._resolve_timeout(timeout)
-            response = self._make_request(
-                "POST",
-                url,
-                headers=headers,
-                params=sorted_params,
-                data=json_data,
-                verify=self.client.verify_ssl,
-                timeout=resolved_timeout,
-            )
-            self.client._debug(f"Response Status: {response.status_code}")
-            self.client._debug(f"Response Text: {response.text}")
-            debug_print(f"BREACHES: Response status: {response.status_code}", self.client.debug)
-            debug_print(
-                f"BREACHES: Response headers: {dict(response.headers)}",
-                self.client.debug,
-            )
-            debug_print(f"BREACHES: Response text: '{response.text}'", self.client.debug)
-            response.raise_for_status()
-            return response.json()
+            return self._post_json(endpoint, body, params=params, timeout=timeout)
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            self.client._debug(f"Exception occurred while adding comment: {str(e)}")
-            debug_print(f"BREACHES: Exception: {str(e)}", self.client.debug)
+            self.client._debug(f"Exception occurred while adding comment: {e}")
             raise
 
     def acknowledge(
@@ -195,34 +140,16 @@ class ModelBreaches(BaseEndpoint):
             pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
+            dict: The full JSON response from Darktrace, or a dict mapping pbid to response if pbid is a list.
         """
         if isinstance(pbid, (list, tuple)):
             return {single_pbid: self.acknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/acknowledge"
-        url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {"acknowledge": True}
-        headers, sorted_params = self._get_headers(endpoint, params, body)
         try:
-            # Send JSON as raw data, not as json parameter (as per Darktrace docs)
-            # IMPORTANT: Must use same JSON formatting as in signature generation!
-            json_data = json.dumps(body, separators=(",", ":"))
-            resolved_timeout = self._resolve_timeout(timeout)
-            response = self._make_request(
-                "POST",
-                url,
-                headers=headers,
-                params=sorted_params,
-                data=json_data,
-                verify=self.client.verify_ssl,
-                timeout=resolved_timeout,
-            )
-            self.client._debug(f"Response Status: {response.status_code}")
-            self.client._debug(f"Response Text: {response.text}")
-            response.raise_for_status()
-            return response.json()
+            return self._post_json(endpoint, body, params=params, timeout=timeout)
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            self.client._debug(f"Exception occurred while acknowledging breach: {str(e)}")
+            self.client._debug(f"Exception occurred while acknowledging breach: {e}")
             raise
 
     def unacknowledge(
@@ -238,34 +165,16 @@ class ModelBreaches(BaseEndpoint):
             pbid (int or list of int): Policy breach ID(s) of the model breach(es).
             params: Additional parameters for the API call (future-proofing)
         Returns:
-            dict: The full JSON response from Darktrace (or error info as dict), or a dict mapping pbid to response if pbid is a list.
+            dict: The full JSON response from Darktrace, or a dict mapping pbid to response if pbid is a list.
         """
         if isinstance(pbid, (list, tuple)):
             return {single_pbid: self.unacknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/unacknowledge"
-        url = f"{self.client.host}{endpoint}"
         body: Dict[str, bool] = {"unacknowledge": True}
-        headers, sorted_params = self._get_headers(endpoint, params, body)
         try:
-            # Send JSON as raw data, not as json parameter (as per Darktrace docs)
-            # IMPORTANT: Must use same JSON formatting as in signature generation!
-            json_data = json.dumps(body, separators=(",", ":"))
-            resolved_timeout = self._resolve_timeout(timeout)
-            response = self._make_request(
-                "POST",
-                url,
-                headers=headers,
-                params=sorted_params,
-                data=json_data,
-                verify=self.client.verify_ssl,
-                timeout=resolved_timeout,
-            )
-            self.client._debug(f"Response Status: {response.status_code}")
-            self.client._debug(f"Response Text: {response.text}")
-            response.raise_for_status()
-            return response.json()
+            return self._post_json(endpoint, body, params=params, timeout=timeout)
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            self.client._debug(f"Exception occurred while unacknowledging breach: {str(e)}")
+            self.client._debug(f"Exception occurred while unacknowledging breach: {e}")
             raise
 
     def acknowledge_with_comment(
