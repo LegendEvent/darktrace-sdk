@@ -22,3 +22,4 @@ build/
 
 # Desloppify local state
 .desloppify/
+.gitnexus
