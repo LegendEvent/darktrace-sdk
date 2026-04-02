@@ -1,6 +1,9 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Metrics"]
+
 
 class Metrics(BaseEndpoint):
     def __init__(self, client):
@@ -10,8 +13,8 @@ class Metrics(BaseEndpoint):
         self,
         metric_id: Optional[int] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **params
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **params,
     ):
         """
         Get metrics information from Darktrace.
@@ -29,19 +32,23 @@ class Metrics(BaseEndpoint):
             >>> client.metrics.get(metric_id=4)
             >>> client.metrics.get(responsedata="mlid,name")
         """
-        endpoint = f'/metrics{f"/{metric_id}" if metric_id is not None else ""}'
+        endpoint = f"/metrics{f'/{metric_id}' if metric_id is not None else ''}"
         url = f"{self.client.host}{endpoint}"
         query_params = dict()
         if responsedata is not None:
-            query_params['responsedata'] = responsedata
+            query_params["responsedata"] = responsedata
         # Add any extra params (future-proofing)
         query_params.update(params)
         headers, sorted_params = self._get_headers(endpoint, query_params)
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()

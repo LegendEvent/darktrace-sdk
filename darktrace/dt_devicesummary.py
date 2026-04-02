@@ -1,6 +1,9 @@
-import requests
-from typing import Optional, Union, Tuple, Dict, Any
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Any, Dict, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["DeviceSummary"]
+
 
 class DeviceSummary(BaseEndpoint):
     """
@@ -44,8 +47,8 @@ class DeviceSummary(BaseEndpoint):
         source: Optional[str] = None,
         status: Optional[str] = None,
         responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **kwargs
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         Get device summary information for a specific device.
@@ -70,42 +73,46 @@ class DeviceSummary(BaseEndpoint):
         Returns:
             dict: API response
         """
-        endpoint = '/devicesummary'
+        endpoint = "/devicesummary"
         url = f"{self.client.host}{endpoint}"
-        params = {'did': did}
+        params: Dict[str, Any] = {"did": did}
         if device_name is not None:
-            params['device_name'] = device_name
+            params["device_name"] = device_name
         if ip_address is not None:
-            params['ip_address'] = ip_address
+            params["ip_address"] = ip_address
         if end_timestamp is not None:
-            params['end_timestamp'] = end_timestamp
+            params["end_timestamp"] = end_timestamp
         if start_timestamp is not None:
-            params['start_timestamp'] = start_timestamp
+            params["start_timestamp"] = start_timestamp
         if devicesummary_by is not None:
-            params['devicesummary_by'] = devicesummary_by
+            params["devicesummary_by"] = devicesummary_by
         if devicesummary_by_value is not None:
-            params['devicesummary_by_value'] = devicesummary_by_value
+            params["devicesummary_by_value"] = devicesummary_by_value
         if device_type is not None:
-            params['device_type'] = device_type
+            params["device_type"] = device_type
         if network_location is not None:
-            params['network_location'] = network_location
+            params["network_location"] = network_location
         if network_location_id is not None:
-            params['network_location_id'] = network_location_id
+            params["network_location_id"] = network_location_id
         if peer_id is not None:
-            params['peer_id'] = peer_id
+            params["peer_id"] = peer_id
         if source is not None:
-            params['source'] = source
+            params["source"] = source
         if status is not None:
-            params['status'] = status
+            params["status"] = status
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
         params.update(kwargs)
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()

@@ -1,14 +1,21 @@
-# Darktrace SDK - Pythonic, modular, and complete API wrapper 
-from ._version import __version__
-from .dt_antigena import Antigena
-from .dt_analyst import Analyst
+# Darktrace SDK - Pythonic, modular, and complete API wrapper
+from ._version import __version__  # noqa: F401
 from .auth import DarktraceAuth
 from .client import DarktraceClient
+from .dt_advanced_search import AdvancedSearch
+from .dt_analyst import Analyst
+from .dt_antigena import Antigena
+from .dt_breaches import ModelBreaches
+from .dt_components import Components
+from .dt_cves import CVEs
+from .dt_details import Details
+from .dt_deviceinfo import DeviceInfo
 from .dt_devices import Devices
+from .dt_devicesearch import DeviceSearch
 from .dt_devicesummary import DeviceSummary
 from .dt_email import DarktraceEmail
-from .dt_enums import Enums
 from .dt_endpointdetails import EndpointDetails
+from .dt_enums import Enums
 from .dt_filtertypes import FilterTypes
 from .dt_intelfeed import IntelFeed
 from .dt_mbcomments import MBComments
@@ -22,45 +29,38 @@ from .dt_status import Status
 from .dt_subnets import Subnets
 from .dt_summarystatistics import SummaryStatistics
 from .dt_tags import Tags
-from .dt_utils import debug_print, TimeoutType
-from .dt_components import Components
-from .dt_cves import CVEs
-from .dt_details import Details
-from .dt_deviceinfo import DeviceInfo
-from .dt_devicesearch import DeviceSearch
-from .dt_breaches import ModelBreaches
-from .dt_advanced_search import AdvancedSearch 
+from .dt_utils import TimeoutType, debug_print
 
 __all__ = [
-    'Antigena',
-    'Analyst',
-    'DarktraceAuth',
-    'DarktraceClient',
-    'Devices',
-    'DeviceSummary',
-    'DarktraceEmail',
-    'Enums',
-    'EndpointDetails',
-    'FilterTypes',
-    'IntelFeed',
-    'MBComments',
-    'MetricData',
-    'Metrics',
-    'Models',
-    'Network',
-    'PCAPs',
-    'SimilarDevices',
-    'Status',
-    'Subnets',
-    'SummaryStatistics',
-    'Tags',
-    'Components',
-    'CVEs',
-    'Details',
-    'DeviceInfo',
-    'DeviceSearch',
-    'ModelBreaches',
-    'AdvancedSearch',
-    'debug_print',
-    'TimeoutType',
+    "AdvancedSearch",
+    "Analyst",
+    "Antigena",
+    "CVEs",
+    "Components",
+    "DarktraceAuth",
+    "DarktraceClient",
+    "DarktraceEmail",
+    "Details",
+    "DeviceInfo",
+    "DeviceSearch",
+    "DeviceSummary",
+    "Devices",
+    "EndpointDetails",
+    "Enums",
+    "FilterTypes",
+    "IntelFeed",
+    "MBComments",
+    "MetricData",
+    "Metrics",
+    "ModelBreaches",
+    "Models",
+    "Network",
+    "PCAPs",
+    "SimilarDevices",
+    "Status",
+    "Subnets",
+    "SummaryStatistics",
+    "Tags",
+    "TimeoutType",
+    "debug_print",
 ]

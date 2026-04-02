@@ -1,6 +1,9 @@
-import requests
-from typing import Optional, List, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import List, Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["MetricData"]
+
 
 class MetricData(BaseEndpoint):
     def __init__(self, client):
@@ -26,8 +29,8 @@ class MetricData(BaseEndpoint):
         breachtimes: Optional[bool] = None,
         fulldevicedetails: Optional[bool] = None,
         devices: Optional[List[str]] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **params
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **params,
     ):
         """
         Get metric time series data from Darktrace /metricdata endpoint.
@@ -57,48 +60,48 @@ class MetricData(BaseEndpoint):
         Returns:
             dict: Metric time series data from Darktrace.
         """
-        endpoint = '/metricdata'
+        endpoint = "/metricdata"
         url = f"{self.client.host}{endpoint}"
         query_params = dict()
 
-        # Handle metric/metrics
+        # Handle metric/metrics - mutually exclusive: use either metrics (list) or metric (single string)
         if metrics is not None:
-            query_params['metric'] = ','.join(metrics)
+            query_params["metric"] = ",".join(metrics)
         elif metric is not None:
-            query_params['metric'] = metric
+            query_params["metric"] = metric
 
         if did is not None:
-            query_params['did'] = did
+            query_params["did"] = did
         if ddid is not None:
-            query_params['ddid'] = ddid
+            query_params["ddid"] = ddid
         if odid is not None:
-            query_params['odid'] = odid
+            query_params["odid"] = odid
         if port is not None:
-            query_params['port'] = port
+            query_params["port"] = port
         if sourceport is not None:
-            query_params['sourceport'] = sourceport
+            query_params["sourceport"] = sourceport
         if destinationport is not None:
-            query_params['destinationport'] = destinationport
+            query_params["destinationport"] = destinationport
         if protocol is not None:
-            query_params['protocol'] = protocol
+            query_params["protocol"] = protocol
         if applicationprotocol is not None:
-            query_params['applicationprotocol'] = applicationprotocol
+            query_params["applicationprotocol"] = applicationprotocol
         if starttime is not None:
-            query_params['starttime'] = starttime
+            query_params["starttime"] = starttime
         if endtime is not None:
-            query_params['endtime'] = endtime
+            query_params["endtime"] = endtime
         if from_ is not None:
-            query_params['from'] = from_
+            query_params["from"] = from_
         if to is not None:
-            query_params['to'] = to
+            query_params["to"] = to
         if interval is not None:
-            query_params['interval'] = interval
+            query_params["interval"] = interval
         if breachtimes is not None:
-            query_params['breachtimes'] = breachtimes
+            query_params["breachtimes"] = breachtimes
         if fulldevicedetails is not None:
-            query_params['fulldevicedetails'] = fulldevicedetails
+            query_params["fulldevicedetails"] = fulldevicedetails
         if devices is not None:
-            query_params['devices'] = ','.join(devices)
+            query_params["devices"] = ",".join(devices)
 
         # Add any extra params
         query_params.update(params)
@@ -107,8 +110,12 @@ class MetricData(BaseEndpoint):
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()

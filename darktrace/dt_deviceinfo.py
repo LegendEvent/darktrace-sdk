@@ -1,6 +1,9 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from typing import Optional, Tuple, Union
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["DeviceInfo"]
+
 
 class DeviceInfo(BaseEndpoint):
     def __init__(self, client):
@@ -17,8 +20,8 @@ class DeviceInfo(BaseEndpoint):
         showallgraphdata: bool = True,
         similardevices: Optional[int] = None,
         intervalhours: int = 1,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **params
+        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        **params,
     ):
         """
         Get device connection information from the /deviceinfo endpoint.
@@ -51,30 +54,36 @@ class DeviceInfo(BaseEndpoint):
         dict
             JSON response from the API.
         """
-        endpoint = '/deviceinfo'
-        params.update({
-            'did': did,
-            'datatype': datatype,
-            'showallgraphdata': str(showallgraphdata).lower(),
-            'fulldevicedetails': str(fulldevicedetails).lower(),
-            'intervalhours': intervalhours
-        })
+        endpoint = "/deviceinfo"
+        params.update(
+            {
+                "did": did,
+                "datatype": datatype,
+                "showallgraphdata": str(showallgraphdata).lower(),
+                "fulldevicedetails": str(fulldevicedetails).lower(),
+                "intervalhours": intervalhours,
+            }
+        )
         if odid is not None:
-            params['odid'] = odid
+            params["odid"] = odid
         if port is not None:
-            params['port'] = port
+            params["port"] = port
         if externaldomain is not None:
-            params['externaldomain'] = externaldomain
+            params["externaldomain"] = externaldomain
         if similardevices is not None:
-            params['similardevices'] = similardevices
+            params["similardevices"] = similardevices
 
         url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint, params)
         resolved_timeout = self._resolve_timeout(timeout)
 
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params or params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params or params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
         response.raise_for_status()
         return response.json()

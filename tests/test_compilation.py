@@ -8,10 +8,9 @@ No network calls are made - this is purely a static validation test.
 Run: pytest tests/test_compilation.py -v
 """
 
-import pytest
-import sys
 import importlib
-from typing import List, Tuple
+
+import pytest
 
 
 class TestSDKCompilation:
@@ -25,9 +24,7 @@ class TestSDKCompilation:
         assert len(__version__) > 0
         # Should be semantic version format
         parts = __version__.split(".")
-        assert len(parts) >= 2, (
-            f"Version should have at least major.minor: {__version__}"
-        )
+        assert len(parts) >= 2, f"Version should have at least major.minor: {__version__}"
 
     def test_auth_module(self):
         """Test auth module imports and has DarktraceAuth class."""
@@ -38,14 +35,9 @@ class TestSDKCompilation:
     def test_utils_module(self):
         """Test dt_utils module has required components."""
         from darktrace.dt_utils import (
-            BaseEndpoint,
-            debug_print,
-            encode_query,
-            TimeoutType,
-            _UNSET,
-            _MAX_RETRIES,
             _INITIAL_RETRY_WAIT_SECONDS,
-            _RETRY_STATUS_CODES,
+            _MAX_RETRIES,
+            BaseEndpoint,
         )
 
         assert BaseEndpoint is not None
@@ -210,8 +202,8 @@ class TestSDKCompilation:
 
     def test_no_syntax_errors(self):
         """Compile all Python files to check for syntax errors."""
-        import py_compile
         import os
+        import py_compile
 
         errors = []
         darktrace_dir = os.path.dirname(__import__("darktrace").__file__)
