@@ -1,4 +1,5 @@
 import json
+import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
@@ -84,26 +85,47 @@ class Antigena(BaseEndpoint):
         response.raise_for_status()
         return response.json()
 
+    def approve_action(self, codeid: int) -> dict:
+        """
+        Approve a pending Darktrace RESPOND action (backwards compatibility, no-op).
+
+        .. deprecated:: 0.9.0
+            This method is a no-op for backwards compatibility only. No migration is needed.
+
+        This method is retained for backwards compatibility only. In modern Darktrace
+        versions, the approve/decline workflow has been replaced by direct action
+        management methods. This method is a no-op that returns a success response.
+
+        Args:
+            codeid (int): Unique numeric identifier of a RESPOND action (ignored).
+
+        Returns:
+            dict: A dummy success response for backwards compatibility.
+        """
+        warnings.warn(
+            "approve_action() is deprecated. This method is a no-op for backwards compatibility only. No migration is needed.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return {
+            "success": True,
+            "message": "Action approved (no-op for backwards compatibility)",
+        }
+
     def activate_action(
         self,
         codeid: int,
         reason: str = "",
-        duration: Optional[int] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
     ) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
 
-        This method changes the state of a RESPOND action from pending to active. Actions created
-        by models will have a default duration, defined by the "Darktrace RESPOND Action Duration"
-        setting on the model. If no duration value is provided, the action is activated for the
-        default time period.
+        Activate a pending action that requires human confirmation.
 
         Args:
             codeid (int): Unique numeric identifier of a RESPOND action.
-            reason (str, optional): Free text field to specify the action purpose. Required if
-                "Audit Antigena" setting is enabled on the Darktrace System Config page.
-            duration (int, optional): Specify how long the action should be active for in seconds.
+            reason (str, optional): Free text field to specify the activation purpose.
             timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
                 float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
@@ -111,11 +133,8 @@ class Antigena(BaseEndpoint):
             dict: API response containing activation result
 
         Example:
-            # Activate action with default duration
-            success = client.antigena.activate_action(123, reason="Suspicious activity detected")
-
-            # Activate action with custom duration (10 minutes)
-            success = client.antigena.activate_action(123, duration=600, reason="Extended monitoring")
+            # Activate a pending action
+            success = client.antigena.activate_action(123, reason="Confirmed legitimate")
         """
         endpoint = "/antigena"
         url = f"{self.client.host}{endpoint}"
@@ -124,12 +143,9 @@ class Antigena(BaseEndpoint):
 
         if reason:
             body["reason"] = reason
-        if duration is not None:
-            body["duration"] = duration
 
         headers, sorted_params = self._get_headers(endpoint, json_body=body)
 
-        # Send JSON as raw data with consistent formatting (same as signature generation)
         json_data = json.dumps(body, separators=(",", ":"))
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
