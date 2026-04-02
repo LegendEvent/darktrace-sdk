@@ -1,3 +1,4 @@
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -32,12 +33,29 @@ from .dt_summarystatistics import SummaryStatistics
 from .dt_tags import Tags
 from .dt_utils import TimeoutType, debug_print
 
+__all__ = ["DarktraceClient"]
+
 # Allowed URL schemes - block dangerous ones for SSRF protection
 # Note: Private IPs are ALLOWED because Darktrace runs on baremetal in enterprises
 _ALLOWED_SCHEMES = frozenset({"http", "https"})
 
 
 class DarktraceClient:
+    """Client for the Darktrace Threat Visualizer API.
+
+    Provides authenticated access to all Darktrace endpoints with automatic
+    retry logic, connection pooling, and configurable timeouts.
+
+    Example::
+
+        with DarktraceClient(
+            host="https://your-instance.darktrace.com",
+            public_token="your_public_token",
+            private_token="your_private_token",
+        ) as client:
+            devices = client.devices.get()
+    """
+
     host: str
     auth: DarktraceAuth
     debug: bool
@@ -184,10 +202,11 @@ class DarktraceClient:
         """Close the underlying requests session to free resources."""
         self._session.close()
 
+    def __repr__(self) -> str:
+        return f"<DarktraceClient host={self.host!r}>"
+
     def __enter__(self) -> "DarktraceClient":
-        """Context manager entry."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Context manager exit - closes session."""
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()

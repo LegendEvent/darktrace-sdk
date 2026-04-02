@@ -4,11 +4,24 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
+__all__ = ["DarktraceAuth"]
+
 
 class DarktraceAuth:
-    def __init__(self, public_token: str, private_token: str):
+    """HMAC-SHA1 authentication for the Darktrace API.
+
+    Generates request signatures using the public token, private token,
+    and request details (path, query parameters, JSON body) as required
+    by the Darktrace Threat Visualizer API.
+    """
+
+    def __init__(self, public_token: str, private_token: str) -> None:
         self.public_token = public_token
         self.private_token = private_token
+
+    def __repr__(self) -> str:
+        masked = self.public_token[:4] + "..." if len(self.public_token) > 4 else "***"
+        return f"<DarktraceAuth public_token={masked}>"
 
     def get_headers(
         self,
