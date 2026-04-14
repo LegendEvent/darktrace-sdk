@@ -23,3 +23,8 @@ build/
 # Desloppify local state
 .desloppify/
 .gitnexus
+
+# Local-only tooling (not for remote)
+.github/
+.gitnexus-allowlist
+.pre-commit-config.yaml
