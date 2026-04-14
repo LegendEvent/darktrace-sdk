@@ -35,3 +35,16 @@ Subnets | orphaned-classes | SDK endpoint, dynamically instantiated
 SummaryStatistics | orphaned-classes | SDK endpoint, dynamically instantiated
 Tags | orphaned-classes | SDK endpoint, dynamically instantiated
 BaseEndpoint | orphaned-classes | base class, used via inheritance
+
+# Exception classes — imported via __init__.py and raised dynamically via _raise_for_status()
+DarktraceError | orphaned-classes | base exception, raised dynamically
+AuthenticationError | orphaned-classes | raised via _raise_for_status()
+BadRequestError | orphaned-classes | raised via _raise_for_status()
+ConnectionError | orphaned-classes | raised via _raise_for_status()
+ForbiddenError | orphaned-classes | raised via _raise_for_status()
+NotFoundError | orphaned-classes | raised via _raise_for_status()
+RateLimitError | orphaned-classes | raised via _raise_for_status()
+ServerError | orphaned-classes | raised via _raise_for_status()
+
+# Deprecated function kept for backward compat
+approve_action | deprecated | deprecated but tested for backward compatibility
