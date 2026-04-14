@@ -53,9 +53,7 @@ class Network(BaseEndpoint):
         Returns:
             dict: Network connectivity/statistics information from Darktrace.
         """
-        endpoint = "/network"
-        url = f"{self.client.host}{endpoint}"
-        params = dict()
+        params = {}
         if applicationprotocol is not None:
             params["applicationprotocol"] = applicationprotocol
         if destinationport is not None:
@@ -88,17 +86,4 @@ class Network(BaseEndpoint):
             params["viewsubnet"] = viewsubnet
         if responsedata is not None:
             params["responsedata"] = responsedata
-
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get("/network", params=params, timeout=timeout)

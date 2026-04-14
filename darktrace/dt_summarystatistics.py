@@ -36,10 +36,7 @@ class SummaryStatistics(BaseEndpoint):
         Returns:
             dict: Summary statistics information from Darktrace.
         """
-        endpoint = "/summarystatistics"
-        url = f"{self.client.host}{endpoint}"
-
-        params = dict()
+        params = {}
         if responsedata is not None:
             params["responsedata"] = responsedata
         if eventtype is not None:
@@ -54,17 +51,4 @@ class SummaryStatistics(BaseEndpoint):
             params["csensor"] = csensor
         if mitreTactics is not None:
             params["mitreTactics"] = mitreTactics
-
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get("/summarystatistics", params=params, timeout=timeout)

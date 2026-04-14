@@ -10,8 +10,9 @@ from typing import Any, Optional, Tuple, Union
 
 import requests
 
-__all__ = ["BaseEndpoint", "TimeoutType", "debug_print", "encode_query"]
+from .exceptions import _raise_for_status
 
+__all__ = ["BaseEndpoint", "TimeoutType", "debug_print", "encode_query"]
 logger = logging.getLogger("darktrace")
 
 # Type alias for timeout parameter — can be None, float, or tuple of (connect, read)
@@ -151,7 +152,7 @@ class BaseEndpoint:
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=url)
         return response.json()
 
     def _post_json(
@@ -190,7 +191,7 @@ class BaseEndpoint:
         )
         if self.client.debug:
             logger.debug("POST %s [%d]", endpoint, response.status_code)
-        response.raise_for_status()
+        _raise_for_status(response, method="POST", url=url)
         return response.json()
 
     def _post_form(
@@ -224,7 +225,37 @@ class BaseEndpoint:
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="POST", url=url)
+        return response.json()
+
+    def _delete(
+        self,
+        endpoint: str,
+        params: dict[str, Any] | None = None,
+        timeout: _InternalTimeoutType = _UNSET,
+    ) -> Any:
+        """Make an authenticated DELETE request.
+
+        Args:
+            endpoint: The API endpoint path (e.g. "/tags/123").
+            params: Optional query parameters.
+            timeout: Per-request timeout override.
+
+        Returns:
+            Parsed JSON response.
+        """
+        headers, sorted_params = self._get_headers(endpoint, params)
+        url = f"{self.client.host}{endpoint}"
+        resolved_timeout = self._resolve_timeout(timeout)
+        response = self._make_request(
+            "DELETE",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
+        )
+        _raise_for_status(response, method="DELETE", url=url)
         return response.json()
 
     def _make_request(self, method: str, url: str, **kwargs) -> requests.Response:

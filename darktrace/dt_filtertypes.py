@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -31,7 +31,7 @@ class FilterTypes(BaseEndpoint):
         responsedata: Optional[str] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Get all filter types or restrict to a specific field/object.
 
@@ -42,22 +42,8 @@ class FilterTypes(BaseEndpoint):
         Returns:
             list: List of filter type objects from the Darktrace API.
         """
-        endpoint = "/filtertypes"
-        url = f"{self.client.host}{endpoint}"
-        query_params = dict()
+        query_params = {}
         if responsedata:
             query_params["responsedata"] = responsedata
         query_params.update(params)
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get("/filtertypes", params=query_params, timeout=timeout)

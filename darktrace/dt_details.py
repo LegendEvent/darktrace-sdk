@@ -72,7 +72,6 @@ class Details(BaseEndpoint):
             - If from_ or starttime is used, count must not be used.
         """
         endpoint = "/details"
-        url = f"{self.client.host}{endpoint}"
         # --- Parameter validation logic ---
         # At least one of did, pbid, msg, or blockedconnections is required
         if not any([did, pbid, msg, blockedconnections]):
@@ -137,16 +136,4 @@ class Details(BaseEndpoint):
         if responsedata is not None:
             params["responsedata"] = responsedata
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

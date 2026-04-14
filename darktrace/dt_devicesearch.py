@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -72,7 +72,6 @@ class DeviceSearch(BaseEndpoint):
             dict: API response
         """
         endpoint = "/devicesearch"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if count is not None:
             params["count"] = count
@@ -116,26 +115,14 @@ class DeviceSearch(BaseEndpoint):
         # Allow for future/undocumented params
         params.update(kwargs)
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_tag(
         self,
         tag: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific tag.
 
@@ -155,7 +142,7 @@ class DeviceSearch(BaseEndpoint):
         type: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific type.
 
@@ -175,7 +162,7 @@ class DeviceSearch(BaseEndpoint):
         label: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific label.
 
@@ -195,7 +182,7 @@ class DeviceSearch(BaseEndpoint):
         vendor: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific vendor.
 
@@ -215,7 +202,7 @@ class DeviceSearch(BaseEndpoint):
         hostname: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific hostname.
 
@@ -235,7 +222,7 @@ class DeviceSearch(BaseEndpoint):
         ip: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific IP address.
 
@@ -255,7 +242,7 @@ class DeviceSearch(BaseEndpoint):
         mac: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Search for devices with a specific MAC address.
 

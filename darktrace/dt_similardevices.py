@@ -35,9 +35,7 @@ class SimilarDevices(BaseEndpoint):
             list or dict: Similar devices information from Darktrace.
         """
         endpoint = f"/similardevices{f'/{device_id}' if device_id else ''}"
-        url = f"{self.client.host}{endpoint}"
-
-        params = dict()
+        params = {}
         if count is not None:
             params["count"] = count
         if fulldevicedetails is not None:
@@ -48,17 +46,4 @@ class SimilarDevices(BaseEndpoint):
             params["responsedata"] = responsedata
         # Allow passing extra params for forward compatibility
         params.update(kwargs)
-
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

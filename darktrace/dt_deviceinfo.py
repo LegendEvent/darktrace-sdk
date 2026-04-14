@@ -73,17 +73,4 @@ class DeviceInfo(BaseEndpoint):
         if similardevices is not None:
             params["similardevices"] = similardevices
 
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params or params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

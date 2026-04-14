@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -15,7 +15,7 @@ class Components(BaseEndpoint):
         responsedata: Optional[str] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Get information about model components.
 
@@ -33,20 +33,6 @@ class Components(BaseEndpoint):
             get(responsedata='filters')  # Only return the 'filters' field for all components
         """
         endpoint = f"/components{f'/{cid}' if cid is not None else ''}"
-        # Add responsedata to params if provided
         if responsedata is not None:
             params["responsedata"] = responsedata
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params if params else None, timeout=timeout)
