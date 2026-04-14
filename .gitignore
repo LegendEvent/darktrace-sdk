@@ -20,6 +20,22 @@ __pycache__/
 dist/
 build/
 
+# Claude AI
+.claude/
+CLAUDE.md
+
+# Coverage
+.coverage
+
+# Darktrace API Guide
+Darktrace_API_Guide.md
+
+# Sisyphus work state
+.sisyphus/
+
+# Virtual environment
+.venv/
+
 # Desloppify local state
 .desloppify/
 .gitnexus

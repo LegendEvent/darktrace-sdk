@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
 from .exceptions import _raise_for_status
@@ -7,10 +9,10 @@ __all__ = ["DarktraceEmail"]
 
 
 class DarktraceEmail(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
-    def decode_link(self, link: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def decode_link(self, link: str, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """
         Decode a link using the Darktrace/Email API.
 
@@ -29,10 +31,10 @@ class DarktraceEmail(BaseEndpoint):
 
     def get_action_summary(
         self,
-        days: Optional[int] = None,
-        limit: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        days: int | None = None,
+        limit: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get action summary from Darktrace/Email API.
 
@@ -56,10 +58,10 @@ class DarktraceEmail(BaseEndpoint):
 
     def get_dash_stats(
         self,
-        days: Optional[int] = None,
-        limit: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        days: int | None = None,
+        limit: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get dashboard stats from Darktrace/Email API.
 
@@ -83,10 +85,10 @@ class DarktraceEmail(BaseEndpoint):
 
     def get_data_loss(
         self,
-        days: Optional[int] = None,
-        limit: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        days: int | None = None,
+        limit: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get data loss information from Darktrace/Email API.
 
@@ -110,10 +112,10 @@ class DarktraceEmail(BaseEndpoint):
 
     def get_user_anomaly(
         self,
-        days: Optional[int] = None,
-        limit: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        days: int | None = None,
+        limit: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get user anomaly data from Darktrace/Email API.
 
@@ -138,9 +140,9 @@ class DarktraceEmail(BaseEndpoint):
     def email_action(
         self,
         uuid: str,
-        data: Dict[str, Any],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        data: dict[str, Any],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Perform an action on an email by UUID in Darktrace/Email API."""
         endpoint = f"/agemail/api/ep/api/v1.0/emails/{uuid}/action"
         return self._post_json(endpoint, body=data, timeout=timeout)
@@ -148,9 +150,9 @@ class DarktraceEmail(BaseEndpoint):
     def get_email(
         self,
         uuid: str,
-        include_headers: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        include_headers: bool | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get email details by UUID from Darktrace/Email API.
 
@@ -170,7 +172,7 @@ class DarktraceEmail(BaseEndpoint):
             params["include_headers"] = include_headers
         return self._get(endpoint, params=params, timeout=timeout)
 
-    def download_email(self, uuid: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> bytes:
+    def download_email(self, uuid: str, timeout: float | tuple[float, float] | None = _UNSET) -> bytes:
         """
         Download an email by UUID from Darktrace/Email API.
 
@@ -199,14 +201,14 @@ class DarktraceEmail(BaseEndpoint):
 
     def search_emails(
         self,
-        data: Dict[str, Any],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        data: dict[str, Any],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """Search emails in Darktrace/Email API."""
         endpoint = "/agemail/api/ep/api/v1.0/emails/search"
         return self._post_json(endpoint, body=data, timeout=timeout)
 
-    def get_tags(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_tags(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """
         Get tags from Darktrace/Email API.
 
@@ -221,7 +223,7 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = "/agemail/api/ep/api/v1.0/resources/tags"
         return self._get(endpoint, timeout=timeout)
 
-    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_actions(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """
         Get actions from Darktrace/Email API.
 
@@ -236,7 +238,7 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = "/agemail/api/ep/api/v1.0/resources/actions"
         return self._get(endpoint, timeout=timeout)
 
-    def get_filters(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_filters(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """
         Get filters from Darktrace/Email API.
 
@@ -251,7 +253,7 @@ class DarktraceEmail(BaseEndpoint):
         endpoint = "/agemail/api/ep/api/v1.0/resources/filters"
         return self._get(endpoint, timeout=timeout)
 
-    def get_event_types(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_event_types(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """
         Get audit event types from Darktrace/Email API.
 
@@ -268,11 +270,11 @@ class DarktraceEmail(BaseEndpoint):
 
     def get_audit_events(
         self,
-        event_type: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        event_type: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get audit events from Darktrace/Email API.
 

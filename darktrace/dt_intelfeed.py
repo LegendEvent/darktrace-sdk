@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -24,18 +26,18 @@ class IntelFeed(BaseEndpoint):
         list: List of watched domains, IPs, or hostnames, or list of sources, or detailed entry dicts.
     """
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        sources: Optional[bool] = None,
-        source: Optional[str] = None,
-        fulldetails: Optional[bool] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        sources: bool | None = None,
+        source: str | None = None,
+        fulldetails: bool | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict | list:
         """
         Get the intelfeed list, sources, or detailed entries.
 
@@ -62,31 +64,31 @@ class IntelFeed(BaseEndpoint):
         query_params.update(params)
         return self._get(endpoint, params=query_params, timeout=timeout)
 
-    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_sources(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """Get a list of sources for entries on the intelfeed list."""
         return self.get(sources=True, timeout=timeout)
 
-    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_by_source(self, source: str, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """Get the intel feed list for all entries under a specific source."""
         return self.get(source=source, timeout=timeout)
 
-    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def get_with_details(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """Get intel feed with full details about expiry time and description for each entry."""
         return self.get(fulldetails=True, timeout=timeout)
 
     def update(
         self,
-        add_entry: Optional[str] = None,
-        add_list: Optional[List[str]] = None,
-        description: Optional[str] = None,
-        source: Optional[str] = None,
-        expiry: Optional[str] = None,
+        add_entry: str | None = None,
+        add_list: list[str] | None = None,
+        description: str | None = None,
+        source: str | None = None,
+        expiry: str | None = None,
         is_hostname: bool = False,
-        remove_entry: Optional[str] = None,
+        remove_entry: str | None = None,
         remove_all: bool = False,
         enable_antigena: bool = False,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Update the intel feed (watched domains) in Darktrace.
 
         Args:
@@ -103,7 +105,7 @@ class IntelFeed(BaseEndpoint):
         endpoint = "/intelfeed"
 
         # Build the request body
-        body: Dict[str, Any] = {}
+        body: dict[str, Any] = {}
 
         if add_entry:
             body["addentry"] = add_entry

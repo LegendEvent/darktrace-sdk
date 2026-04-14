@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,24 +8,24 @@ __all__ = ["Devices"]
 
 
 class Devices(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        did: Optional[int] = None,
-        ip: Optional[str] = None,
-        iptime: Optional[str] = None,
-        mac: Optional[str] = None,
-        seensince: Optional[str] = None,
-        sid: Optional[int] = None,
-        count: Optional[int] = None,
-        includetags: Optional[bool] = None,
-        responsedata: Optional[str] = None,
-        cloudsecurity: Optional[bool] = None,
-        saasfilter: Optional[Any] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        did: int | None = None,
+        ip: str | None = None,
+        iptime: str | None = None,
+        mac: str | None = None,
+        seensince: str | None = None,
+        sid: int | None = None,
+        count: int | None = None,
+        includetags: bool | None = None,
+        responsedata: str | None = None,
+        cloudsecurity: bool | None = None,
+        saasfilter: Any | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get device(s) from Darktrace.
 
@@ -76,9 +78,9 @@ class Devices(BaseEndpoint):
     def update(
         self,
         did: int,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict:
         """Update device properties in Darktrace.
 
         Args:
@@ -91,7 +93,7 @@ class Devices(BaseEndpoint):
         endpoint = "/devices"
 
         # Prepare request body
-        body: Dict[str, Any] = {"did": did}
+        body: dict[str, Any] = {"did": did}
         body.update(kwargs)
 
         return self._post_json(endpoint, body=body, timeout=timeout)

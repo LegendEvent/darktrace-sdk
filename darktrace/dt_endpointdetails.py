@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,19 +6,19 @@ __all__ = ["EndpointDetails"]
 
 
 class EndpointDetails(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        ip: Optional[str] = None,
-        hostname: Optional[str] = None,
-        additionalinfo: Optional[bool] = None,
-        devices: Optional[bool] = None,
-        score: Optional[bool] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:
+        ip: str | None = None,
+        hostname: str | None = None,
+        additionalinfo: bool | None = None,
+        devices: bool | None = None,
+        score: bool | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get endpoint details from Darktrace.
 

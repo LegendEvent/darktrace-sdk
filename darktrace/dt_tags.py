@@ -1,4 +1,6 @@
-from typing import Any, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,17 +8,17 @@ __all__ = ["Tags"]
 
 
 class Tags(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     # TAGS ENDPOINT
     def get(
         self,
-        tag_id: Optional[str] = None,
-        tag: Optional[str] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        tag_id: str | None = None,
+        tag: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get tag information from Darktrace.
 
@@ -42,10 +44,10 @@ class Tags(BaseEndpoint):
     def create(
         self,
         name: str,
-        color: Optional[int] = None,
-        description: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        color: int | None = None,
+        description: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Create a new tag in Darktrace.
 
@@ -66,7 +68,7 @@ class Tags(BaseEndpoint):
 
         return self._post_json("/tags", body=body, timeout=timeout)
 
-    def delete(self, tag_id: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
+    def delete(self, tag_id: str, timeout: float | tuple[float, float] | None = _UNSET) -> dict:
         """
         Delete a tag by tag ID (tid).
 
@@ -83,12 +85,12 @@ class Tags(BaseEndpoint):
 
     def get_entities(
         self,
-        did: Optional[int] = None,
-        tag: Optional[str] = None,
-        responsedata: Optional[str] = None,
-        fulldevicedetails: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        did: int | None = None,
+        tag: str | None = None,
+        responsedata: str | None = None,
+        fulldevicedetails: bool | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get tags for a device or devices for a tag via /tags/entities.
 
@@ -117,9 +119,9 @@ class Tags(BaseEndpoint):
         self,
         did: int,
         tag: str,
-        duration: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        duration: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Add a tag to a device via /tags/entities (POST, form-encoded).
 
@@ -141,8 +143,8 @@ class Tags(BaseEndpoint):
         self,
         did: int,
         tag: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Remove a tag from a device via /tags/entities (DELETE).
 
@@ -162,10 +164,10 @@ class Tags(BaseEndpoint):
     def get_tag_entities(
         self,
         tid: int,
-        responsedata: Optional[str] = None,
-        fulldevicedetails: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        responsedata: str | None = None,
+        fulldevicedetails: bool | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get entities (devices or credentials) associated with a specific tag via /tags/[tid]/entities (GET).
 
@@ -190,9 +192,9 @@ class Tags(BaseEndpoint):
         tid: int,
         entityType: str,
         entityValue,
-        expiryDuration: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        expiryDuration: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Add a tag to one or more entities (device or credential) via /tags/[tid]/entities (POST, JSON body).
 
@@ -215,8 +217,8 @@ class Tags(BaseEndpoint):
         self,
         tid: int,
         teid: int,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Remove a tag from an entity via /tags/[tid]/entities/[teid] (DELETE).
 

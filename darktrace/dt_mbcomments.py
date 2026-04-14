@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,20 +6,20 @@ __all__ = ["MBComments"]
 
 
 class MBComments(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        comment_id: Optional[str] = None,
-        starttime: Optional[int] = None,
-        endtime: Optional[int] = None,
-        responsedata: Optional[str] = None,
-        count: Optional[int] = None,
-        pbid: Optional[int] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        comment_id: str | None = None,
+        starttime: int | None = None,
+        endtime: int | None = None,
+        responsedata: str | None = None,
+        count: int | None = None,
+        pbid: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict | list:
         """
         Get model breach comments or details for a specific comment.
 
@@ -55,9 +55,9 @@ class MBComments(BaseEndpoint):
         self,
         breach_id: str,
         comment: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict:
         """Add a comment to a model breach.
 
         Args:
@@ -67,6 +67,6 @@ class MBComments(BaseEndpoint):
             **params: Additional parameters.
         """
         endpoint = "/mbcomments"
-        body: Dict[str, Any] = {"breachid": breach_id, "comment": comment}
+        body: dict[str, str] = {"breachid": breach_id, "comment": comment}
         body.update(params)
         return self._post_json(endpoint, body=body, timeout=timeout)

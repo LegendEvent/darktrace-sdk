@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,29 +6,29 @@ __all__ = ["Network"]
 
 
 class Network(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        applicationprotocol: Optional[str] = None,
-        destinationport: Optional[int] = None,
-        did: Optional[int] = None,
-        endtime: Optional[int] = None,
-        from_: Optional[str] = None,
-        fulldevicedetails: Optional[bool] = None,
-        intext: Optional[str] = None,
-        ip: Optional[str] = None,
-        metric: Optional[str] = None,
-        port: Optional[int] = None,
-        protocol: Optional[str] = None,
-        sourceport: Optional[int] = None,
-        starttime: Optional[int] = None,
-        to: Optional[str] = None,
-        viewsubnet: Optional[int] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        applicationprotocol: str | None = None,
+        destinationport: int | None = None,
+        did: int | None = None,
+        endtime: int | None = None,
+        from_: str | None = None,
+        fulldevicedetails: bool | None = None,
+        intext: str | None = None,
+        ip: str | None = None,
+        metric: str | None = None,
+        port: int | None = None,
+        protocol: str | None = None,
+        sourceport: int | None = None,
+        starttime: int | None = None,
+        to: str | None = None,
+        viewsubnet: int | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get network connectivity and statistics information from Darktrace.
 

@@ -1,20 +1,21 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
+from .exceptions import _raise_for_status
 
 __all__ = ["PCAPs"]
 
 
 class PCAPs(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        pcap_id: Optional[str] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        pcap_id: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list | bytes:
         """
         Retrieve PCAP information or download a specific PCAP file from Darktrace.
 
@@ -41,7 +42,7 @@ class PCAPs(BaseEndpoint):
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=url)
         # Return JSON if possible, else return raw content (for PCAP file download)
         return response.json() if "application/json" in response.headers.get("Content-Type", "") else response.content
 
@@ -50,12 +51,12 @@ class PCAPs(BaseEndpoint):
         ip1: str,
         start: int,
         end: int,
-        ip2: Optional[str] = None,
-        port1: Optional[int] = None,
-        port2: Optional[int] = None,
-        protocol: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        ip2: str | None = None,
+        port1: int | None = None,
+        port2: int | None = None,
+        protocol: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Create a new PCAP capture request in Darktrace.
 

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import json
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any
 
 import requests
 
@@ -16,9 +18,9 @@ class ModelBreaches(BaseEndpoint):
 
     def get(
         self,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict | list:
         """
         Get model breach alerts from the /modelbreaches endpoint.
 
@@ -72,10 +74,10 @@ class ModelBreaches(BaseEndpoint):
 
     def get_comments(
         self,
-        pbid: Union[int, list],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        pbid: int | list,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict | list:
         """
         Get comments for a specific model breach alert.
 
@@ -94,9 +96,9 @@ class ModelBreaches(BaseEndpoint):
         self,
         pbid: int,
         message: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict:
         """
         Add a comment to a model breach alert.
 
@@ -108,7 +110,7 @@ class ModelBreaches(BaseEndpoint):
             dict: The full JSON response from Darktrace
         """
         endpoint = f"/modelbreaches/{pbid}/comments"
-        body: Dict[str, Any] = {"message": message}
+        body: dict[str, Any] = {"message": message}
         try:
             return self._post_json(endpoint, body, params=params, timeout=timeout)
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
@@ -117,10 +119,10 @@ class ModelBreaches(BaseEndpoint):
 
     def acknowledge(
         self,
-        pbid: Union[int, list],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        pbid: int | list,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict:
         """
         Acknowledge a model breach alert.
 
@@ -133,7 +135,7 @@ class ModelBreaches(BaseEndpoint):
         if isinstance(pbid, (list, tuple)):
             return {single_pbid: self.acknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/acknowledge"
-        body: Dict[str, bool] = {"acknowledge": True}
+        body: dict[str, bool] = {"acknowledge": True}
         try:
             return self._post_json(endpoint, body, params=params, timeout=timeout)
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
@@ -142,10 +144,10 @@ class ModelBreaches(BaseEndpoint):
 
     def unacknowledge(
         self,
-        pbid: Union[int, list],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        pbid: int | list,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict:
         """
         Unacknowledge a model breach alert.
 
@@ -158,7 +160,7 @@ class ModelBreaches(BaseEndpoint):
         if isinstance(pbid, (list, tuple)):
             return {single_pbid: self.unacknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/unacknowledge"
-        body: Dict[str, bool] = {"unacknowledge": True}
+        body: dict[str, bool] = {"unacknowledge": True}
         try:
             return self._post_json(endpoint, body, params=params, timeout=timeout)
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
@@ -169,9 +171,9 @@ class ModelBreaches(BaseEndpoint):
         self,
         pbid: int,
         message: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict:
         """
         Acknowledge a model breach and add a comment in one call.
 
@@ -191,9 +193,9 @@ class ModelBreaches(BaseEndpoint):
         self,
         pbid: int,
         message: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict:
         """
         Unacknowledge a model breach and add a comment in one call.
 

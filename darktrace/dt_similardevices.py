@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,19 +6,19 @@ __all__ = ["SimilarDevices"]
 
 
 class SimilarDevices(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        device_id: Optional[str] = None,
-        count: Optional[int] = None,
-        fulldevicedetails: Optional[bool] = None,
-        token: Optional[str] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        device_id: str | None = None,
+        count: int | None = None,
+        fulldevicedetails: bool | None = None,
+        token: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ):
+    ) -> dict | list:
         """
         Get similar devices information from Darktrace.
 
