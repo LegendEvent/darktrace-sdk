@@ -41,7 +41,7 @@ Darktrace_API_Guide.md
 .gitnexus
 
 # Local-only tooling (not for remote)
-.github/
+.github/workflows/lint.yml
 .gitnexus-allowlist
 .pre-commit-config.yaml
 
