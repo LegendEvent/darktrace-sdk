@@ -44,3 +44,5 @@ Darktrace_API_Guide.md
 .github/
 .gitnexus-allowlist
 .pre-commit-config.yaml
+
+hooks/
