@@ -1,4 +1,4 @@
-from typing import Any, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -23,15 +23,15 @@ class FilterTypes(BaseEndpoint):
             - graphable (bool, optional): True if the filter can be used on a graph.
     """
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict | list:
         """
         Get all filter types or restrict to a specific field/object.
 

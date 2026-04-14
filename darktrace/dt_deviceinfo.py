@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,23 +6,23 @@ __all__ = ["DeviceInfo"]
 
 
 class DeviceInfo(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
         did: int,
         datatype: str = "co",
-        odid: Optional[int] = None,
-        port: Optional[int] = None,
-        externaldomain: Optional[str] = None,
+        odid: int | None = None,
+        port: int | None = None,
+        externaldomain: str | None = None,
         fulldevicedetails: bool = False,
         showallgraphdata: bool = True,
-        similardevices: Optional[int] = None,
+        similardevices: int | None = None,
         intervalhours: int = 1,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict | list:
         """
         Get device connection information from the /deviceinfo endpoint.
 

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import warnings
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -17,14 +19,14 @@ class Antigena(BaseEndpoint):
     activated will still be returned.
     """
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get_actions(
         self,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict | list:
         """
         Get information about current and past Darktrace RESPOND actions.
 
@@ -100,7 +102,7 @@ class Antigena(BaseEndpoint):
         self,
         codeid: int,
         reason: str = "",
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
     ) -> dict:
         """
         Activate a pending Darktrace RESPOND action.
@@ -122,7 +124,7 @@ class Antigena(BaseEndpoint):
         """
         endpoint = "/antigena"
 
-        body: Dict[str, Any] = {"codeid": codeid, "activate": True}
+        body: dict[str, Any] = {"codeid": codeid, "activate": True}
 
         if reason:
             body["reason"] = reason
@@ -134,8 +136,8 @@ class Antigena(BaseEndpoint):
         codeid: int,
         duration: int,
         reason: str = "",
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Extend an active Darktrace RESPOND action.
 
@@ -166,7 +168,7 @@ class Antigena(BaseEndpoint):
         """
         endpoint = "/antigena"
 
-        body: Dict[str, Any] = {"codeid": codeid, "duration": duration}
+        body: dict[str, Any] = {"codeid": codeid, "duration": duration}
 
         if reason:
             body["reason"] = reason
@@ -177,8 +179,8 @@ class Antigena(BaseEndpoint):
         self,
         codeid: int,
         reason: str = "",
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Clear an active, pending or expired Darktrace RESPOND action.
 
@@ -205,7 +207,7 @@ class Antigena(BaseEndpoint):
         """
         endpoint = "/antigena"
 
-        body: Dict[str, Any] = {"codeid": codeid, "clear": True}
+        body: dict[str, Any] = {"codeid": codeid, "clear": True}
 
         if reason:
             body["reason"] = reason
@@ -217,8 +219,8 @@ class Antigena(BaseEndpoint):
         codeid: int,
         duration: int,
         reason: str = "",
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Reactivate a cleared or expired Darktrace RESPOND action.
 
@@ -240,7 +242,7 @@ class Antigena(BaseEndpoint):
         """
         endpoint = "/antigena"
 
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             "codeid": codeid,
             "activate": True,
             "duration": duration,
@@ -257,8 +259,8 @@ class Antigena(BaseEndpoint):
         action: str,
         duration: int,
         reason: str = "",
-        connections: Optional[List[Dict[str, Union[str, int]]]] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        connections: list[dict[str, str | int]] | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
     ) -> dict:
         """
         Create a manual Darktrace RESPOND/Network action.
@@ -317,7 +319,7 @@ class Antigena(BaseEndpoint):
         """
         endpoint = "/antigena/manual"
 
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             "did": did,
             "action": action,
             "duration": duration,
@@ -331,9 +333,9 @@ class Antigena(BaseEndpoint):
 
     def get_summary(
         self,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ) -> Any:
+    ) -> dict | list:
         """
         Get a summary of active and pending Darktrace RESPOND actions.
 

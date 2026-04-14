@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,37 +6,37 @@ __all__ = ["Details"]
 
 
 class Details(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        did: Optional[int] = None,
-        pbid: Optional[int] = None,
-        msg: Optional[str] = None,
-        blockedconnections: Optional[str] = None,
+        did: int | None = None,
+        pbid: int | None = None,
+        msg: str | None = None,
+        blockedconnections: str | None = None,
         eventtype: str = "connection",
-        count: Optional[int] = None,
-        starttime: Optional[int] = None,
-        endtime: Optional[int] = None,
-        from_: Optional[str] = None,
-        to: Optional[str] = None,
-        applicationprotocol: Optional[str] = None,
-        destinationport: Optional[int] = None,
-        sourceport: Optional[int] = None,
-        port: Optional[int] = None,
-        protocol: Optional[str] = None,
-        ddid: Optional[int] = None,
-        odid: Optional[int] = None,
-        externalhostname: Optional[str] = None,
-        intext: Optional[str] = None,
-        uid: Optional[str] = None,
+        count: int | None = None,
+        starttime: int | None = None,
+        endtime: int | None = None,
+        from_: str | None = None,
+        to: str | None = None,
+        applicationprotocol: str | None = None,
+        destinationport: int | None = None,
+        sourceport: int | None = None,
+        port: int | None = None,
+        protocol: str | None = None,
+        ddid: int | None = None,
+        odid: int | None = None,
+        externalhostname: str | None = None,
+        intext: str | None = None,
+        uid: str | None = None,
         deduplicate: bool = False,
         fulldevicedetails: bool = False,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict | list:
         """
         Get detailed connection and event information for a device or entity.
 

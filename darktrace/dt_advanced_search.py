@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint, encode_query
 
@@ -6,15 +8,15 @@ __all__ = ["AdvancedSearch"]
 
 
 class AdvancedSearch(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def search(
         self,
-        query: Dict[str, Any],
+        query: dict[str, Any],
         post_request: bool = False,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """Perform Advanced Search query.
 
         Parameters:
@@ -93,9 +95,9 @@ class AdvancedSearch(BaseEndpoint):
         self,
         field: str,
         analysis_type: str,
-        query: Dict[str, Any],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        query: dict[str, Any],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """Analyze field data."""
         encoded_query = encode_query(query)
         endpoint = f"/advancedsearch/api/analyze/{field}/{analysis_type}/{encoded_query}"
@@ -105,9 +107,9 @@ class AdvancedSearch(BaseEndpoint):
         self,
         graph_type: str,
         interval: int,
-        query: Dict[str, Any],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        query: dict[str, Any],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """Get graph data."""
         encoded_query = encode_query(query)
         endpoint = f"/advancedsearch/api/graph/{graph_type}/{interval}/{encoded_query}"

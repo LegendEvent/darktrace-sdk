@@ -10,6 +10,7 @@ from typing import Any, Optional, Tuple, Union
 
 import requests
 
+from .exceptions import ConnectionError as DarktraceConnectionError
 from .exceptions import _raise_for_status
 
 __all__ = ["BaseEndpoint", "TimeoutType", "debug_print", "encode_query"]
@@ -130,7 +131,7 @@ class BaseEndpoint:
         endpoint: str,
         params: dict[str, Any] | None = None,
         timeout: _InternalTimeoutType = _UNSET,
-    ) -> Any:
+    ) -> dict | list:
         """Make an authenticated GET request.
 
         Args:
@@ -161,7 +162,7 @@ class BaseEndpoint:
         body: dict[str, Any],
         params: dict[str, Any] | None = None,
         timeout: _InternalTimeoutType = _UNSET,
-    ) -> Any:
+    ) -> dict | list:
         """Make an authenticated POST request with a JSON body.
 
         The body is JSON-serialized with compact separators (no whitespace)
@@ -200,7 +201,7 @@ class BaseEndpoint:
         form_data: dict[str, Any],
         params: dict[str, Any] | None = None,
         timeout: _InternalTimeoutType = _UNSET,
-    ) -> Any:
+    ) -> dict | list:
         """Make an authenticated POST request with form-encoded data.
 
         Args:
@@ -233,7 +234,7 @@ class BaseEndpoint:
         endpoint: str,
         params: dict[str, Any] | None = None,
         timeout: _InternalTimeoutType = _UNSET,
-    ) -> Any:
+    ) -> dict | list:
         """Make an authenticated DELETE request.
 
         Args:
@@ -273,7 +274,7 @@ class BaseEndpoint:
             ``requests.Response`` object.
 
         Raises:
-            requests.RequestException: After max retries exhausted.
+            DarktraceConnectionError: After max retries exhausted for connection/timeout failures.
         """
         last_exception: Exception | None = None
 
@@ -322,11 +323,11 @@ class BaseEndpoint:
                     time.sleep(wait_time)
                     continue
                 else:
-                    raise
+                    raise DarktraceConnectionError(f"Connection failed: {e}") from e
 
         # Should not reach here, but raise last exception if we do
         if last_exception:
-            raise last_exception
+            raise DarktraceConnectionError(f"Connection failed: {last_exception}") from last_exception
 
         raise RuntimeError("Unexpected state in retry loop")  # pragma: no cover
 

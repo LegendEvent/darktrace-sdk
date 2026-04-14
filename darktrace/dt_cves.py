@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,16 +6,16 @@ __all__ = ["CVEs"]
 
 
 class CVEs(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        did: Optional[int] = None,
-        fulldevicedetails: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        did: int | None = None,
+        fulldevicedetails: bool | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict | list:
         """
         Retrieve CVE information for devices from the Darktrace/OT ICS Vulnerability Tracker.
 

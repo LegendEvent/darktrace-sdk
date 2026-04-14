@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,17 +6,17 @@ __all__ = ["Subnets"]
 
 
 class Subnets(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        subnet_id: Optional[int] = None,
-        seensince: Optional[str] = None,
-        sid: Optional[int] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        subnet_id: int | None = None,
+        seensince: str | None = None,
+        sid: int | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get subnet information from Darktrace.
 
@@ -46,18 +46,18 @@ class Subnets(BaseEndpoint):
     def post(
         self,
         sid: int,
-        label: Optional[str] = None,
-        network: Optional[str] = None,
-        longitude: Optional[float] = None,
-        latitude: Optional[float] = None,
-        dhcp: Optional[bool] = None,
-        uniqueUsernames: Optional[bool] = None,
-        uniqueHostnames: Optional[bool] = None,
-        excluded: Optional[bool] = None,
-        modelExcluded: Optional[bool] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        label: str | None = None,
+        network: str | None = None,
+        longitude: float | None = None,
+        latitude: float | None = None,
+        dhcp: bool | None = None,
+        uniqueUsernames: bool | None = None,
+        uniqueHostnames: bool | None = None,
+        excluded: bool | None = None,
+        modelExcluded: bool | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Create or update a subnet in Darktrace.
 
@@ -80,7 +80,7 @@ class Subnets(BaseEndpoint):
         """
         endpoint = "/subnets"
 
-        body: Dict[str, Any] = {"sid": sid}
+        body: dict = {"sid": sid}
         if label is not None:
             body["label"] = label
         if network is not None:

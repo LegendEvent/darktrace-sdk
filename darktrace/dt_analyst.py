@@ -1,6 +1,9 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
+from .exceptions import _raise_for_status
 
 __all__ = ["Analyst"]
 
@@ -11,7 +14,7 @@ class Analyst(BaseEndpoint):
     Retrieve, acknowledge, pin, and comment on AI Analyst incident groups and events.
     """
 
-    def get_groups(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> Any:
+    def get_groups(self, timeout: float | tuple[float, float] | None = _UNSET, **params) -> dict | list:
         """Get AI Analyst incident groups.
 
         Available parameters:
@@ -45,10 +48,10 @@ class Analyst(BaseEndpoint):
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
         return response.json()
 
-    def get_incident_events(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> Any:
+    def get_incident_events(self, timeout: float | tuple[float, float] | None = _UNSET, **params) -> dict | list:
         """Get AI Analyst incident events.
 
         Available parameters:
@@ -87,14 +90,14 @@ class Analyst(BaseEndpoint):
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
         return response.json()
 
     def acknowledge(
         self,
-        uuids: Union[str, List[str]],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        uuids: str | list[str],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Acknowledge AI Analyst incident events.
 
         Args:
@@ -113,9 +116,9 @@ class Analyst(BaseEndpoint):
 
     def unacknowledge(
         self,
-        uuids: Union[str, List[str]],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        uuids: str | list[str],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Unacknowledge AI Analyst incident events.
 
         Args:
@@ -134,9 +137,9 @@ class Analyst(BaseEndpoint):
 
     def pin(
         self,
-        uuids: Union[str, List[str]],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        uuids: str | list[str],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Pin AI Analyst incident events.
 
         Args:
@@ -155,9 +158,9 @@ class Analyst(BaseEndpoint):
 
     def unpin(
         self,
-        uuids: Union[str, List[str]],
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        uuids: str | list[str],
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Unpin AI Analyst incident events.
 
         Args:
@@ -177,9 +180,9 @@ class Analyst(BaseEndpoint):
     def get_comments(
         self,
         incident_id: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-        response_data: Optional[str] = "",
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+        response_data: str | None = "",
+    ) -> dict | list:
         """Get comments for an AI Analyst incident event.
 
         Args:
@@ -187,7 +190,7 @@ class Analyst(BaseEndpoint):
             response_data: Restrict returned JSON to specific fields.
         """
         endpoint = "/aianalyst/incident/comments"
-        params: Dict[str, Any] = {"incident_id": incident_id}
+        params: dict[str, Any] = {"incident_id": incident_id}
         if response_data:
             params["responsedata"] = response_data
         return self._get(endpoint, params=params, timeout=timeout)
@@ -196,8 +199,8 @@ class Analyst(BaseEndpoint):
         self,
         incident_id: str,
         message: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Add a comment to an AI Analyst incident event.
 
         Args:
@@ -207,10 +210,10 @@ class Analyst(BaseEndpoint):
         Returns:
             dict: Full Darktrace API response.
         """
-        body: Dict[str, Any] = {"incident_id": incident_id, "message": message}
+        body: dict[str, Any] = {"incident_id": incident_id, "message": message}
         return self._post_json("/aianalyst/incident/comments", body=body, timeout=timeout)
 
-    def get_stats(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> Any:
+    def get_stats(self, timeout: float | tuple[float, float] | None = _UNSET, **params) -> dict | list:
         """Get AI Analyst statistics.
 
         Available parameters:
@@ -238,10 +241,10 @@ class Analyst(BaseEndpoint):
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
         return response.json()
 
-    def get_investigations(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params) -> Any:
+    def get_investigations(self, timeout: float | tuple[float, float] | None = _UNSET, **params) -> dict | list:
         """Get AI Analyst investigations.
 
         Available parameters:
@@ -271,15 +274,15 @@ class Analyst(BaseEndpoint):
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
         return response.json()
 
     def create_investigation(
         self,
         investigate_time: str,
         did: int,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Create a new AI Analyst investigation.
 
         Args:

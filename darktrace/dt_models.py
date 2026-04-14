@@ -1,4 +1,4 @@
-from typing import Any, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,15 +6,15 @@ __all__ = ["Models"]
 
 
 class Models(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        uuid: Optional[str] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Any:
+        uuid: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get model information from Darktrace.
 

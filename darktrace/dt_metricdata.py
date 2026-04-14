@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,32 +6,32 @@ __all__ = ["MetricData"]
 
 
 class MetricData(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        metric: Optional[str] = None,
-        metrics: Optional[List[str]] = None,
-        did: Optional[int] = None,
-        ddid: Optional[int] = None,
-        odid: Optional[int] = None,
-        port: Optional[int] = None,
-        sourceport: Optional[int] = None,
-        destinationport: Optional[int] = None,
-        protocol: Optional[str] = None,
-        applicationprotocol: Optional[str] = None,
-        starttime: Optional[int] = None,
-        endtime: Optional[int] = None,
-        from_: Optional[int] = None,
-        to: Optional[int] = None,
-        interval: Optional[str] = None,
-        breachtimes: Optional[bool] = None,
-        fulldevicedetails: Optional[bool] = None,
-        devices: Optional[List[str]] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        metric: str | None = None,
+        metrics: list[str] | None = None,
+        did: int | None = None,
+        ddid: int | None = None,
+        odid: int | None = None,
+        port: int | None = None,
+        sourceport: int | None = None,
+        destinationport: int | None = None,
+        protocol: str | None = None,
+        applicationprotocol: str | None = None,
+        starttime: int | None = None,
+        endtime: int | None = None,
+        from_: int | None = None,
+        to: int | None = None,
+        interval: str | None = None,
+        breachtimes: bool | None = None,
+        fulldevicedetails: bool | None = None,
+        devices: list[str] | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **params,
-    ):
+    ) -> dict | list:
         """
         Get metric time series data from Darktrace /metricdata endpoint.
 

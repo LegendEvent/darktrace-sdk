@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -6,20 +6,20 @@ __all__ = ["SummaryStatistics"]
 
 
 class SummaryStatistics(BaseEndpoint):
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
-        responsedata: Optional[str] = None,
-        eventtype: Optional[str] = None,
-        endtime: Optional[int] = None,
-        to: Optional[str] = None,
-        hours: Optional[int] = None,
-        csensor: Optional[bool] = None,
-        mitreTactics: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):
+        responsedata: str | None = None,
+        eventtype: str | None = None,
+        endtime: int | None = None,
+        to: str | None = None,
+        hours: int | None = None,
+        csensor: bool | None = None,
+        mitreTactics: bool | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get summary statistics information from Darktrace.
 

@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -28,28 +30,28 @@ class DeviceSummary(BaseEndpoint):
         **kwargs: Any additional parameters (future-proofing, not in official docs)
     """
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
         self,
         did: int,
-        device_name: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        end_timestamp: Optional[int] = None,
-        start_timestamp: Optional[int] = None,
-        devicesummary_by: Optional[str] = None,
-        devicesummary_by_value: Optional[str] = None,
-        device_type: Optional[str] = None,
-        network_location: Optional[str] = None,
-        network_location_id: Optional[str] = None,
-        peer_id: Optional[str] = None,
-        source: Optional[str] = None,
-        status: Optional[str] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        device_name: str | None = None,
+        ip_address: str | None = None,
+        end_timestamp: int | None = None,
+        start_timestamp: int | None = None,
+        devicesummary_by: str | None = None,
+        devicesummary_by_value: str | None = None,
+        device_type: str | None = None,
+        network_location: str | None = None,
+        network_location_id: str | None = None,
+        peer_id: str | None = None,
+        source: str | None = None,
+        status: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict | list:
         """
         Get device summary information for a specific device.
 
@@ -74,7 +76,7 @@ class DeviceSummary(BaseEndpoint):
             dict: API response
         """
         endpoint = "/devicesummary"
-        params: Dict[str, Any] = {"did": did}
+        params: dict[str, Any] = {"did": did}
         if device_name is not None:
             params["device_name"] = device_name
         if ip_address is not None:

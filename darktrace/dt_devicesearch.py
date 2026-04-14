@@ -1,4 +1,4 @@
-from typing import Any, Optional, Tuple, Union
+from __future__ import annotations
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -20,7 +20,7 @@ class DeviceSearch(BaseEndpoint):
         seensince (str): Relative offset for activity (e.g. '1hour', '30minute', '60')
     """
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         super().__init__(client)
 
     def get(
@@ -39,9 +39,9 @@ class DeviceSearch(BaseEndpoint):
         offset=None,
         responsedata=None,
         seensince=None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ):
+    ) -> dict | list:
         """
         Search for devices using /devicesearch endpoint.
 
@@ -120,9 +120,9 @@ class DeviceSearch(BaseEndpoint):
     def get_tag(
         self,
         tag: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific tag.
 
@@ -140,9 +140,9 @@ class DeviceSearch(BaseEndpoint):
     def get_type(
         self,
         type: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific type.
 
@@ -160,9 +160,9 @@ class DeviceSearch(BaseEndpoint):
     def get_label(
         self,
         label: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific label.
 
@@ -180,9 +180,9 @@ class DeviceSearch(BaseEndpoint):
     def get_vendor(
         self,
         vendor: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific vendor.
 
@@ -200,9 +200,9 @@ class DeviceSearch(BaseEndpoint):
     def get_hostname(
         self,
         hostname: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific hostname.
 
@@ -220,9 +220,9 @@ class DeviceSearch(BaseEndpoint):
     def get_ip(
         self,
         ip: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific IP address.
 
@@ -240,9 +240,9 @@ class DeviceSearch(BaseEndpoint):
     def get_mac(
         self,
         mac: str,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> Any:
+    ) -> dict | list:
         """
         Search for devices with a specific MAC address.
 
