@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint, encode_query
@@ -15,7 +14,7 @@ class AdvancedSearch(BaseEndpoint):
         query: Dict[str, Any],
         post_request: bool = False,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """Perform Advanced Search query.
 
         Parameters:
@@ -62,23 +61,8 @@ class AdvancedSearch(BaseEndpoint):
             encoded_query = encode_query(full_query)
 
             # Use POST request with JSON body containing the hash
-            url = f"{self.client.host}{endpoint}"
             body = {"hash": encoded_query}
-            headers, sorted_params = self._get_headers(endpoint, json_body=body)
-            headers["Content-Type"] = "application/json"
-            resolved_timeout = self._resolve_timeout(timeout)
-            response = self._make_request(
-                "POST",
-                url,
-                headers=headers,
-                data=json.dumps(body, separators=(",", ":")),
-                verify=self.client.verify_ssl,
-                timeout=resolved_timeout,
-            )
-            self.client._debug(f"Response status: {response.status_code}")
-            self.client._debug(f"Response text: {response.text}")
-            response.raise_for_status()
-            return response.json()
+            return self._post_json(endpoint, body=body, timeout=timeout)
         else:
             # Use GET request (traditional method) - encode the full query structure
             full_query = {
@@ -103,19 +87,7 @@ class AdvancedSearch(BaseEndpoint):
                 full_query["time"] = query.get("time", {"user_interval": 0})
 
             encoded_query = encode_query(full_query)
-            url = f"{self.client.host}{endpoint}/{encoded_query}"
-            headers, sorted_params = self._get_headers(f"{endpoint}/{encoded_query}")
-            resolved_timeout = self._resolve_timeout(timeout)
-            response = self._make_request(
-                "GET",
-                url,
-                headers=headers,
-                params=sorted_params,
-                verify=self.client.verify_ssl,
-                timeout=resolved_timeout,
-            )
-            response.raise_for_status()
-            return response.json()
+            return self._get(f"{endpoint}/{encoded_query}", timeout=timeout)
 
     def analyze(
         self,
@@ -123,23 +95,11 @@ class AdvancedSearch(BaseEndpoint):
         analysis_type: str,
         query: Dict[str, Any],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """Analyze field data."""
         encoded_query = encode_query(query)
         endpoint = f"/advancedsearch/api/analyze/{field}/{analysis_type}/{encoded_query}"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, timeout=timeout)
 
     def graph(
         self,
@@ -147,20 +107,8 @@ class AdvancedSearch(BaseEndpoint):
         interval: int,
         query: Dict[str, Any],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """Get graph data."""
         encoded_query = encode_query(query)
         endpoint = f"/advancedsearch/api/graph/{graph_type}/{interval}/{encoded_query}"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, timeout=timeout)

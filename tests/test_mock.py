@@ -261,7 +261,9 @@ class TestRetryLogic:
         assert call_count[0] == 3  # Initial + 2 retries
 
     def test_max_retries_exceeded(self, mock_response):
-        """Test that after max retries, response is returned (even if 500)."""
+        """Test that after max retries, a ServerError is raised for 500 responses."""
+        from darktrace.exceptions import ServerError
+
         client = DarktraceClient(
             host="https://example.com",
             public_token="test",
@@ -276,16 +278,18 @@ class TestRetryLogic:
             response = Mock()
             response.raise_for_status = Mock()
             response.status_code = 500
+            response.reason = "Internal Server Error"
+            response.url = "https://example.com/devices"
             response.json.return_value = {"error": "server error"}
             return response
 
         client._session.request = Mock(side_effect=side_effect)
 
         with patch("darktrace.dt_utils.time.sleep"):
-            response = client.devices.get()
+            with pytest.raises(ServerError):
+                client.devices.get()
 
-        # Should return the response after all retries exhausted
-        assert response == {"error": "server error"}
+        # Should have tried initial + 3 retries before raising
         assert call_count[0] == 4  # Initial + 3 retries
 
 

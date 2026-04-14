@@ -72,7 +72,6 @@ class PCAPs(BaseEndpoint):
             dict: Details of the PCAP creation request (including filename, state, etc.).
         """
         endpoint = "/pcaps"
-        url = f"{self.client.host}{endpoint}"
         body = {"ip1": ip1, "start": start, "end": end}
         if ip2 is not None:
             body["ip2"] = ip2
@@ -82,16 +81,4 @@ class PCAPs(BaseEndpoint):
             body["port2"] = port2
         if protocol is not None:
             body["protocol"] = protocol
-        headers, _ = self._get_headers(endpoint)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            json=body,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)

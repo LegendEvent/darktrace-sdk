@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
@@ -38,7 +37,6 @@ class MBComments(BaseEndpoint):
             list or dict: Comments or comment details from Darktrace.
         """
         endpoint = f"/mbcomments{f'/{comment_id}' if comment_id else ''}"
-        url = f"{self.client.host}{endpoint}"
         query_params = dict()
         if starttime is not None:
             query_params["starttime"] = starttime
@@ -51,19 +49,7 @@ class MBComments(BaseEndpoint):
         if pbid is not None:
             query_params["pbid"] = pbid
         query_params.update(params)
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=query_params, timeout=timeout)
 
     def post(
         self,
@@ -81,22 +67,6 @@ class MBComments(BaseEndpoint):
             **params: Additional parameters.
         """
         endpoint = "/mbcomments"
-        url = f"{self.client.host}{endpoint}"
-        data: Dict[str, Any] = {"breachid": breach_id, "comment": comment}
-        data.update(params)
-        headers, sorted_params = self._get_headers(endpoint, json_body=data)
-        headers["Content-Type"] = "application/json"
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            data=json.dumps(data, separators=(",", ":")),
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        self.client._debug(f"Response status: {response.status_code}")
-        self.client._debug(f"Response text: {response.text}")
-        response.raise_for_status()
-        return response.json()
+        body: Dict[str, Any] = {"breachid": breach_id, "comment": comment}
+        body.update(params)
+        return self._post_json(endpoint, body=body, timeout=timeout)

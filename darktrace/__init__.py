@@ -30,15 +30,29 @@ from .dt_subnets import Subnets
 from .dt_summarystatistics import SummaryStatistics
 from .dt_tags import Tags
 from .dt_utils import TimeoutType, debug_print
+from .exceptions import (
+    AuthenticationError,
+    BadRequestError,
+    ConnectionError,
+    DarktraceError,
+    ForbiddenError,
+    NotFoundError,
+    RateLimitError,
+    ServerError,
+)
 
 __all__ = [
     "AdvancedSearch",
     "Analyst",
     "Antigena",
+    "AuthenticationError",
+    "BadRequestError",
     "CVEs",
     "Components",
+    "ConnectionError",
     "DarktraceAuth",
     "DarktraceClient",
+    "DarktraceError",
     "DarktraceEmail",
     "Details",
     "DeviceInfo",
@@ -48,6 +62,7 @@ __all__ = [
     "EndpointDetails",
     "Enums",
     "FilterTypes",
+    "ForbiddenError",
     "IntelFeed",
     "MBComments",
     "MetricData",
@@ -55,7 +70,10 @@ __all__ = [
     "ModelBreaches",
     "Models",
     "Network",
+    "NotFoundError",
     "PCAPs",
+    "RateLimitError",
+    "ServerError",
     "SimilarDevices",
     "Status",
     "Subnets",

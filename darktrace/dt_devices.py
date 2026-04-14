@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
@@ -45,7 +44,6 @@ class Devices(BaseEndpoint):
             list or dict: API response containing device information
         """
         endpoint = "/devices"
-        url = f"{self.client.host}{endpoint}"
 
         # Build parameters dictionary
         params = dict()
@@ -73,26 +71,14 @@ class Devices(BaseEndpoint):
         if saasfilter is not None:
             params["saasfilter"] = saasfilter
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def update(
         self,
         did: int,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **kwargs,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> Any:
         """Update device properties in Darktrace.
 
         Args:
@@ -103,28 +89,9 @@ class Devices(BaseEndpoint):
                 type (int): Device type enum
         """
         endpoint = "/devices"
-        url = f"{self.client.host}{endpoint}"
 
         # Prepare request body
         body: Dict[str, Any] = {"did": did}
         body.update(kwargs)
 
-        # Get headers with JSON body for signature generation
-        headers, sorted_params = self._get_headers(endpoint, json_body=body)
-
-        # Send JSON as raw data with consistent formatting (same as signature generation)
-        json_data = json.dumps(body, separators=(",", ":"))
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            params=sorted_params,
-            data=json_data,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        self.client._debug(f"Response Status: {response.status_code}")
-        self.client._debug(f"Response Text: {response.text}")
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)

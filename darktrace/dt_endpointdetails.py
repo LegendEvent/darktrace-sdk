@@ -34,7 +34,6 @@ class EndpointDetails(BaseEndpoint):
             dict: Endpoint details from Darktrace.
         """
         endpoint = "/endpointdetails"
-        url = f"{self.client.host}{endpoint}"
         params = dict()
         if ip is not None:
             params["ip"] = ip
@@ -49,16 +48,4 @@ class EndpointDetails(BaseEndpoint):
         if responsedata is not None:
             params["responsedata"] = responsedata
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

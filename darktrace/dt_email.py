@@ -1,7 +1,7 @@
-import json
 from typing import Any, Dict, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
+from .exceptions import _raise_for_status
 
 __all__ = ["DarktraceEmail"]
 
@@ -10,7 +10,7 @@ class DarktraceEmail(BaseEndpoint):
     def __init__(self, client):
         super().__init__(client)
 
-    def decode_link(self, link: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
+    def decode_link(self, link: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """
         Decode a link using the Darktrace/Email API.
 
@@ -24,28 +24,15 @@ class DarktraceEmail(BaseEndpoint):
             email.decode_link(link="https://...encoded...")
         """
         endpoint = "/agemail/api/ep/api/v1.0/admin/decode_link"
-        url = f"{self.client.host}{endpoint}"
         params = {"link": link}
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_action_summary(
         self,
         days: Optional[int] = None,
         limit: Optional[int] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    ) -> Any:
         """
         Get action summary from Darktrace/Email API.
 
@@ -60,32 +47,19 @@ class DarktraceEmail(BaseEndpoint):
             email.get_action_summary(days=7, limit=10)
         """
         endpoint = "/agemail/api/ep/api/v1.0/dash/action_summary"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if days is not None:
             params["days"] = days
         if limit is not None:
             params["limit"] = limit
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_dash_stats(
         self,
         days: Optional[int] = None,
         limit: Optional[int] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    ) -> Any:
         """
         Get dashboard stats from Darktrace/Email API.
 
@@ -100,32 +74,19 @@ class DarktraceEmail(BaseEndpoint):
             email.get_dash_stats(days=28, limit=2)
         """
         endpoint = "/agemail/api/ep/api/v1.0/dash/dash_stats"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if days is not None:
             params["days"] = days
         if limit is not None:
             params["limit"] = limit
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_data_loss(
         self,
         days: Optional[int] = None,
         limit: Optional[int] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    ) -> Any:
         """
         Get data loss information from Darktrace/Email API.
 
@@ -140,32 +101,19 @@ class DarktraceEmail(BaseEndpoint):
             email.get_data_loss(days=7, limit=5)
         """
         endpoint = "/agemail/api/ep/api/v1.0/dash/data_loss"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if days is not None:
             params["days"] = days
         if limit is not None:
             params["limit"] = limit
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_user_anomaly(
         self,
         days: Optional[int] = None,
         limit: Optional[int] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    ) -> Any:
         """
         Get user anomaly data from Darktrace/Email API.
 
@@ -180,58 +128,29 @@ class DarktraceEmail(BaseEndpoint):
             email.get_user_anomaly(days=28, limit=2)
         """
         endpoint = "/agemail/api/ep/api/v1.0/dash/user_anomaly"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if days is not None:
             params["days"] = days
         if limit is not None:
             params["limit"] = limit
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def email_action(
         self,
         uuid: str,
         data: Dict[str, Any],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """Perform an action on an email by UUID in Darktrace/Email API."""
         endpoint = f"/agemail/api/ep/api/v1.0/emails/{uuid}/action"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, json_body=data)
-        headers["Content-Type"] = "application/json"
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            data=json.dumps(data, separators=(",", ":")),
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        self.client._debug(f"Response status: {response.status_code}")
-        self.client._debug(f"Response text: {response.text}")
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=data, timeout=timeout)
 
     def get_email(
         self,
         uuid: str,
         include_headers: Optional[bool] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    ) -> Any:
         """
         Get email details by UUID from Darktrace/Email API.
 
@@ -246,25 +165,12 @@ class DarktraceEmail(BaseEndpoint):
             email.get_email(uuid="...", include_headers=True)
         """
         endpoint = f"/agemail/api/ep/api/v1.0/emails/{uuid}"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if include_headers is not None:
             params["include_headers"] = include_headers
-        headers, sorted_params = self._get_headers(endpoint, params)
+        return self._get(endpoint, params=params, timeout=timeout)
 
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def download_email(self, uuid: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> bytes:  # type: ignore[assignment]
+    def download_email(self, uuid: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> bytes:
         """
         Download an email by UUID from Darktrace/Email API.
 
@@ -278,9 +184,8 @@ class DarktraceEmail(BaseEndpoint):
             email.download_email(uuid="...")
         """
         endpoint = f"/agemail/api/ep/api/v1.0/emails/{uuid}/download"
-        url = f"{self.client.host}{endpoint}"
         headers, sorted_params = self._get_headers(endpoint)
-
+        url = f"{self.client.host}{endpoint}"
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
             "GET",
@@ -289,35 +194,19 @@ class DarktraceEmail(BaseEndpoint):
             verify=self.client.verify_ssl,
             timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=url)
         return response.content
 
     def search_emails(
         self,
         data: Dict[str, Any],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """Search emails in Darktrace/Email API."""
         endpoint = "/agemail/api/ep/api/v1.0/emails/search"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint, json_body=data)
-        headers["Content-Type"] = "application/json"
-        resolved_timeout = self._resolve_timeout(timeout)
+        return self._post_json(endpoint, body=data, timeout=timeout)
 
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            data=json.dumps(data, separators=(",", ":")),
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        self.client._debug(f"Response status: {response.status_code}")
-        self.client._debug(f"Response text: {response.text}")
-        response.raise_for_status()
-        return response.json()
-
-    def get_tags(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
+    def get_tags(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """
         Get tags from Darktrace/Email API.
 
@@ -330,21 +219,9 @@ class DarktraceEmail(BaseEndpoint):
             email.get_tags()
         """
         endpoint = "/agemail/api/ep/api/v1.0/resources/tags"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        return self._get(endpoint, timeout=timeout)
 
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
+    def get_actions(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """
         Get actions from Darktrace/Email API.
 
@@ -357,21 +234,9 @@ class DarktraceEmail(BaseEndpoint):
             email.get_actions()
         """
         endpoint = "/agemail/api/ep/api/v1.0/resources/actions"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        return self._get(endpoint, timeout=timeout)
 
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def get_filters(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
+    def get_filters(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """
         Get filters from Darktrace/Email API.
 
@@ -384,21 +249,9 @@ class DarktraceEmail(BaseEndpoint):
             email.get_filters()
         """
         endpoint = "/agemail/api/ep/api/v1.0/resources/filters"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
+        return self._get(endpoint, timeout=timeout)
 
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def get_event_types(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Dict[str, Any]:  # type: ignore[assignment]
+    def get_event_types(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """
         Get audit event types from Darktrace/Email API.
 
@@ -411,19 +264,7 @@ class DarktraceEmail(BaseEndpoint):
             email.get_event_types()
         """
         endpoint = "/agemail/api/ep/api/v1.0/system/audit/eventTypes"
-        url = f"{self.client.host}{endpoint}"
-        headers, sorted_params = self._get_headers(endpoint)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, timeout=timeout)
 
     def get_audit_events(
         self,
@@ -431,7 +272,7 @@ class DarktraceEmail(BaseEndpoint):
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
-    ) -> Dict[str, Any]:  # type: ignore[assignment]
+    ) -> Any:
         """
         Get audit events from Darktrace/Email API.
 
@@ -447,7 +288,6 @@ class DarktraceEmail(BaseEndpoint):
             email.get_audit_events(event_type="login", limit=10, offset=0)
         """
         endpoint = "/agemail/api/ep/api/v1.0/system/audit/events"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if event_type is not None:
             params["eventType"] = event_type
@@ -455,16 +295,4 @@ class DarktraceEmail(BaseEndpoint):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

@@ -35,7 +35,7 @@
 - **Modular & Maintainable**: Each endpoint group is a separate Python module/class.
 - **Easy Authentication**: Secure HMAC-SHA1 signature generation and token management.
 - **SSL Verification**: SSL certificate verification is enabled by default for secure connections.
-- **Async-Ready**: Designed for easy extension to async workflows.
+- **Synchronous Design**: Built on `requests` for synchronous workflows. Async support may be considered for a future version.
 - **Type Hints & Docstrings**: Full typing and documentation for all public methods.
 - **Comprehensive Documentation**: Detailed documentation for every module and endpoint.
 

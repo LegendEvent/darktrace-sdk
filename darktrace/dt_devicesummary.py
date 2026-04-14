@@ -74,7 +74,6 @@ class DeviceSummary(BaseEndpoint):
             dict: API response
         """
         endpoint = "/devicesummary"
-        url = f"{self.client.host}{endpoint}"
         params: Dict[str, Any] = {"did": did}
         if device_name is not None:
             params["device_name"] = device_name
@@ -103,16 +102,4 @@ class DeviceSummary(BaseEndpoint):
         if responsedata is not None:
             params["responsedata"] = responsedata
         params.update(kwargs)
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

@@ -18,7 +18,7 @@ class ModelBreaches(BaseEndpoint):
         self,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Get model breach alerts from the /modelbreaches endpoint.
 
@@ -68,26 +68,14 @@ class ModelBreaches(BaseEndpoint):
         else:
             params_list = list(params.items())
 
-        headers, sorted_params = self._get_headers(endpoint, dict(params_list))
-        url = f"{self.client.host}{endpoint}"
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=dict(params_list), timeout=timeout)
 
     def get_comments(
         self,
         pbid: Union[int, list],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ):  # type: ignore[assignment]
+    ) -> Any:
         """
         Get comments for a specific model breach alert.
 
@@ -108,7 +96,7 @@ class ModelBreaches(BaseEndpoint):
         message: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> Any:
         """
         Add a comment to a model breach alert.
 
@@ -132,7 +120,7 @@ class ModelBreaches(BaseEndpoint):
         pbid: Union[int, list],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> Any:
         """
         Acknowledge a model breach alert.
 
@@ -157,7 +145,7 @@ class ModelBreaches(BaseEndpoint):
         pbid: Union[int, list],
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> Any:
         """
         Unacknowledge a model breach alert.
 
@@ -183,7 +171,7 @@ class ModelBreaches(BaseEndpoint):
         message: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> Any:
         """
         Acknowledge a model breach and add a comment in one call.
 
@@ -205,7 +193,7 @@ class ModelBreaches(BaseEndpoint):
         message: str,
         timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
         **params,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> Any:
         """
         Unacknowledge a model breach and add a comment in one call.
 

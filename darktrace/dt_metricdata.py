@@ -61,7 +61,6 @@ class MetricData(BaseEndpoint):
             dict: Metric time series data from Darktrace.
         """
         endpoint = "/metricdata"
-        url = f"{self.client.host}{endpoint}"
         query_params = dict()
 
         # Handle metric/metrics - mutually exclusive: use either metrics (list) or metric (single string)
@@ -106,16 +105,4 @@ class MetricData(BaseEndpoint):
         # Add any extra params
         query_params.update(params)
 
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=query_params, timeout=timeout)

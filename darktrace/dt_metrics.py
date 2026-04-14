@@ -33,22 +33,9 @@ class Metrics(BaseEndpoint):
             >>> client.metrics.get(responsedata="mlid,name")
         """
         endpoint = f"/metrics{f'/{metric_id}' if metric_id is not None else ''}"
-        url = f"{self.client.host}{endpoint}"
-        query_params = dict()
+        query_params = {}
         if responsedata is not None:
             query_params["responsedata"] = responsedata
         # Add any extra params (future-proofing)
         query_params.update(params)
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=query_params, timeout=timeout)

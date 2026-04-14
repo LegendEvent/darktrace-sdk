@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .dt_utils import _UNSET, BaseEndpoint
@@ -51,7 +50,6 @@ class IntelFeed(BaseEndpoint):
             list: List of watched domains, IPs, hostnames, or sources, or detailed entry dicts.
         """
         endpoint = "/intelfeed"
-        url = f"{self.client.host}{endpoint}"
         query_params = dict()
         if sources is not None:
             query_params["sources"] = str(sources).lower()
@@ -62,29 +60,17 @@ class IntelFeed(BaseEndpoint):
         if responsedata:
             query_params["responsedata"] = responsedata
         query_params.update(params)
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-        resolved_timeout = self._resolve_timeout(timeout)
+        return self._get(endpoint, params=query_params, timeout=timeout)
 
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """Get a list of sources for entries on the intelfeed list."""
         return self.get(sources=True, timeout=timeout)
 
-    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """Get the intel feed list for all entries under a specific source."""
         return self.get(source=source, timeout=timeout)
 
-    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET) -> Any:
         """Get intel feed with full details about expiry time and description for each entry."""
         return self.get(fulldetails=True, timeout=timeout)
 
@@ -115,7 +101,6 @@ class IntelFeed(BaseEndpoint):
             enable_antigena: If True, enable automatic Antigena Network actions
         """
         endpoint = "/intelfeed"
-        url = f"{self.client.host}{endpoint}"
 
         # Build the request body
         body: Dict[str, Any] = {}
@@ -139,21 +124,4 @@ class IntelFeed(BaseEndpoint):
         if enable_antigena:
             body["iagn"] = True
 
-        # For POST requests with JSON body, we need to include the body in the signature
-        headers, _ = self._get_headers(endpoint, json_body=body)
-        headers["Content-Type"] = "application/json"
-
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            data=json.dumps(body, separators=(",", ":")),
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        self.client._debug(f"Response status: {response.status_code}")
-        self.client._debug(f"Response text: {response.text}")
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)

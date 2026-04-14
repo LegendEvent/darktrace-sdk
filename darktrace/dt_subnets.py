@@ -32,7 +32,6 @@ class Subnets(BaseEndpoint):
             list or dict: Subnet information from Darktrace.
         """
         endpoint = f"/subnets{f'/{subnet_id}' if subnet_id else ''}"
-        url = f"{self.client.host}{endpoint}"
 
         params = dict()
         if seensince is not None:
@@ -42,19 +41,7 @@ class Subnets(BaseEndpoint):
         if responsedata is not None:
             params["responsedata"] = responsedata
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def post(
         self,
@@ -92,7 +79,6 @@ class Subnets(BaseEndpoint):
             dict: Result of the subnet creation or update operation.
         """
         endpoint = "/subnets"
-        url = f"{self.client.host}{endpoint}"
 
         body: Dict[str, Any] = {"sid": sid}
         if label is not None:
@@ -116,16 +102,4 @@ class Subnets(BaseEndpoint):
         if responsedata is not None:
             body["responsedata"] = responsedata
 
-        headers, _ = self._get_headers(endpoint)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            json=body,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)
