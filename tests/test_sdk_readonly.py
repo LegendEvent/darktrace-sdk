@@ -512,7 +512,7 @@ def test_email_get_action_summary(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -531,7 +531,7 @@ def test_email_get_dash_stats(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -550,7 +550,7 @@ def test_email_get_data_loss(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -569,7 +569,7 @@ def test_email_get_user_anomaly(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -588,7 +588,7 @@ def test_email_get_tags(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -607,7 +607,7 @@ def test_email_get_actions(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -626,7 +626,7 @@ def test_email_get_filters(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -645,7 +645,7 @@ def test_email_get_event_types(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -664,7 +664,7 @@ def test_email_get_audit_events(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
