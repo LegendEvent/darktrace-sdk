@@ -6,9 +6,6 @@ __all__ = ["Components"]
 
 
 class Components(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         cid: int | None = None,
@@ -22,7 +19,7 @@ class Components(BaseEndpoint):
         Parameters:
             cid (int, optional): Component ID to retrieve a specific component. If None, returns all components.
             responsedata (str, optional): Restrict the returned JSON to only the specified top-level field or object.
-            **params: Additional parameters for future compatibility.
+            **params: Additional API parameters.
 
         Returns:
             dict or list: API response containing component(s) data.

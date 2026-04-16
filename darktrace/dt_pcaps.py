@@ -7,9 +7,6 @@ __all__ = ["PCAPs"]
 
 
 class PCAPs(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         pcap_id: str | None = None,

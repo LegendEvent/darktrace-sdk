@@ -6,9 +6,6 @@ __all__ = ["Metrics"]
 
 
 class Metrics(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         metric_id: int | None = None,
@@ -22,7 +19,7 @@ class Metrics(BaseEndpoint):
         Args:
             metric_id (int, optional): The metric logic ID (mlid) for a specific metric. If not provided, returns all metrics.
             responsedata (str, optional): Restrict the returned JSON to only the specified top-level field or object.
-            **params: Additional parameters for future compatibility (currently unused).
+            **params: Additional API parameters.
 
         Returns:
             dict or list: Metric information from Darktrace. If metric_id is provided, returns a dict for that metric; otherwise, returns a list of all metrics.
@@ -36,6 +33,5 @@ class Metrics(BaseEndpoint):
         query_params = {}
         if responsedata is not None:
             query_params["responsedata"] = responsedata
-        # Add any extra params (future-proofing)
         query_params.update(params)
         return self._get(endpoint, params=query_params, timeout=timeout)

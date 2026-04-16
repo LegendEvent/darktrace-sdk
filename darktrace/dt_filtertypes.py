@@ -13,7 +13,7 @@ class FilterTypes(BaseEndpoint):
     Args:
         responsedata (str, optional): When given the name of a top-level field or object, restricts the returned JSON to only that field or object.
             Example: responsedata="comparators"
-        **params: Additional query parameters (not officially supported, for forward compatibility).
+        **params: Additional API parameters (not officially documented).
 
     Returns:
         list: List of filter type objects, each with fields:
@@ -22,9 +22,6 @@ class FilterTypes(BaseEndpoint):
             - comparators (list): The comparators available for the filter.
             - graphable (bool, optional): True if the filter can be used on a graph.
     """
-
-    def __init__(self, client) -> None:
-        super().__init__(client)
 
     def get(
         self,
@@ -37,7 +34,7 @@ class FilterTypes(BaseEndpoint):
 
         Args:
             responsedata (str, optional): Restrict the returned JSON to only the specified field/object.
-            **params: Additional query parameters (not officially supported).
+            **params: Additional API parameters (not officially documented).
 
         Returns:
             list: List of filter type objects from the Darktrace API.

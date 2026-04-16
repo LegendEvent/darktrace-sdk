@@ -27,11 +27,8 @@ class DeviceSummary(BaseEndpoint):
         source (str, optional): Source filter.
         status (str, optional): Device status filter.
         responsedata (str, optional): Restrict returned JSON to only this field/object.
-        **kwargs: Any additional parameters (future-proofing, not in official docs)
+        **kwargs: Additional API parameters (not in official docs).
     """
-
-    def __init__(self, client) -> None:
-        super().__init__(client)
 
     def get(
         self,

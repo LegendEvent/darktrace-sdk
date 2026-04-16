@@ -8,9 +8,6 @@ __all__ = ["Tags"]
 
 
 class Tags(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     # TAGS ENDPOINT
     def get(
         self,

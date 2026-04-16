@@ -6,9 +6,6 @@ __all__ = ["SummaryStatistics"]
 
 
 class SummaryStatistics(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         responsedata: str | None = None,

@@ -102,7 +102,7 @@ class ModelBreaches(BaseEndpoint):
         Args:
             pbid (int): Policy breach ID of the model breach.
             message (str): The comment text to add.
-            params: Additional parameters for the API call (future-proofing, e.g., responsedata)
+            params: Additional API parameters (e.g., responsedata).
         Returns:
             dict: The full JSON response from Darktrace
         """
@@ -121,7 +121,7 @@ class ModelBreaches(BaseEndpoint):
 
         Args:
             pbid (int or list of int): Policy breach ID(s) of the model breach(es).
-            params: Additional parameters for the API call (future-proofing)
+            params: Additional API parameters.
         Returns:
             dict: The full JSON response from Darktrace, or a dict mapping pbid to response if pbid is a list.
         """
@@ -142,7 +142,7 @@ class ModelBreaches(BaseEndpoint):
 
         Args:
             pbid (int or list of int): Policy breach ID(s) of the model breach(es).
-            params: Additional parameters for the API call (future-proofing)
+            params: Additional API parameters.
         Returns:
             dict: The full JSON response from Darktrace, or a dict mapping pbid to response if pbid is a list.
         """

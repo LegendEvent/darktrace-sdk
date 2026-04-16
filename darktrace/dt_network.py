@@ -6,9 +6,6 @@ __all__ = ["Network"]
 
 
 class Network(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         applicationprotocol: str | None = None,

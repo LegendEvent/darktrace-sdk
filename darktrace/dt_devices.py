@@ -8,9 +8,6 @@ __all__ = ["Devices"]
 
 
 class Devices(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         did: int | None = None,
@@ -47,7 +44,6 @@ class Devices(BaseEndpoint):
         """
         endpoint = "/devices"
 
-        # Build parameters dictionary
         params = dict()
         if did is not None:
             params["did"] = did
@@ -92,7 +88,6 @@ class Devices(BaseEndpoint):
         """
         endpoint = "/devices"
 
-        # Prepare request body
         body: dict[str, Any] = {"did": did}
         body.update(kwargs)
 

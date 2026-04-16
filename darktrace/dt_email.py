@@ -9,9 +9,6 @@ __all__ = ["DarktraceEmail"]
 
 
 class DarktraceEmail(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def decode_link(self, link: str, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """
         Decode a link using the Darktrace/Email API.

@@ -6,9 +6,6 @@ __all__ = ["MetricData"]
 
 
 class MetricData(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         metric: str | None = None,
@@ -55,7 +52,7 @@ class MetricData(BaseEndpoint):
             fulldevicedetails (bool, optional): Whether to include full device details.
             devices (list of str, optional): List of device IDs or names.
             timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
-            **params: Additional parameters for future compatibility.
+            **params: Additional API parameters.
 
         Returns:
             dict: Metric time series data from Darktrace.
@@ -102,7 +99,6 @@ class MetricData(BaseEndpoint):
         if devices is not None:
             query_params["devices"] = ",".join(devices)
 
-        # Add any extra params
         query_params.update(params)
 
         return self._get(endpoint, params=query_params, timeout=timeout)

@@ -6,9 +6,6 @@ __all__ = ["Status"]
 
 
 class Status(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         includechildren: bool | None = None,

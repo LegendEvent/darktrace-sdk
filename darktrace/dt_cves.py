@@ -6,9 +6,6 @@ __all__ = ["CVEs"]
 
 
 class CVEs(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         did: int | None = None,
@@ -22,7 +19,7 @@ class CVEs(BaseEndpoint):
         Parameters:
             did (int, optional): Device ID to filter CVEs for a specific device.
             fulldevicedetails (bool, optional): If True, returns full device detail objects for all referenced devices.
-            **params: Additional query parameters for future compatibility.
+            **params: Additional API parameters.
 
         Returns:
             dict: JSON response from the /cves endpoint.

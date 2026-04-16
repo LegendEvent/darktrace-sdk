@@ -6,9 +6,6 @@ __all__ = ["Models"]
 
 
 class Models(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         uuid: str | None = None,

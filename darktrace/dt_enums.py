@@ -12,9 +12,6 @@ class Enums(BaseEndpoint):
     The list of enums can be filtered using the responsedata parameter.
     """
 
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         responsedata: str | None = None,
@@ -26,7 +23,7 @@ class Enums(BaseEndpoint):
 
         Args:
             responsedata (str, optional): When given the name of a top-level field or object, restricts the returned JSON to only that field or object (e.g., 'countries').
-            **params: Additional query parameters (not officially supported, for forward compatibility).
+            **params: Additional API parameters (not officially documented).
 
         Returns:
             dict: Enum values from the Darktrace API.
@@ -34,6 +31,5 @@ class Enums(BaseEndpoint):
         query_params = {}
         if responsedata:
             query_params["responsedata"] = responsedata
-        # Allow for future/unknown params
         query_params.update(params)
         return self._get("/enums", params=query_params, timeout=timeout)

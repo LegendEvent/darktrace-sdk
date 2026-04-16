@@ -8,9 +8,6 @@ __all__ = ["AdvancedSearch"]
 
 
 class AdvancedSearch(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def search(
         self,
         query: dict[str, Any],
@@ -32,7 +29,6 @@ class AdvancedSearch(BaseEndpoint):
             # For POST requests (6.1+), we need to create the full Advanced Search structure
             # and encode it as base64, then send it as {"hash": "encoded_string"}
 
-            # Build the complete Advanced Search query structure
             full_query = {
                 "search": query.get("search", ""),
                 "fields": query.get("fields", []),

@@ -20,9 +20,6 @@ class DeviceSearch(BaseEndpoint):
         seensince (str): Relative offset for activity (e.g. '1hour', '30minute', '60')
     """
 
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         tag=None,
@@ -112,7 +109,6 @@ class DeviceSearch(BaseEndpoint):
             params["responsedata"] = responsedata
         if seensince is not None:
             params["seensince"] = seensince
-        # Allow for future/undocumented params
         params.update(kwargs)
 
         return self._get(endpoint, params=params, timeout=timeout)

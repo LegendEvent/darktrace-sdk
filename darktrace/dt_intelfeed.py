@@ -16,7 +16,7 @@ class IntelFeed(BaseEndpoint):
         - sources (bool): If True, returns the current set of sources rather than the list of watched entries.
         - source (str): Restrict a retrieved list of entries to a particular source (label, max 64 chars).
         - fulldetails (bool): If True, returns full details about expiry time and description for each entry.
-        - responsedata (str): Restrict the returned JSON to only the specified field/object (future compatibility).
+        - responsedata (str): Restrict the returned JSON to only the specified field/object.
         - **params: Additional query parameters (not officially supported).
 
     POST parameters (see update method):
@@ -25,9 +25,6 @@ class IntelFeed(BaseEndpoint):
     Returns:
         list: List of watched domains, IPs, or hostnames, or list of sources, or detailed entry dicts.
     """
-
-    def __init__(self, client) -> None:
-        super().__init__(client)
 
     def get(
         self,
@@ -104,7 +101,6 @@ class IntelFeed(BaseEndpoint):
         """
         endpoint = "/intelfeed"
 
-        # Build the request body
         body: dict[str, Any] = {}
 
         if add_entry:

@@ -6,9 +6,6 @@ __all__ = ["Subnets"]
 
 
 class Subnets(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         subnet_id: int | None = None,

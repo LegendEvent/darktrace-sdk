@@ -6,9 +6,6 @@ __all__ = ["SimilarDevices"]
 
 
 class SimilarDevices(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         device_id: str | None = None,
@@ -29,7 +26,7 @@ class SimilarDevices(BaseEndpoint):
             token (str, optional): Pagination token for large result sets.
             responsedata (str, optional): Restrict the returned JSON to only the specified field(s).
             timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
-            **kwargs: Additional parameters for future compatibility.
+            **kwargs: Additional API parameters.
 
         Returns:
             list or dict: Similar devices information from Darktrace.
@@ -44,6 +41,5 @@ class SimilarDevices(BaseEndpoint):
             params["token"] = token
         if responsedata is not None:
             params["responsedata"] = responsedata
-        # Allow passing extra params for forward compatibility
         params.update(kwargs)
         return self._get(endpoint, params=params, timeout=timeout)

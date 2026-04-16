@@ -6,9 +6,6 @@ __all__ = ["EndpointDetails"]
 
 
 class EndpointDetails(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         ip: str | None = None,

@@ -19,9 +19,6 @@ class Antigena(BaseEndpoint):
     activated will still be returned.
     """
 
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get_actions(
         self,
         timeout: float | tuple[float, float] | None = _UNSET,

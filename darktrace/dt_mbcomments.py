@@ -6,9 +6,6 @@ __all__ = ["MBComments"]
 
 
 class MBComments(BaseEndpoint):
-    def __init__(self, client) -> None:
-        super().__init__(client)
-
     def get(
         self,
         comment_id: str | None = None,
