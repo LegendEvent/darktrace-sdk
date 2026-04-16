@@ -29,6 +29,21 @@ class DarktraceEmail(BaseEndpoint):
         params = {"link": link}
         return self._get(endpoint, params=params, timeout=timeout)
 
+    def _dashboard_get(
+        self,
+        path_suffix: str,
+        days: int | None = None,
+        limit: int | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
+        endpoint = f"/agemail/api/ep/api/v1.0/dash/{path_suffix}"
+        params = {}
+        if days is not None:
+            params["days"] = days
+        if limit is not None:
+            params["limit"] = limit
+        return self._get(endpoint, params=params, timeout=timeout)
+
     def get_action_summary(
         self,
         days: int | None = None,
@@ -48,13 +63,7 @@ class DarktraceEmail(BaseEndpoint):
         Example:
             email.get_action_summary(days=7, limit=10)
         """
-        endpoint = "/agemail/api/ep/api/v1.0/dash/action_summary"
-        params = {}
-        if days is not None:
-            params["days"] = days
-        if limit is not None:
-            params["limit"] = limit
-        return self._get(endpoint, params=params, timeout=timeout)
+        return self._dashboard_get("action_summary", days=days, limit=limit, timeout=timeout)
 
     def get_dash_stats(
         self,
@@ -75,13 +84,7 @@ class DarktraceEmail(BaseEndpoint):
         Example:
             email.get_dash_stats(days=28, limit=2)
         """
-        endpoint = "/agemail/api/ep/api/v1.0/dash/dash_stats"
-        params = {}
-        if days is not None:
-            params["days"] = days
-        if limit is not None:
-            params["limit"] = limit
-        return self._get(endpoint, params=params, timeout=timeout)
+        return self._dashboard_get("dash_stats", days=days, limit=limit, timeout=timeout)
 
     def get_data_loss(
         self,
@@ -102,13 +105,7 @@ class DarktraceEmail(BaseEndpoint):
         Example:
             email.get_data_loss(days=7, limit=5)
         """
-        endpoint = "/agemail/api/ep/api/v1.0/dash/data_loss"
-        params = {}
-        if days is not None:
-            params["days"] = days
-        if limit is not None:
-            params["limit"] = limit
-        return self._get(endpoint, params=params, timeout=timeout)
+        return self._dashboard_get("data_loss", days=days, limit=limit, timeout=timeout)
 
     def get_user_anomaly(
         self,
@@ -129,13 +126,7 @@ class DarktraceEmail(BaseEndpoint):
         Example:
             email.get_user_anomaly(days=28, limit=2)
         """
-        endpoint = "/agemail/api/ep/api/v1.0/dash/user_anomaly"
-        params = {}
-        if days is not None:
-            params["days"] = days
-        if limit is not None:
-            params["limit"] = limit
-        return self._get(endpoint, params=params, timeout=timeout)
+        return self._dashboard_get("user_anomaly", days=days, limit=limit, timeout=timeout)
 
     def email_action(
         self,
