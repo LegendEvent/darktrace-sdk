@@ -159,8 +159,6 @@ class Tags(BaseEndpoint):
         params = {"did": did, "tag": tag}
         return self._delete("/tags/entities", params=params, timeout=timeout)
 
-        # /tags/[tid]/entities ENDPOINT
-
     def get_tag_entities(
         self,
         tid: int,

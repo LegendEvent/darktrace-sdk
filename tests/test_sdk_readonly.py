@@ -502,14 +502,6 @@ def test_devicesummary_basic(dt_client):
 
 # --- Email module tests ---
 @pytest.mark.usefixtures("dt_client")
-def test_email_decode_link(dt_client):
-    # This test expects a valid encoded link. Use a dummy or skip if not available.
-    # result = dt_client.email.decode_link(link="https://...encoded...")
-    # assert isinstance(result, dict)
-    pass  # No real encoded link available for test
-
-
-@pytest.mark.usefixtures("dt_client")
 def test_email_get_action_summary(dt_client):
     try:
         result = dt_client.email.get_action_summary(days=7, limit=2)
