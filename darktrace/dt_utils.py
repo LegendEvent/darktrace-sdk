@@ -6,12 +6,15 @@ import base64
 import json
 import logging
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import requests
 
 from .exceptions import ConnectionError as DarktraceConnectionError
 from .exceptions import _raise_for_status
+
+if TYPE_CHECKING:
+    from .client import DarktraceClient
 
 __all__ = ["BaseEndpoint", "TimeoutType", "debug_print", "encode_query"]
 logger = logging.getLogger("darktrace")
@@ -86,7 +89,7 @@ class BaseEndpoint:
     resolution, and structured debug logging via Python's ``logging`` module.
     """
 
-    def __init__(self, client: Any) -> None:
+    def __init__(self, client: DarktraceClient) -> None:
         self.client = client
 
     def __repr__(self) -> str:

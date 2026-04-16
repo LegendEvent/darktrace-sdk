@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+import types
 from urllib.parse import urlparse
 
 import requests
@@ -210,5 +210,10 @@ class DarktraceClient:
     def __enter__(self) -> DarktraceClient:
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    def __exit__(
+        self,
+        exc_type: type | None,
+        exc_val: BaseException | None,
+        exc_tb: types.TracebackType | None,
+    ) -> None:
         self.close()
