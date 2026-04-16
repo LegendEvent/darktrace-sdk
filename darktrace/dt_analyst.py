@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from .dt_utils import _UNSET, BaseEndpoint
-from .exceptions import _raise_for_status
 
 __all__ = ["Analyst"]
 
@@ -36,20 +35,7 @@ class Analyst(BaseEndpoint):
         - saasonly (bool): Restrict to SaaS activity
         - groupid (str): Incident group ID
         """
-        endpoint = "/aianalyst/groups"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            f"{self.client.host}{endpoint}",
-            headers=headers,
-            params=sorted_params or params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
-        return response.json()
+        return self._get("/aianalyst/groups", params=params, timeout=timeout)
 
     def get_incident_events(self, timeout: float | tuple[float, float] | None = _UNSET, **params) -> dict | list:
         """Get AI Analyst incident events.
@@ -78,20 +64,7 @@ class Analyst(BaseEndpoint):
         - groupid (str): Incident group ID
         - uuid (str): Incident event UUID
         """
-        endpoint = "/aianalyst/incidentevents"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            f"{self.client.host}{endpoint}",
-            headers=headers,
-            params=sorted_params or params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
-        return response.json()
+        return self._get("/aianalyst/incidentevents", params=params, timeout=timeout)
 
     def acknowledge(
         self,
@@ -230,19 +203,7 @@ class Analyst(BaseEndpoint):
         - master (int): Master instance ID under Unified View
         - saasonly (bool): Restrict to SaaS activity
         """
-        endpoint = "/aianalyst/stats"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            f"{self.client.host}{endpoint}",
-            headers=headers,
-            params=sorted_params or params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
-        return response.json()
+        return self._get("/aianalyst/stats", params=params, timeout=timeout)
 
     def get_investigations(self, timeout: float | tuple[float, float] | None = _UNSET, **params) -> dict | list:
         """Get AI Analyst investigations.
@@ -263,19 +224,7 @@ class Analyst(BaseEndpoint):
         - includefirstreports (bool): Include first reports
         - investigationid (str): Investigation ID
         """
-        endpoint = "/aianalyst/investigations"
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            f"{self.client.host}{endpoint}",
-            headers=headers,
-            params=sorted_params or params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        _raise_for_status(response, method="GET", url=f"{self.client.host}{endpoint}")
-        return response.json()
+        return self._get("/aianalyst/investigations", params=params, timeout=timeout)
 
     def create_investigation(
         self,

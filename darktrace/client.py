@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 from urllib.parse import urlparse
 
@@ -61,33 +63,33 @@ class DarktraceClient:
     debug: bool
     verify_ssl: bool
     timeout: TimeoutType
-    advanced_search: "AdvancedSearch"
-    antigena: "Antigena"
-    analyst: "Analyst"
-    breaches: "ModelBreaches"
-    components: "Components"
-    cves: "CVEs"
-    details: "Details"
-    deviceinfo: "DeviceInfo"
-    devices: "Devices"
-    devicesearch: "DeviceSearch"
-    devicesummary: "DeviceSummary"
-    email: "DarktraceEmail"
-    endpointdetails: "EndpointDetails"
-    enums: "Enums"
-    filtertypes: "FilterTypes"
-    intelfeed: "IntelFeed"
-    mbcomments: "MBComments"
-    metricdata: "MetricData"
-    metrics: "Metrics"
-    models: "Models"
-    network: "Network"
-    pcaps: "PCAPs"
-    similardevices: "SimilarDevices"
-    status: "Status"
-    subnets: "Subnets"
-    summarystatistics: "SummaryStatistics"
-    tags: "Tags"
+    advanced_search: AdvancedSearch
+    antigena: Antigena
+    analyst: Analyst
+    breaches: ModelBreaches
+    components: Components
+    cves: CVEs
+    details: Details
+    deviceinfo: DeviceInfo
+    devices: Devices
+    devicesearch: DeviceSearch
+    devicesummary: DeviceSummary
+    email: DarktraceEmail
+    endpointdetails: EndpointDetails
+    enums: Enums
+    filtertypes: FilterTypes
+    intelfeed: IntelFeed
+    mbcomments: MBComments
+    metricdata: MetricData
+    metrics: Metrics
+    models: Models
+    network: Network
+    pcaps: PCAPs
+    similardevices: SimilarDevices
+    status: Status
+    subnets: Subnets
+    summarystatistics: SummaryStatistics
+    tags: Tags
 
     def __init__(
         self,
@@ -205,7 +207,7 @@ class DarktraceClient:
     def __repr__(self) -> str:
         return f"<DarktraceClient host={self.host!r}>"
 
-    def __enter__(self) -> "DarktraceClient":
+    def __enter__(self) -> DarktraceClient:
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
