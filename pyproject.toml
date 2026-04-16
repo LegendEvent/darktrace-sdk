@@ -58,3 +58,8 @@ indent-style = "space"
 
 [tool.ruff.lint.isort]
 known-first-party = ["darktrace"]
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+disallow_untyped_defs = false

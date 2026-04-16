@@ -1,4 +1,6 @@
 # Darktrace SDK - Pythonic, modular, and complete API wrapper
+from __future__ import annotations
+
 from ._version import __version__  # noqa: F401
 from .auth import DarktraceAuth
 from .client import DarktraceClient

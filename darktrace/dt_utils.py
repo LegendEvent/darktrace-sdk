@@ -6,7 +6,7 @@ import base64
 import json
 import logging
 import time
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 import requests
 
@@ -17,7 +17,7 @@ __all__ = ["BaseEndpoint", "TimeoutType", "debug_print", "encode_query"]
 logger = logging.getLogger("darktrace")
 
 # Type alias for timeout parameter — can be None, float, or tuple of (connect, read)
-TimeoutType = Optional[Union[float, Tuple[float, float]]]
+TimeoutType = float | tuple[float, float] | None
 
 
 class _Unset:
@@ -45,7 +45,7 @@ class _Unset:
 _UNSET = _Unset()
 
 # Internal type alias that includes _Unset sentinel for _resolve_timeout's parameter
-_InternalTimeoutType = Union[_Unset, None, float, Tuple[float, float]]
+_InternalTimeoutType = _Unset | None | float | tuple[float, float]
 
 # Retry configuration
 _MAX_RETRIES = 3

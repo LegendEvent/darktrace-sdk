@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import hashlib
 import hmac
 import json
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 __all__ = ["DarktraceAuth"]
 
@@ -26,9 +28,9 @@ class DarktraceAuth:
     def get_headers(
         self,
         request_path: str,
-        params: Optional[Dict[str, Any]] = None,
-        json_body: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        params: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Generate authentication headers and sorted parameters for Darktrace API requests.
 
