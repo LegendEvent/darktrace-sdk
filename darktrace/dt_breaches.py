@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import json
 from typing import Any
-
-import requests
 
 from .dt_utils import _UNSET, BaseEndpoint
 
@@ -111,11 +108,7 @@ class ModelBreaches(BaseEndpoint):
         """
         endpoint = f"/modelbreaches/{pbid}/comments"
         body: dict[str, Any] = {"message": message}
-        try:
-            return self._post_json(endpoint, body, params=params, timeout=timeout)
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            self.client._debug(f"Exception occurred while adding comment: {e}")
-            raise
+        return self._post_json(endpoint, body, params=params, timeout=timeout)
 
     def acknowledge(
         self,
@@ -136,11 +129,7 @@ class ModelBreaches(BaseEndpoint):
             return {single_pbid: self.acknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/acknowledge"
         body: dict[str, bool] = {"acknowledge": True}
-        try:
-            return self._post_json(endpoint, body, params=params, timeout=timeout)
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            self.client._debug(f"Exception occurred while acknowledging breach: {e}")
-            raise
+        return self._post_json(endpoint, body, params=params, timeout=timeout)
 
     def unacknowledge(
         self,
@@ -161,11 +150,7 @@ class ModelBreaches(BaseEndpoint):
             return {single_pbid: self.unacknowledge(single_pbid, timeout=timeout, **params) for single_pbid in pbid}
         endpoint = f"/modelbreaches/{pbid}/unacknowledge"
         body: dict[str, bool] = {"unacknowledge": True}
-        try:
-            return self._post_json(endpoint, body, params=params, timeout=timeout)
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            self.client._debug(f"Exception occurred while unacknowledging breach: {e}")
-            raise
+        return self._post_json(endpoint, body, params=params, timeout=timeout)
 
     def acknowledge_with_comment(
         self,

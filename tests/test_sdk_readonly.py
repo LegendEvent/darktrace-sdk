@@ -497,7 +497,7 @@ def test_devicesummary_basic(dt_client):
             )
         else:
             # Acceptable: API returns error for unknown did
-            assert True
+            pass
 
 
 # --- Email module tests ---
@@ -727,7 +727,7 @@ def test_endpointdetails_basic(dt_client):
         assert result_none is not None
     except Exception:
         # Acceptable: API returns error for unknown hostname
-        assert True
+        pass
 
     # --- Enums module tests ---
 
@@ -758,7 +758,7 @@ def test_enums_invalid_responsedata(dt_client):
         assert not result or all(k.lower() != "notarealenumcategory" for k in result.keys())
     except Exception:
         # Acceptable: API returns error for unknown responsedata
-        assert True
+        pass
 
 
 # --- Filtertypes module tests ---
@@ -803,7 +803,7 @@ def test_filtertypes_invalid_responsedata(dt_client):
             assert not result
     except Exception:
         # Acceptable: API returns error for unknown responsedata
-        assert True
+        pass
 
 
 # --- IntelFeed module tests (#15) ---
@@ -853,7 +853,7 @@ def test_intelfeed_invalid_source(dt_client):
         assert not result  # Should be empty
     except Exception:
         # Acceptable: API returns error for unknown source
-        assert True
+        pass
 
 
 # --- MBComments module tests (#16) ---
@@ -910,8 +910,7 @@ def test_mbcomments_invalid_pbid(dt_client):
         assert isinstance(result, list)
         assert not result  # Should be empty
     except Exception:
-        # Acceptable: API returns error for unknown pbid
-        assert True
+        pass  # Acceptable: API may return error for unknown did
 
 
 # --- metricdata module tests (#17) ---
@@ -925,7 +924,7 @@ def test_metricdata_basic(dt_client):
         assert "data" in result or "metric" in result or result  # Accept any non-empty dict
     except Exception:
         # Acceptable: API returns error if no data or metric not available
-        assert True
+        pass
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -936,7 +935,7 @@ def test_metricdata_multiple_metrics(dt_client):
         assert isinstance(result, dict)
         assert result  # Should be non-empty if metrics exist
     except Exception:
-        assert True
+        pass
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -957,7 +956,7 @@ def test_metricdata_with_parameters(dt_client):
         )
         assert isinstance(result, dict)
     except Exception:
-        assert True
+        pass
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -969,7 +968,7 @@ def test_metricdata_invalid_metric(dt_client):
         # Should be empty or error handled gracefully
         assert not result or "error" in result or "message" in result
     except Exception:
-        assert True
+        pass
 
 
 # --- metrics module tests (#18) ---
@@ -1011,7 +1010,7 @@ def test_metrics_invalid_id(dt_client):
         # Should be empty or error handled gracefully
         assert not result or "error" in result or "message" in result
     except Exception:
-        assert True
+        pass
 
 
 # --- models module tests (#19) ---
@@ -1063,7 +1062,7 @@ def test_models_invalid_uuid(dt_client):
             assert not result
     except Exception:
         # Acceptable: API returns error for unknown uuid
-        assert True
+        pass
 
 
 # --- network module tests (#20) ---
@@ -1113,7 +1112,7 @@ def test_network_basic(dt_client):
         result_none = dt_client.network.get(did=999999)
         assert isinstance(result_none, dict)
     except Exception:
-        assert True
+        pass
 
 
 # --- pcaps module tests (#21) ---
@@ -1136,7 +1135,7 @@ def test_pcaps_download_invalid(dt_client):
             assert "error" in content or "message" in content or not content
     except Exception:
         # Acceptable: API returns error for unknown file
-        assert True
+        pass
 
 
 # --- similardevices module tests (#22) ---
@@ -1178,7 +1177,7 @@ def test_similardevices_basic(dt_client):
             assert not result_none
     except Exception:
         # Acceptable: API returns error for unknown device_id
-        assert True
+        pass
 
 
 # --- status module tests (#23) ---
@@ -1351,7 +1350,7 @@ def test_tags_basic(dt_client):
             assert not result_none
     except Exception:
         # Acceptable: API returns error for unknown tag_id
-        assert True
+        pass
 
 
 # --- tags/entities module tests (#38) ---
@@ -1431,4 +1430,4 @@ def test_tags_tid_entities_basic(dt_client):
         elif isinstance(result_none, list):
             assert not result_none
     except Exception:
-        assert True
+        pass
