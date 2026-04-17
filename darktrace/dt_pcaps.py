@@ -1,12 +1,18 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+from .exceptions import _raise_for_status
+
+__all__ = ["PCAPs"]
+
 
 class PCAPs(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
-    def get(self, pcap_id: Optional[str] = None, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def get(
+        self,
+        pcap_id: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list | bytes:
         """
         Retrieve PCAP information or download a specific PCAP file from Darktrace.
 
@@ -17,23 +23,37 @@ class PCAPs(BaseEndpoint):
         Returns:
             list, dict, or bytes: List of PCAPs, details of a specific PCAP, or binary PCAP file content.
         """
-        endpoint = f'/pcaps{f"/{pcap_id}" if pcap_id else ""}'
+        endpoint = f"/pcaps{f'/{pcap_id}' if pcap_id else ''}"
         url = f"{self.client.host}{endpoint}"
         params = dict()
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
         headers, sorted_params = self._get_headers(endpoint, params)
 
         resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
+            "GET",
+            url,
+            headers=headers,
+            params=sorted_params,
+            verify=self.client.verify_ssl,
+            timeout=resolved_timeout,
         )
-        response.raise_for_status()
+        _raise_for_status(response, method="GET", url=url)
         # Return JSON if possible, else return raw content (for PCAP file download)
-        return response.json() if 'application/json' in response.headers.get('Content-Type', '') else response.content
+        return response.json() if "application/json" in response.headers.get("Content-Type", "") else response.content
 
-    def create(self, ip1: str, start: int, end: int, ip2: Optional[str] = None, port1: Optional[int] = None, port2: Optional[int] = None, protocol: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def create(
+        self,
+        ip1: str,
+        start: int,
+        end: int,
+        ip2: str | None = None,
+        port1: int | None = None,
+        port2: int | None = None,
+        protocol: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Create a new PCAP capture request in Darktrace.
 
@@ -49,8 +69,7 @@ class PCAPs(BaseEndpoint):
         Returns:
             dict: Details of the PCAP creation request (including filename, state, etc.).
         """
-        endpoint = '/pcaps'
-        url = f"{self.client.host}{endpoint}"
+        endpoint = "/pcaps"
         body = {"ip1": ip1, "start": start, "end": end}
         if ip2 is not None:
             body["ip2"] = ip2
@@ -60,12 +79,4 @@ class PCAPs(BaseEndpoint):
             body["port2"] = port2
         if protocol is not None:
             body["protocol"] = protocol
-        headers, _ = self._get_headers(endpoint)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "POST", url, headers=headers, json=body,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)

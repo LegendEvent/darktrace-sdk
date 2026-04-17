@@ -1,39 +1,39 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Details"]
+
 
 class Details(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        did: Optional[int] = None,
-        pbid: Optional[int] = None,
-        msg: Optional[str] = None,
-        blockedconnections: Optional[str] = None,
+        did: int | None = None,
+        pbid: int | None = None,
+        msg: str | None = None,
+        blockedconnections: str | None = None,
         eventtype: str = "connection",
-        count: Optional[int] = None,
-        starttime: Optional[int] = None,
-        endtime: Optional[int] = None,
-        from_: Optional[str] = None,
-        to: Optional[str] = None,
-        applicationprotocol: Optional[str] = None,
-        destinationport: Optional[int] = None,
-        sourceport: Optional[int] = None,
-        port: Optional[int] = None,
-        protocol: Optional[str] = None,
-        ddid: Optional[int] = None,
-        odid: Optional[int] = None,
-        externalhostname: Optional[str] = None,
-        intext: Optional[str] = None,
-        uid: Optional[str] = None,
+        count: int | None = None,
+        starttime: int | None = None,
+        endtime: int | None = None,
+        from_: str | None = None,
+        to: str | None = None,
+        applicationprotocol: str | None = None,
+        destinationport: int | None = None,
+        sourceport: int | None = None,
+        port: int | None = None,
+        protocol: str | None = None,
+        ddid: int | None = None,
+        odid: int | None = None,
+        externalhostname: str | None = None,
+        intext: str | None = None,
+        uid: str | None = None,
         deduplicate: bool = False,
         fulldevicedetails: bool = False,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **params
-    ):
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **params,
+    ) -> dict | list:
         """
         Get detailed connection and event information for a device or entity.
 
@@ -68,8 +68,7 @@ class Details(BaseEndpoint):
             - Time parameters must always be specified in pairs.
             - If from_ or starttime is used, count must not be used.
         """
-        endpoint = '/details'
-        url = f"{self.client.host}{endpoint}"
+        endpoint = "/details"
         # --- Parameter validation logic ---
         # At least one of did, pbid, msg, or blockedconnections is required
         if not any([did, pbid, msg, blockedconnections]):
@@ -88,58 +87,50 @@ class Details(BaseEndpoint):
 
         # Map all parameters to API names
         if did is not None:
-            params['did'] = did
+            params["did"] = did
         if pbid is not None:
-            params['pbid'] = pbid
+            params["pbid"] = pbid
         if msg is not None:
-            params['msg'] = msg
+            params["msg"] = msg
         if blockedconnections is not None:
-            params['blockedconnections'] = blockedconnections
+            params["blockedconnections"] = blockedconnections
         if eventtype is not None:
-            params['eventtype'] = eventtype
+            params["eventtype"] = eventtype
         if count is not None:
-            params['count'] = count
+            params["count"] = count
         if starttime is not None:
-            params['starttime'] = starttime
+            params["starttime"] = starttime
         if endtime is not None:
-            params['endtime'] = endtime
+            params["endtime"] = endtime
         if from_ is not None:
-            params['from'] = from_
+            params["from"] = from_
         if to is not None:
-            params['to'] = to
+            params["to"] = to
         if applicationprotocol is not None:
-            params['applicationprotocol'] = applicationprotocol
+            params["applicationprotocol"] = applicationprotocol
         if destinationport is not None:
-            params['destinationport'] = destinationport
+            params["destinationport"] = destinationport
         if sourceport is not None:
-            params['sourceport'] = sourceport
+            params["sourceport"] = sourceport
         if port is not None:
-            params['port'] = port
+            params["port"] = port
         if protocol is not None:
-            params['protocol'] = protocol
+            params["protocol"] = protocol
         if ddid is not None:
-            params['ddid'] = ddid
+            params["ddid"] = ddid
         if odid is not None:
-            params['odid'] = odid
+            params["odid"] = odid
         if externalhostname is not None:
-            params['externalhostname'] = externalhostname
+            params["externalhostname"] = externalhostname
         if intext is not None:
-            params['intext'] = intext
+            params["intext"] = intext
         if uid is not None:
-            params['uid'] = uid
+            params["uid"] = uid
         if deduplicate:
-            params['deduplicate'] = str(deduplicate).lower()
+            params["deduplicate"] = str(deduplicate).lower()
         if fulldevicedetails:
-            params['fulldevicedetails'] = str(fulldevicedetails).lower()
+            params["fulldevicedetails"] = str(fulldevicedetails).lower()
         if responsedata is not None:
-            params['responsedata'] = responsedata
+            params["responsedata"] = responsedata
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)

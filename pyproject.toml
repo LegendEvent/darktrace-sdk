@@ -39,3 +39,107 @@ include = ["darktrace*"]
 
 [tool.setuptools.package-data]
 darktrace = ["py.typed"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.8.0", "pytest>=7.0", "pytest-cov>=4.0", "pre-commit>=3.0", "import-linter>=2.0"]
+
+[tool.ruff]
+target-version = "py37"
+line-length = 120
+extend-exclude = ["examples/"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.isort]
+known-first-party = ["darktrace"]
+
+[tool.importlinter]
+root_packages = ["darktrace"]
+
+# Contract 1: Hub-and-spoke invariant — endpoint modules are independent.
+# No dt_* module may directly import any other dt_* module. The TYPE_CHECKING
+# path dt_utils->client is ignored (type-only, not a runtime dependency).
+[[tool.importlinter.contracts]]
+name = "Hub-and-spoke: endpoint modules must not import each other"
+type = "independence"
+modules = [
+    "darktrace.dt_advanced_search",
+    "darktrace.dt_analyst",
+    "darktrace.dt_antigena",
+    "darktrace.dt_breaches",
+    "darktrace.dt_components",
+    "darktrace.dt_cves",
+    "darktrace.dt_details",
+    "darktrace.dt_deviceinfo",
+    "darktrace.dt_devices",
+    "darktrace.dt_devicesearch",
+    "darktrace.dt_devicesummary",
+    "darktrace.dt_email",
+    "darktrace.dt_endpointdetails",
+    "darktrace.dt_enums",
+    "darktrace.dt_filtertypes",
+    "darktrace.dt_intelfeed",
+    "darktrace.dt_mbcomments",
+    "darktrace.dt_metricdata",
+    "darktrace.dt_metrics",
+    "darktrace.dt_models",
+    "darktrace.dt_network",
+    "darktrace.dt_pcaps",
+    "darktrace.dt_similardevices",
+    "darktrace.dt_status",
+    "darktrace.dt_subnets",
+    "darktrace.dt_summarystatistics",
+    "darktrace.dt_tags",
+]
+ignore_imports = ["darktrace.dt_utils -> darktrace.client"]
+
+# Contract 2: Infrastructure isolation — dt_utils must not import endpoint modules
+# or the client/auth facade modules. Only exceptions is allowed. The TYPE_CHECKING
+# import of client is explicitly ignored.
+[[tool.importlinter.contracts]]
+name = "Infrastructure layer: dt_utils must only import from exceptions"
+type = "forbidden"
+source_modules = ["darktrace.dt_utils"]
+forbidden_modules = [
+    "darktrace.dt_advanced_search",
+    "darktrace.dt_analyst",
+    "darktrace.dt_antigena",
+    "darktrace.dt_breaches",
+    "darktrace.dt_components",
+    "darktrace.dt_cves",
+    "darktrace.dt_details",
+    "darktrace.dt_deviceinfo",
+    "darktrace.dt_devices",
+    "darktrace.dt_devicesearch",
+    "darktrace.dt_devicesummary",
+    "darktrace.dt_email",
+    "darktrace.dt_endpointdetails",
+    "darktrace.dt_enums",
+    "darktrace.dt_filtertypes",
+    "darktrace.dt_intelfeed",
+    "darktrace.dt_mbcomments",
+    "darktrace.dt_metricdata",
+    "darktrace.dt_metrics",
+    "darktrace.dt_models",
+    "darktrace.dt_network",
+    "darktrace.dt_pcaps",
+    "darktrace.dt_similardevices",
+    "darktrace.dt_status",
+    "darktrace.dt_subnets",
+    "darktrace.dt_summarystatistics",
+    "darktrace.dt_tags",
+    "darktrace.client",
+    "darktrace.auth",
+]
+ignore_imports = ["darktrace.dt_utils -> darktrace.client"]
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+disallow_untyped_defs = false

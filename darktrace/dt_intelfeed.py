@@ -1,7 +1,10 @@
-import requests
-import json
-from typing import Optional, List, Dict, Any, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from typing import Any
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["IntelFeed"]
 
 
 class IntelFeed(BaseEndpoint):
@@ -13,7 +16,7 @@ class IntelFeed(BaseEndpoint):
         - sources (bool): If True, returns the current set of sources rather than the list of watched entries.
         - source (str): Restrict a retrieved list of entries to a particular source (label, max 64 chars).
         - fulldetails (bool): If True, returns full details about expiry time and description for each entry.
-        - responsedata (str): Restrict the returned JSON to only the specified field/object (future compatibility).
+        - responsedata (str): Restrict the returned JSON to only the specified field/object.
         - **params: Additional query parameters (not officially supported).
 
     POST parameters (see update method):
@@ -22,12 +25,16 @@ class IntelFeed(BaseEndpoint):
     Returns:
         list: List of watched domains, IPs, or hostnames, or list of sources, or detailed entry dicts.
     """
-    def __init__(self, client):
-        super().__init__(client)
 
-    def get(self, sources: Optional[bool] = None, source: Optional[str] = None,
-            fulldetails: Optional[bool] = None, responsedata: Optional[str] = None,
-            timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **params):  # type: ignore[assignment]
+    def get(
+        self,
+        sources: bool | None = None,
+        source: str | None = None,
+        fulldetails: bool | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **params,
+    ) -> dict | list:
         """
         Get the intelfeed list, sources, or detailed entries.
 
@@ -41,45 +48,46 @@ class IntelFeed(BaseEndpoint):
         Returns:
             list: List of watched domains, IPs, hostnames, or sources, or detailed entry dicts.
         """
-        endpoint = '/intelfeed'
-        url = f"{self.client.host}{endpoint}"
+        endpoint = "/intelfeed"
         query_params = dict()
         if sources is not None:
-            query_params['sources'] = str(sources).lower()
+            query_params["sources"] = str(sources).lower()
         if source:
-            query_params['source'] = source
+            query_params["source"] = source
         if fulldetails:
-            query_params['fulldetails'] = 'true'
+            query_params["fulldetails"] = "true"
         if responsedata:
-            query_params['responsedata'] = responsedata
+            query_params["responsedata"] = responsedata
         query_params.update(params)
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-        resolved_timeout = self._resolve_timeout(timeout)
+        return self._get(endpoint, params=query_params, timeout=timeout)
 
-        response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def get_sources(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def get_sources(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """Get a list of sources for entries on the intelfeed list."""
         return self.get(sources=True, timeout=timeout)
-    def get_by_source(self, source: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+
+    def get_by_source(self, source: str, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """Get the intel feed list for all entries under a specific source."""
         return self.get(source=source, timeout=timeout)
-    def get_with_details(self, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+
+    def get_with_details(self, timeout: float | tuple[float, float] | None = _UNSET) -> dict | list:
         """Get intel feed with full details about expiry time and description for each entry."""
         return self.get(fulldetails=True, timeout=timeout)
-    def update(self, add_entry: Optional[str] = None, add_list: Optional[List[str]] = None,
-               description: Optional[str] = None, source: Optional[str] = None,
-               expiry: Optional[str] = None, is_hostname: bool = False,
-               remove_entry: Optional[str] = None, remove_all: bool = False,
-               enable_antigena: bool = False,
-               timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+
+    def update(
+        self,
+        add_entry: str | None = None,
+        add_list: list[str] | None = None,
+        description: str | None = None,
+        source: str | None = None,
+        expiry: str | None = None,
+        is_hostname: bool = False,
+        remove_entry: str | None = None,
+        remove_all: bool = False,
+        enable_antigena: bool = False,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """Update the intel feed (watched domains) in Darktrace.
-        
+
         Args:
             add_entry: Single entry to add (domain, hostname or IP address)
             add_list: List of entries to add (domains, hostnames or IP addresses)
@@ -91,42 +99,27 @@ class IntelFeed(BaseEndpoint):
             remove_all: If True, remove all entries
             enable_antigena: If True, enable automatic Antigena Network actions
         """
-        endpoint = '/intelfeed'
-        url = f"{self.client.host}{endpoint}"
-        
-        # Build the request body
-        body: Dict[str, Any] = {}
-        
+        endpoint = "/intelfeed"
+
+        body: dict[str, Any] = {}
+
         if add_entry:
-            body['addentry'] = add_entry
+            body["addentry"] = add_entry
         if add_list:
-            body['addlist'] = ','.join(add_list)
+            body["addlist"] = ",".join(add_list)
         if remove_entry:
-            body['removeentry'] = remove_entry
+            body["removeentry"] = remove_entry
         if remove_all:
-            body['removeall'] = True
+            body["removeall"] = True
         if description:
-            body['description'] = description
+            body["description"] = description
         if source:
-            body['source'] = source
+            body["source"] = source
         if expiry:
-            body['expiry'] = expiry
+            body["expiry"] = expiry
         if is_hostname:
-            body['hostname'] = True
+            body["hostname"] = True
         if enable_antigena:
-            body['iagn'] = True
-        
-        # For POST requests with JSON body, we need to include the body in the signature
-        headers, _ = self._get_headers(endpoint, json_body=body)
-        headers['Content-Type'] = 'application/json'
+            body["iagn"] = True
 
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "POST", url, headers=headers, data=json.dumps(body, separators=(',', ':')),
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        self.client._debug(f"Response status: {response.status_code}")
-        self.client._debug(f"Response text: {response.text}")
-        response.raise_for_status()
-        return response.json() 
+        return self._post_json(endpoint, body=body, timeout=timeout)

@@ -1,20 +1,19 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Subnets"]
 
 
 class Subnets(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        subnet_id: Optional[int] = None,
-        seensince: Optional[str] = None,
-        sid: Optional[int] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-    ):
+        subnet_id: int | None = None,
+        seensince: str | None = None,
+        sid: int | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get subnet information from Darktrace.
 
@@ -30,7 +29,6 @@ class Subnets(BaseEndpoint):
             list or dict: Subnet information from Darktrace.
         """
         endpoint = f"/subnets{f'/{subnet_id}' if subnet_id else ''}"
-        url = f"{self.client.host}{endpoint}"
 
         params = dict()
         if seensince is not None:
@@ -40,35 +38,23 @@ class Subnets(BaseEndpoint):
         if responsedata is not None:
             params["responsedata"] = responsedata
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def post(
         self,
         sid: int,
-        label: Optional[str] = None,
-        network: Optional[str] = None,
-        longitude: Optional[float] = None,
-        latitude: Optional[float] = None,
-        dhcp: Optional[bool] = None,
-        uniqueUsernames: Optional[bool] = None,
-        uniqueHostnames: Optional[bool] = None,
-        excluded: Optional[bool] = None,
-        modelExcluded: Optional[bool] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-    ):
+        label: str | None = None,
+        network: str | None = None,
+        longitude: float | None = None,
+        latitude: float | None = None,
+        dhcp: bool | None = None,
+        uniqueUsernames: bool | None = None,
+        uniqueHostnames: bool | None = None,
+        excluded: bool | None = None,
+        modelExcluded: bool | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict:
         """
         Create or update a subnet in Darktrace.
 
@@ -90,9 +76,8 @@ class Subnets(BaseEndpoint):
             dict: Result of the subnet creation or update operation.
         """
         endpoint = "/subnets"
-        url = f"{self.client.host}{endpoint}"
 
-        body = {"sid": sid}
+        body: dict = {"sid": sid}
         if label is not None:
             body["label"] = label
         if network is not None:
@@ -114,16 +99,4 @@ class Subnets(BaseEndpoint):
         if responsedata is not None:
             body["responsedata"] = responsedata
 
-        headers, _ = self._get_headers(endpoint)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            json=body,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)

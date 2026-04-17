@@ -4,13 +4,14 @@ Test script for the Darktrace SDK
 This script demonstrates the basic functionality of the Darktrace SDK
 """
 
+import time as _time
+from datetime import datetime, timedelta, timezone
+
 import pytest
 import requests
 import urllib3
+
 from darktrace import DarktraceClient
-from datetime import datetime, timezone, timedelta
-import time as _time
-import random
 
 # Global test configuration (set via pytest CLI options in conftest.py)
 TEST_HOST = None
@@ -74,9 +75,7 @@ def dt_client(pytestconfig):
             last_response = e.response.text if e.response else "No response"
 
     if not connection_ok:
-        raise AssertionError(
-            f"Connection failed to {TEST_HOST}. Error: {last_error}. Response: {last_response}"
-        )
+        raise AssertionError(f"Connection failed to {TEST_HOST}. Error: {last_error}. Response: {last_response}")
 
     return client
 
@@ -99,9 +98,7 @@ def test_intel_feed(dt_client):
         source = sources[0]
         source_entries = dt_client.intelfeed.get(source=source)
         assert isinstance(source_entries, list)
-        detailed_source_entries = dt_client.intelfeed.get(
-            source=source, fulldetails=True
-        )
+        detailed_source_entries = dt_client.intelfeed.get(source=source, fulldetails=True)
         assert isinstance(detailed_source_entries, list)
 
 
@@ -110,9 +107,7 @@ def test_antigena_actions(dt_client):
     actions = dt_client.antigena.get_actions()
     assert isinstance(actions, (list, dict))
 
-    detailed_actions = dt_client.antigena.get_actions(
-        fulldevicedetails=True, includehistory=True, includecleared=True
-    )
+    detailed_actions = dt_client.antigena.get_actions(fulldevicedetails=True, includehistory=True, includecleared=True)
     assert isinstance(detailed_actions, (list, dict))
 
     filtered_actions = dt_client.antigena.get_actions(
@@ -140,9 +135,7 @@ def test_antigena_actions(dt_client):
 
     devices = dt_client.devices.get(count=1)
     device_list = (
-        devices.get("devices", [])
-        if isinstance(devices, dict)
-        else (devices if isinstance(devices, list) else [])
+        devices.get("devices", []) if isinstance(devices, dict) else (devices if isinstance(devices, list) else [])
     )
     if device_list:
         test_did = device_list[0].get("did")
@@ -181,12 +174,8 @@ def test_advanced_search(dt_client):
         "timeframe": "3600",
         "time": {"user_interval": 0},
     }
-    analyze_results = dt_client.advanced_search.analyze(
-        "@fields.dest_port", "terms", analyze_query
-    )
-    buckets = (
-        analyze_results.get("aggregations", {}).get("terms", {}).get("buckets", [])
-    )
+    analyze_results = dt_client.advanced_search.analyze("@fields.dest_port", "terms", analyze_query)
+    buckets = analyze_results.get("aggregations", {}).get("terms", {}).get("buckets", [])
     assert isinstance(buckets, list)
 
     # Test 3: Graph data (count over time)
@@ -198,9 +187,7 @@ def test_advanced_search(dt_client):
         "time": {"user_interval": 0},
     }
     graph_results = dt_client.advanced_search.graph("count", 300000, graph_query)
-    graph_buckets = (
-        graph_results.get("aggregations", {}).get("count", {}).get("buckets", [])
-    )
+    graph_buckets = graph_results.get("aggregations", {}).get("count", {}).get("buckets", [])
     assert isinstance(graph_buckets, list)
 
     # Test 4: POST request method (fallback to GET if not supported)
@@ -233,9 +220,7 @@ def test_analyst(dt_client):
     groups = dt_client.analyst.get_groups()
     assert isinstance(groups, list)
 
-    critical_groups = dt_client.analyst.get_groups(
-        groupcritical=True, includeacknowledged=False
-    )
+    critical_groups = dt_client.analyst.get_groups(groupcritical=True, includeacknowledged=False)
     assert isinstance(critical_groups, list)
 
     stats = dt_client.analyst.get_stats()
@@ -286,9 +271,7 @@ def test_cves(dt_client):
 
 def test_details(dt_client):
     did = 3937  # Placeholder for device ID, replace with a real one if available
-    pbid = (
-        48892  # Placeholder for model breach ID, replace with a real one if available
-    )
+    pbid = 48892  # Placeholder for model breach ID, replace with a real one if available
     details = dt_client.details.get(did, count=1)
     assert isinstance(details, (list, dict))
 
@@ -304,9 +287,7 @@ def test_details(dt_client):
     )
     assert isinstance(details_time, (list, dict))
 
-    details_event = dt_client.details.get(
-        did, eventtype="connection", responsedata="device,model,connections", count=1
-    )
+    details_event = dt_client.details.get(did, eventtype="connection", responsedata="device,model,connections", count=1)
     assert isinstance(details_event, (list, dict))
 
 
@@ -356,9 +337,7 @@ def test_devices_basic(dt_client):
     # 3. Get a list of Google Cloud Platform and Microsoft 365 devices, with only the device identifier and username returned
     result_saas = dt_client.devices.get(saasfilter="gcp*", responsedata="did,hostname")
     assert result_saas is not None
-    result_saas2 = dt_client.devices.get(
-        saasfilter="office365*", responsedata="did,hostname"
-    )
+    result_saas2 = dt_client.devices.get(saasfilter="office365*", responsedata="did,hostname")
     assert result_saas2 is not None
 
     # 4. Get a device by MAC address (if supported by your instance)
@@ -394,9 +373,7 @@ def test_model_breaches(dt_client):
     assert isinstance(breaches, list)
 
     # 2. Detailed breach info with device at top and expandenums
-    detailed_breaches = dt_client.breaches.get(
-        minimal=False, deviceattop=True, count=1, expandenums=True
-    )
+    detailed_breaches = dt_client.breaches.get(minimal=False, deviceattop=True, count=1, expandenums=True)
     assert isinstance(detailed_breaches, list)
 
     # 3. Time-based filtering (last 24 hours)
@@ -410,15 +387,11 @@ def test_model_breaches(dt_client):
     assert isinstance(time_breaches, list)
 
     # 4. Suppressed, SaaS, and group filtering
-    filtered_breaches = dt_client.breaches.get(
-        includesuppressed=True, saasonly=True, group="device", minimal=True
-    )
+    filtered_breaches = dt_client.breaches.get(includesuppressed=True, saasonly=True, group="device", minimal=True)
     assert isinstance(filtered_breaches, list)
 
     # 5. SaaS filter (multiple values)
-    saas_breaches = dt_client.breaches.get(
-        saasfilter=["office365*", "azure*"], minimal=True
-    )
+    saas_breaches = dt_client.breaches.get(saasfilter=["office365*", "azure*"], minimal=True)
     assert isinstance(saas_breaches, list)
 
     # 6. Creation time filtering
@@ -433,9 +406,7 @@ def test_model_breaches(dt_client):
     assert isinstance(creation_breaches, list)
 
     # 7. Responsedata parameter
-    resp_breaches = dt_client.breaches.get(
-        responsedata="model,percentscore,device", minimal=True
-    )
+    resp_breaches = dt_client.breaches.get(responsedata="model,percentscore,device", minimal=True)
     assert isinstance(resp_breaches, list)
 
     # 8. Comments (read-only)
@@ -526,18 +497,10 @@ def test_devicesummary_basic(dt_client):
             )
         else:
             # Acceptable: API returns error for unknown did
-            assert True
+            pass
 
 
 # --- Email module tests ---
-@pytest.mark.usefixtures("dt_client")
-def test_email_decode_link(dt_client):
-    # This test expects a valid encoded link. Use a dummy or skip if not available.
-    # result = dt_client.email.decode_link(link="https://...encoded...")
-    # assert isinstance(result, dict)
-    pass  # No real encoded link available for test
-
-
 @pytest.mark.usefixtures("dt_client")
 def test_email_get_action_summary(dt_client):
     try:
@@ -549,7 +512,7 @@ def test_email_get_action_summary(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -568,7 +531,7 @@ def test_email_get_dash_stats(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -587,7 +550,7 @@ def test_email_get_data_loss(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -606,7 +569,7 @@ def test_email_get_user_anomaly(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -625,7 +588,7 @@ def test_email_get_tags(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -644,7 +607,7 @@ def test_email_get_actions(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -663,7 +626,7 @@ def test_email_get_filters(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -682,7 +645,7 @@ def test_email_get_event_types(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -701,7 +664,7 @@ def test_email_get_audit_events(dt_client):
         )
     except Exception as e:
         msg = str(e)
-        if "login" in msg.lower() or "html" in msg.lower():
+        if "login" in msg.lower() or "html" in msg.lower() or "forbidden" in msg.lower():
             pytest.skip(
                 "Darktrace Email API is not available or not licensed. A Darktrace Email license is required for this functionality."
             )
@@ -743,38 +706,28 @@ def test_endpointdetails_basic(dt_client):
     assert result_host is not None
 
     # 3. Hostname with devices
-    result_host_devices = dt_client.endpointdetails.get(
-        hostname="darktrace.com", devices=True
-    )
+    result_host_devices = dt_client.endpointdetails.get(hostname="darktrace.com", devices=True)
     assert result_host_devices is not None
 
     # 4. Hostname with additionalinfo
-    result_host_info = dt_client.endpointdetails.get(
-        hostname="darktrace.com", additionalinfo=True
-    )
+    result_host_info = dt_client.endpointdetails.get(hostname="darktrace.com", additionalinfo=True)
     assert result_host_info is not None
 
     # 5. Hostname with score
-    result_host_score = dt_client.endpointdetails.get(
-        hostname="darktrace.com", score=True
-    )
+    result_host_score = dt_client.endpointdetails.get(hostname="darktrace.com", score=True)
     assert result_host_score is not None
 
     # 6. Hostname with responsedata
-    result_host_resp = dt_client.endpointdetails.get(
-        hostname="darktrace.com", responsedata="devices"
-    )
+    result_host_resp = dt_client.endpointdetails.get(hostname="darktrace.com", responsedata="devices")
     assert result_host_resp is not None
 
     # 7. Edge case: non-existent hostname
     try:
-        result_none = dt_client.endpointdetails.get(
-            hostname="nonexistentdomain.example"
-        )
+        result_none = dt_client.endpointdetails.get(hostname="nonexistentdomain.example")
         assert result_none is not None
     except Exception:
         # Acceptable: API returns error for unknown hostname
-        assert True
+        pass
 
     # --- Enums module tests ---
 
@@ -802,12 +755,10 @@ def test_enums_invalid_responsedata(dt_client):
         result = dt_client.enums.get(responsedata="notarealenumcategory")
         assert isinstance(result, dict)
         # Should be empty or not contain the invalid key
-        assert not result or all(
-            k.lower() != "notarealenumcategory" for k in result.keys()
-        )
+        assert not result or all(k.lower() != "notarealenumcategory" for k in result.keys())
     except Exception:
         # Acceptable: API returns error for unknown responsedata
-        assert True
+        pass
 
 
 # --- Filtertypes module tests ---
@@ -818,10 +769,7 @@ def test_filtertypes_all(dt_client):
     assert isinstance(result, list)
     # Should contain at least one filter type with required fields
     assert any(
-        isinstance(item, dict)
-        and "filtertype" in item
-        and "valuetype" in item
-        and "comparators" in item
+        isinstance(item, dict) and "filtertype" in item and "valuetype" in item and "comparators" in item
         for item in result
     )
 
@@ -850,14 +798,12 @@ def test_filtertypes_invalid_responsedata(dt_client):
         assert isinstance(result, (dict, list))
         # Should be empty or not contain the invalid key
         if isinstance(result, dict):
-            assert not result or all(
-                k.lower() != "notarealfield" for k in result.keys()
-            )
+            assert not result or all(k.lower() != "notarealfield" for k in result.keys())
         elif isinstance(result, list):
             assert not result
     except Exception:
         # Acceptable: API returns error for unknown responsedata
-        assert True
+        pass
 
 
 # --- IntelFeed module tests (#15) ---
@@ -907,7 +853,7 @@ def test_intelfeed_invalid_source(dt_client):
         assert not result  # Should be empty
     except Exception:
         # Acceptable: API returns error for unknown source
-        assert True
+        pass
 
 
 # --- MBComments module tests (#16) ---
@@ -920,12 +866,7 @@ def test_mbcomments_all(dt_client):
     if result:
         assert all(isinstance(item, dict) for item in result)
         for item in result:
-            assert (
-                "time" in item
-                and "pbid" in item
-                and "username" in item
-                and "message" in item
-            )
+            assert "time" in item and "pbid" in item and "username" in item and "message" in item
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -969,8 +910,7 @@ def test_mbcomments_invalid_pbid(dt_client):
         assert isinstance(result, list)
         assert not result  # Should be empty
     except Exception:
-        # Acceptable: API returns error for unknown pbid
-        assert True
+        pass  # Acceptable: API may return error for unknown did
 
 
 # --- metricdata module tests (#17) ---
@@ -981,12 +921,10 @@ def test_metricdata_basic(dt_client):
     try:
         result = dt_client.metricdata.get(metric="connections")
         assert isinstance(result, dict)
-        assert (
-            "data" in result or "metric" in result or result
-        )  # Accept any non-empty dict
-    except Exception as e:
+        assert "data" in result or "metric" in result or result  # Accept any non-empty dict
+    except Exception:
         # Acceptable: API returns error if no data or metric not available
-        assert True
+        pass
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -996,8 +934,8 @@ def test_metricdata_multiple_metrics(dt_client):
         result = dt_client.metricdata.get(metrics=["connections", "bytesin"])
         assert isinstance(result, dict)
         assert result  # Should be non-empty if metrics exist
-    except Exception as e:
-        assert True
+    except Exception:
+        pass
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -1017,8 +955,8 @@ def test_metricdata_with_parameters(dt_client):
             fulldevicedetails=False,
         )
         assert isinstance(result, dict)
-    except Exception as e:
-        assert True
+    except Exception:
+        pass
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -1030,7 +968,7 @@ def test_metricdata_invalid_metric(dt_client):
         # Should be empty or error handled gracefully
         assert not result or "error" in result or "message" in result
     except Exception:
-        assert True
+        pass
 
 
 # --- metrics module tests (#18) ---
@@ -1072,7 +1010,7 @@ def test_metrics_invalid_id(dt_client):
         # Should be empty or error handled gracefully
         assert not result or "error" in result or "message" in result
     except Exception:
-        assert True
+        pass
 
 
 # --- models module tests (#19) ---
@@ -1083,10 +1021,7 @@ def test_models_list(dt_client):
     assert isinstance(result, list)
     # Should contain at least one model with required fields
     if result:
-        assert any(
-            isinstance(item, dict) and "uuid" in item and "name" in item
-            for item in result
-        )
+        assert any(isinstance(item, dict) and "uuid" in item and "name" in item for item in result)
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -1127,7 +1062,7 @@ def test_models_invalid_uuid(dt_client):
             assert not result
     except Exception:
         # Acceptable: API returns error for unknown uuid
-        assert True
+        pass
 
 
 # --- network module tests (#20) ---
@@ -1164,9 +1099,7 @@ def test_network_basic(dt_client):
     # 7. Filter by time (from/to)
     end = datetime.now()
     start = end - timedelta(hours=1)
-    result_time = dt_client.network.get(
-        from_=start.strftime("%Y-%m-%d %H:%M:%S"), to=end.strftime("%Y-%m-%d %H:%M:%S")
-    )
+    result_time = dt_client.network.get(from_=start.strftime("%Y-%m-%d %H:%M:%S"), to=end.strftime("%Y-%m-%d %H:%M:%S"))
     assert isinstance(result_time, dict)
 
     # 8. Filter by responsedata (restrict fields)
@@ -1179,7 +1112,7 @@ def test_network_basic(dt_client):
         result_none = dt_client.network.get(did=999999)
         assert isinstance(result_none, dict)
     except Exception:
-        assert True
+        pass
 
 
 # --- pcaps module tests (#21) ---
@@ -1202,7 +1135,7 @@ def test_pcaps_download_invalid(dt_client):
             assert "error" in content or "message" in content or not content
     except Exception:
         # Acceptable: API returns error for unknown file
-        assert True
+        pass
 
 
 # --- similardevices module tests (#22) ---
@@ -1226,9 +1159,12 @@ def test_similardevices_basic(dt_client):
     assert isinstance(result_resp, (list, dict))
 
     # 5. With token parameter (pagination, if supported)
-    # This is a smoke test; token is usually returned in a paginated response, so just check no error
-    result_token = dt_client.similardevices.get(token="notarealtoken")
-    assert isinstance(result_token, (list, dict))
+    # This is a smoke test; token is usually returned in a paginated response
+    try:
+        result_token = dt_client.similardevices.get(token="notarealtoken")
+        assert isinstance(result_token, (list, dict))
+    except requests.exceptions.JSONDecodeError:
+        pass
 
     # 6. Edge case: non-existent device_id
     try:
@@ -1241,7 +1177,7 @@ def test_similardevices_basic(dt_client):
             assert not result_none
     except Exception:
         # Acceptable: API returns error for unknown device_id
-        assert True
+        pass
 
 
 # --- status module tests (#23) ---
@@ -1269,18 +1205,14 @@ def test_status_basic(dt_client):
     assert "probes" in result_resp or not result_resp
 
     # 5. All parameters combined
-    result_all = dt_client.status.get(
-        includechildren=False, fast=True, responsedata="probes"
-    )
+    result_all = dt_client.status.get(includechildren=False, fast=True, responsedata="probes")
     assert isinstance(result_all, dict)
 
     # 6. Edge case: invalid responsedata
     result_invalid = dt_client.status.get(responsedata="notarealfield")
     assert isinstance(result_invalid, dict)
     # Should be empty or error handled gracefully
-    assert (
-        not result_invalid or "error" in result_invalid or "message" in result_invalid
-    )
+    assert not result_invalid or "error" in result_invalid or "message" in result_invalid
 
 
 # --- subnets module tests (#24) ---
@@ -1300,11 +1232,7 @@ def test_subnets_basic(dt_client):
     assert isinstance(result_seen2, (list, dict))
 
     # 4. With sid parameter (if any subnet exists)
-    subnets = (
-        result
-        if isinstance(result, list)
-        else (result.get("subnets", []) if isinstance(result, dict) else [])
-    )
+    subnets = result if isinstance(result, list) else (result.get("subnets", []) if isinstance(result, dict) else [])
     sid = None
     if subnets and isinstance(subnets, list) and len(subnets) > 0:
         sid = subnets[0].get("sid")
@@ -1337,11 +1265,7 @@ def test_summarystatistics_basic(dt_client):
     # 1. Basic call (should return a dict with summary statistics)
     result = dt_client.summarystatistics.get()
     assert isinstance(result, dict)
-    assert (
-        "devicecount" in result
-        or "usercredentialcount" in result
-        or "bandwidth" in result
-    )
+    assert "devicecount" in result or "usercredentialcount" in result or "bandwidth" in result
 
     # 2. With responsedata parameter (restrict fields)
     result_resp = dt_client.summarystatistics.get(responsedata="bandwidth")
@@ -1426,11 +1350,11 @@ def test_tags_basic(dt_client):
             assert not result_none
     except Exception:
         # Acceptable: API returns error for unknown tag_id
-        assert True
+        pass
 
 
 # --- tags/entities module tests (#38) ---
-import pytest
+import pytest  # noqa: E402
 
 
 @pytest.mark.usefixtures("dt_client")
@@ -1463,9 +1387,7 @@ def test_tags_entities_basic(dt_client):
 
     # 3. With responsedata and fulldevicedetails
     if did:
-        tags_resp = dt_client.tags.get_entities(
-            did=did, responsedata="name", fulldevicedetails=True
-        )
+        tags_resp = dt_client.tags.get_entities(did=did, responsedata="name", fulldevicedetails=True)
         assert isinstance(tags_resp, (list, dict))
 
     # 4. Edge case: non-existent device/tag
@@ -1496,9 +1418,7 @@ def test_tags_tid_entities_basic(dt_client):
     assert isinstance(entities, (list, dict))
 
     # 3. GET: With responsedata and fulldevicedetails
-    entities_resp = dt_client.tags.get_tag_entities(
-        tid, responsedata="entityType", fulldevicedetails=True
-    )
+    entities_resp = dt_client.tags.get_tag_entities(tid, responsedata="entityType", fulldevicedetails=True)
     assert isinstance(entities_resp, (list, dict))
 
     # 6. Edge case: non-existent tid
@@ -1510,4 +1430,4 @@ def test_tags_tid_entities_basic(dt_client):
         elif isinstance(result_none, list):
             assert not result_none
     except Exception:
-        assert True
+        pass

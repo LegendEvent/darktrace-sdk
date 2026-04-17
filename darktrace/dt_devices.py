@@ -1,28 +1,28 @@
-import requests
-import json
-from typing import List, Dict, Any, Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from typing import Any
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Devices"]
 
 
 class Devices(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        did: int = None,
-        ip: str = None,
-        iptime: str = None,
-        mac: str = None,
-        seensince: str = None,
-        sid: int = None,
-        count: int = None,
-        includetags: bool = None,
-        responsedata: str = None,
-        cloudsecurity: bool = None,
-        saasfilter: Any = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-    ):
+        did: int | None = None,
+        ip: str | None = None,
+        iptime: str | None = None,
+        mac: str | None = None,
+        seensince: str | None = None,
+        sid: int | None = None,
+        count: int | None = None,
+        includetags: bool | None = None,
+        responsedata: str | None = None,
+        cloudsecurity: bool | None = None,
+        saasfilter: Any | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get device(s) from Darktrace.
 
@@ -43,9 +43,7 @@ class Devices(BaseEndpoint):
             list or dict: API response containing device information
         """
         endpoint = "/devices"
-        url = f"{self.client.host}{endpoint}"
 
-        # Build parameters dictionary
         params = dict()
         if did is not None:
             params["did"] = did
@@ -67,33 +65,18 @@ class Devices(BaseEndpoint):
             params["responsedata"] = responsedata
         if cloudsecurity is not None:
             params["cloudsecurity"] = cloudsecurity
-        # saasfilter can be a string or list of strings; only wrap in list if input is a list/tuple
+        # saasfilter can be a string or list of strings
         if saasfilter is not None:
-            if isinstance(saasfilter, (list, tuple)):
-                params["saasfilter"] = saasfilter
-            else:
-                params["saasfilter"] = saasfilter
+            params["saasfilter"] = saasfilter
 
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def update(
         self,
         did: int,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ) -> dict:  # type: ignore[assignment]
+    ) -> dict:
         """Update device properties in Darktrace.
 
         Args:
@@ -104,28 +87,8 @@ class Devices(BaseEndpoint):
                 type (int): Device type enum
         """
         endpoint = "/devices"
-        url = f"{self.client.host}{endpoint}"
 
-        # Prepare request body
-        body: Dict[str, Any] = {"did": did}
+        body: dict[str, Any] = {"did": did}
         body.update(kwargs)
 
-        # Get headers with JSON body for signature generation
-        headers, sorted_params = self._get_headers(endpoint, json_body=body)
-
-        # Send JSON as raw data with consistent formatting (same as signature generation)
-        json_data = json.dumps(body, separators=(",", ":"))
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "POST",
-            url,
-            headers=headers,
-            params=sorted_params,
-            data=json_data,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        self.client._debug(f"Response Status: {response.status_code}")
-        self.client._debug(f"Response Text: {response.text}")
-        response.raise_for_status()
-        return response.json()
+        return self._post_json(endpoint, body=body, timeout=timeout)

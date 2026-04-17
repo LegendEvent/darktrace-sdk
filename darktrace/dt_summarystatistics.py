@@ -1,23 +1,22 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["SummaryStatistics"]
 
 
 class SummaryStatistics(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        responsedata: Optional[str] = None,
-        eventtype: Optional[str] = None,
-        endtime: Optional[int] = None,
-        to: Optional[str] = None,
-        hours: Optional[int] = None,
-        csensor: Optional[bool] = None,
-        mitreTactics: Optional[bool] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-    ):
+        responsedata: str | None = None,
+        eventtype: str | None = None,
+        endtime: int | None = None,
+        to: str | None = None,
+        hours: int | None = None,
+        csensor: bool | None = None,
+        mitreTactics: bool | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get summary statistics information from Darktrace.
 
@@ -34,10 +33,7 @@ class SummaryStatistics(BaseEndpoint):
         Returns:
             dict: Summary statistics information from Darktrace.
         """
-        endpoint = "/summarystatistics"
-        url = f"{self.client.host}{endpoint}"
-
-        params = dict()
+        params = {}
         if responsedata is not None:
             params["responsedata"] = responsedata
         if eventtype is not None:
@@ -52,17 +48,4 @@ class SummaryStatistics(BaseEndpoint):
             params["csensor"] = csensor
         if mitreTactics is not None:
             params["mitreTactics"] = mitreTactics
-
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get("/summarystatistics", params=params, timeout=timeout)

@@ -1,6 +1,8 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["DeviceSearch"]
 
 
 class DeviceSearch(BaseEndpoint):
@@ -18,9 +20,6 @@ class DeviceSearch(BaseEndpoint):
         seensince (str): Relative offset for activity (e.g. '1hour', '30minute', '60')
     """
 
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
         tag=None,
@@ -37,9 +36,9 @@ class DeviceSearch(BaseEndpoint):
         offset=None,
         responsedata=None,
         seensince=None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
+        timeout: float | tuple[float, float] | None = _UNSET,
         **kwargs,
-    ):
+    ) -> dict | list:
         """
         Search for devices using /devicesearch endpoint.
 
@@ -70,7 +69,6 @@ class DeviceSearch(BaseEndpoint):
             dict: API response
         """
         endpoint = "/devicesearch"
-        url = f"{self.client.host}{endpoint}"
         params = {}
         if count is not None:
             params["count"] = count
@@ -111,20 +109,16 @@ class DeviceSearch(BaseEndpoint):
             params["responsedata"] = responsedata
         if seensince is not None:
             params["seensince"] = seensince
-        # Allow for future/undocumented params
         params.update(kwargs)
 
-        headers, sorted_params = self._get_headers(endpoint, params)
+        return self._get(endpoint, params=params, timeout=timeout)
 
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def get_tag(self, tag: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_tag(
+        self,
+        tag: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific tag.
 
@@ -139,7 +133,12 @@ class DeviceSearch(BaseEndpoint):
         query = f'tag:"{tag}"'
         return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_type(self, type: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_type(
+        self,
+        type: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific type.
 
@@ -154,7 +153,12 @@ class DeviceSearch(BaseEndpoint):
         query = f'type:"{type}"'
         return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_label(self, label: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_label(
+        self,
+        label: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific label.
 
@@ -169,7 +173,12 @@ class DeviceSearch(BaseEndpoint):
         query = f'label:"{label}"'
         return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_vendor(self, vendor: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_vendor(
+        self,
+        vendor: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific vendor.
 
@@ -184,7 +193,12 @@ class DeviceSearch(BaseEndpoint):
         query = f'vendor:"{vendor}"'
         return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_hostname(self, hostname: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_hostname(
+        self,
+        hostname: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific hostname.
 
@@ -199,7 +213,12 @@ class DeviceSearch(BaseEndpoint):
         query = f'hostname:"{hostname}"'
         return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_ip(self, ip: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_ip(
+        self,
+        ip: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific IP address.
 
@@ -214,7 +233,12 @@ class DeviceSearch(BaseEndpoint):
         query = f'ip:"{ip}"'
         return self.get(query=query, timeout=timeout, **kwargs)
 
-    def get_mac(self, mac: str, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET, **kwargs):  # type: ignore[assignment]
+    def get_mac(
+        self,
+        mac: str,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **kwargs,
+    ) -> dict | list:
         """
         Search for devices with a specific MAC address.
 

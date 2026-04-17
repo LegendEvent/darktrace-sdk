@@ -1,32 +1,31 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Network"]
 
 
 class Network(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        applicationprotocol: Optional[str] = None,
-        destinationport: Optional[int] = None,
-        did: Optional[int] = None,
-        endtime: Optional[int] = None,
-        from_: Optional[str] = None,
-        fulldevicedetails: Optional[bool] = None,
-        intext: Optional[str] = None,
-        ip: Optional[str] = None,
-        metric: Optional[str] = None,
-        port: Optional[int] = None,
-        protocol: Optional[str] = None,
-        sourceport: Optional[int] = None,
-        starttime: Optional[int] = None,
-        to: Optional[str] = None,
-        viewsubnet: Optional[int] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-    ):
+        applicationprotocol: str | None = None,
+        destinationport: int | None = None,
+        did: int | None = None,
+        endtime: int | None = None,
+        from_: str | None = None,
+        fulldevicedetails: bool | None = None,
+        intext: str | None = None,
+        ip: str | None = None,
+        metric: str | None = None,
+        port: int | None = None,
+        protocol: str | None = None,
+        sourceport: int | None = None,
+        starttime: int | None = None,
+        to: str | None = None,
+        viewsubnet: int | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get network connectivity and statistics information from Darktrace.
 
@@ -51,9 +50,7 @@ class Network(BaseEndpoint):
         Returns:
             dict: Network connectivity/statistics information from Darktrace.
         """
-        endpoint = "/network"
-        url = f"{self.client.host}{endpoint}"
-        params = dict()
+        params = {}
         if applicationprotocol is not None:
             params["applicationprotocol"] = applicationprotocol
         if destinationport is not None:
@@ -86,17 +83,4 @@ class Network(BaseEndpoint):
             params["viewsubnet"] = viewsubnet
         if responsedata is not None:
             params["responsedata"] = responsedata
-
-        headers, sorted_params = self._get_headers(endpoint, params)
-        resolved_timeout = self._resolve_timeout(timeout)
-
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get("/network", params=params, timeout=timeout)

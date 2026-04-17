@@ -9,16 +9,17 @@ and endpoint method signatures without making actual network calls.
 Run: pytest tests/test_mock.py -v
 """
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 import requests
+
 from darktrace import DarktraceClient
 from darktrace.dt_utils import (
-    BaseEndpoint,
-    _UNSET,
-    _MAX_RETRIES,
     _INITIAL_RETRY_WAIT_SECONDS,
+    _MAX_RETRIES,
     _RETRY_STATUS_CODES,
+    BaseEndpoint,
 )
 
 
@@ -58,38 +59,28 @@ class TestSSRFProtection:
 
     def test_valid_http_scheme(self):
         """Test that http:// scheme is allowed."""
-        client = DarktraceClient(
-            host="http://example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="http://example.com", public_token="test", private_token="test")
         assert client.host == "http://example.com"
 
     def test_valid_https_scheme(self):
         """Test that https:// scheme is allowed."""
-        client = DarktraceClient(
-            host="https://example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://example.com", public_token="test", private_token="test")
         assert client.host == "https://example.com"
 
     def test_no_scheme_adds_https(self):
         """Test that missing scheme defaults to https."""
-        client = DarktraceClient(
-            host="example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="example.com", public_token="test", private_token="test")
         assert client.host == "https://example.com"
 
     def test_block_file_scheme(self):
         """Test that file:// scheme is blocked."""
         with pytest.raises(ValueError, match="Invalid URL scheme"):
-            DarktraceClient(
-                host="file:///etc/passwd", public_token="test", private_token="test"
-            )
+            DarktraceClient(host="file:///etc/passwd", public_token="test", private_token="test")
 
     def test_block_ftp_scheme(self):
         """Test that ftp:// scheme is blocked."""
         with pytest.raises(ValueError, match="Invalid URL scheme"):
-            DarktraceClient(
-                host="ftp://example.com/file", public_token="test", private_token="test"
-            )
+            DarktraceClient(host="ftp://example.com/file", public_token="test", private_token="test")
 
     def test_block_data_scheme(self):
         """Test that data:// scheme is blocked."""
@@ -103,35 +94,25 @@ class TestSSRFProtection:
     def test_block_javascript_scheme(self):
         """Test that javascript:// scheme is blocked."""
         with pytest.raises(ValueError, match="Invalid URL scheme"):
-            DarktraceClient(
-                host="javascript:alert(1)", public_token="test", private_token="test"
-            )
+            DarktraceClient(host="javascript:alert(1)", public_token="test", private_token="test")
 
     def test_private_ip_allowed(self):
         """Test that private IPs are explicitly allowed."""
         # 10.x.x.x
-        client = DarktraceClient(
-            host="https://10.0.0.1", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://10.0.0.1", public_token="test", private_token="test")
         assert client.host == "https://10.0.0.1"
 
         # 192.168.x.x
-        client = DarktraceClient(
-            host="https://192.168.1.1", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://192.168.1.1", public_token="test", private_token="test")
         assert client.host == "https://192.168.1.1"
 
         # 172.16.x.x
-        client = DarktraceClient(
-            host="https://172.16.0.1", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://172.16.0.1", public_token="test", private_token="test")
         assert client.host == "https://172.16.0.1"
 
     def test_localhost_allowed(self):
         """Test that localhost is allowed."""
-        client = DarktraceClient(
-            host="https://localhost", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://localhost", public_token="test", private_token="test")
         assert client.host == "https://localhost"
 
 
@@ -143,17 +124,13 @@ class TestContextManager:
 
     def test_enter_returns_client(self):
         """Test that __enter__ returns the client."""
-        client = DarktraceClient(
-            host="https://example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://example.com", public_token="test", private_token="test")
         with client as c:
             assert c is client
 
     def test_exit_closes_session(self):
         """Test that __exit__ closes the session."""
-        client = DarktraceClient(
-            host="https://example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://example.com", public_token="test", private_token="test")
         # Verify __exit__ exists and is callable
         assert hasattr(client, "__exit__")
         assert callable(client.__exit__)
@@ -162,9 +139,7 @@ class TestContextManager:
 
     def test_close_method(self):
         """Test that close() method works."""
-        client = DarktraceClient(
-            host="https://example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://example.com", public_token="test", private_token="test")
         # Verify close exists and is callable
         assert hasattr(client, "close")
         assert callable(client.close)
@@ -286,7 +261,9 @@ class TestRetryLogic:
         assert call_count[0] == 3  # Initial + 2 retries
 
     def test_max_retries_exceeded(self, mock_response):
-        """Test that after max retries, response is returned (even if 500)."""
+        """Test that after max retries, a ServerError is raised for 500 responses."""
+        from darktrace.exceptions import ServerError
+
         client = DarktraceClient(
             host="https://example.com",
             public_token="test",
@@ -301,16 +278,18 @@ class TestRetryLogic:
             response = Mock()
             response.raise_for_status = Mock()
             response.status_code = 500
+            response.reason = "Internal Server Error"
+            response.url = "https://example.com/devices"
             response.json.return_value = {"error": "server error"}
             return response
 
         client._session.request = Mock(side_effect=side_effect)
 
         with patch("darktrace.dt_utils.time.sleep"):
-            response = client.devices.get()
+            with pytest.raises(ServerError):
+                client.devices.get()
 
-        # Should return the response after all retries exhausted
-        assert response == {"error": "server error"}
+        # Should have tried initial + 3 retries before raising
         assert call_count[0] == 4  # Initial + 3 retries
 
 
@@ -412,11 +391,11 @@ class TestEndpointSignatures:
         assert hasattr(client.antigena, "get_actions")
         assert hasattr(client.antigena, "get_summary")
         assert hasattr(client.antigena, "activate_action")
+        assert hasattr(client.antigena, "approve_action")  # Deprecated backwards compat
         assert hasattr(client.antigena, "extend_action")
         assert hasattr(client.antigena, "clear_action")
         assert hasattr(client.antigena, "reactivate_action")
         assert hasattr(client.antigena, "create_manual_action")
-        assert hasattr(client.antigena, "approve_action")  # Deprecated
 
     def test_breaches_methods(self, client):
         """Test ModelBreaches endpoint methods exist."""
@@ -815,9 +794,7 @@ class TestEndpointMockCalls:
         """Test PCAPs.get() with mocked response."""
         mock_response.status_code = 200
         mock_response.json.return_value = []
-        mock_response.headers = {
-            "Content-Type": "application/json"
-        }  # Required for pcaps
+        mock_response.headers = {"Content-Type": "application/json"}  # Required for pcaps
         client._session.request = Mock(return_value=mock_response)
 
         result = client.pcaps.get()
@@ -856,9 +833,7 @@ class TestSSLVerification:
 
     def test_ssl_verification_default_true(self):
         """Test that SSL verification is enabled by default."""
-        client = DarktraceClient(
-            host="https://example.com", public_token="test", private_token="test"
-        )
+        client = DarktraceClient(host="https://example.com", public_token="test", private_token="test")
         assert client.verify_ssl is True
 
     def test_ssl_verification_can_be_disabled(self):
@@ -879,7 +854,7 @@ class TestDeprecations:
     """Test deprecation warnings."""
 
     def test_approve_action_deprecated(self, client):
-        """Test that approve_action emits de deprecation warning."""
+        """Test that approve_action emits a deprecation warning."""
         import warnings
 
         with warnings.catch_warnings(record=True) as w:

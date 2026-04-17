@@ -1,12 +1,17 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Models"]
+
 
 class Models(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
-    def get(self, uuid: Optional[str] = None, responsedata: Optional[str] = None, timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET):  # type: ignore[assignment]
+    def get(
+        self,
+        uuid: str | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get model information from Darktrace.
 
@@ -17,19 +22,9 @@ class Models(BaseEndpoint):
         Returns:
             list or dict: Model information from Darktrace. Returns a list of models or a dict for a single model.
         """
-        endpoint = '/models'
-        url = f"{self.client.host}{endpoint}"
-        params = dict()
+        params = {}
         if uuid is not None:
-            params['uuid'] = uuid
+            params["uuid"] = uuid
         if responsedata is not None:
-            params['responsedata'] = responsedata
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        response.raise_for_status()
-        return response.json()
+            params["responsedata"] = responsedata
+        return self._get("/models", params=params, timeout=timeout)

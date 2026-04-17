@@ -1,19 +1,18 @@
-import requests
-from typing import Optional, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["Status"]
 
 
 class Status(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        includechildren: Optional[bool] = None,
-        fast: Optional[bool] = None,
-        responsedata: Optional[str] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-    ):
+        includechildren: bool | None = None,
+        fast: bool | None = None,
+        responsedata: str | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+    ) -> dict | list:
         """
         Get detailed system health and status information from Darktrace.
 
@@ -26,27 +25,11 @@ class Status(BaseEndpoint):
         Returns:
             dict: System health and status information from Darktrace.
         """
-        endpoint = "/status"
-        url = f"{self.client.host}{endpoint}"
-
-        params = dict()
+        params = {}
         if includechildren is not None:
             params["includechildren"] = includechildren
         if fast is not None:
             params["fast"] = fast
         if responsedata is not None:
             params["responsedata"] = responsedata
-
-        headers, sorted_params = self._get_headers(endpoint, params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET",
-            url,
-            headers=headers,
-            params=sorted_params,
-            verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get("/status", params=params, timeout=timeout)

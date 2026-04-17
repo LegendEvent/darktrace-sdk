@@ -1,34 +1,34 @@
-import requests
-from typing import Optional, List, Union, Tuple
-from .dt_utils import debug_print, BaseEndpoint, _UNSET
+from __future__ import annotations
+
+from .dt_utils import _UNSET, BaseEndpoint
+
+__all__ = ["MetricData"]
+
 
 class MetricData(BaseEndpoint):
-    def __init__(self, client):
-        super().__init__(client)
-
     def get(
         self,
-        metric: Optional[str] = None,
-        metrics: Optional[List[str]] = None,
-        did: Optional[int] = None,
-        ddid: Optional[int] = None,
-        odid: Optional[int] = None,
-        port: Optional[int] = None,
-        sourceport: Optional[int] = None,
-        destinationport: Optional[int] = None,
-        protocol: Optional[str] = None,
-        applicationprotocol: Optional[str] = None,
-        starttime: Optional[int] = None,
-        endtime: Optional[int] = None,
-        from_: Optional[int] = None,
-        to: Optional[int] = None,
-        interval: Optional[str] = None,
-        breachtimes: Optional[bool] = None,
-        fulldevicedetails: Optional[bool] = None,
-        devices: Optional[List[str]] = None,
-        timeout: Optional[Union[float, Tuple[float, float]]] = _UNSET,  # type: ignore[assignment]
-        **params
-    ):
+        metric: str | None = None,
+        metrics: list[str] | None = None,
+        did: int | None = None,
+        ddid: int | None = None,
+        odid: int | None = None,
+        port: int | None = None,
+        sourceport: int | None = None,
+        destinationport: int | None = None,
+        protocol: str | None = None,
+        applicationprotocol: str | None = None,
+        starttime: int | None = None,
+        endtime: int | None = None,
+        from_: int | None = None,
+        to: int | None = None,
+        interval: str | None = None,
+        breachtimes: bool | None = None,
+        fulldevicedetails: bool | None = None,
+        devices: list[str] | None = None,
+        timeout: float | tuple[float, float] | None = _UNSET,
+        **params,
+    ) -> dict | list:
         """
         Get metric time series data from Darktrace /metricdata endpoint.
 
@@ -52,63 +52,53 @@ class MetricData(BaseEndpoint):
             fulldevicedetails (bool, optional): Whether to include full device details.
             devices (list of str, optional): List of device IDs or names.
             timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
-            **params: Additional parameters for future compatibility.
+            **params: Additional API parameters.
 
         Returns:
             dict: Metric time series data from Darktrace.
         """
-        endpoint = '/metricdata'
-        url = f"{self.client.host}{endpoint}"
+        endpoint = "/metricdata"
         query_params = dict()
 
-        # Handle metric/metrics
+        # Handle metric/metrics - mutually exclusive: use either metrics (list) or metric (single string)
         if metrics is not None:
-            query_params['metric'] = ','.join(metrics)
+            query_params["metric"] = ",".join(metrics)
         elif metric is not None:
-            query_params['metric'] = metric
+            query_params["metric"] = metric
 
         if did is not None:
-            query_params['did'] = did
+            query_params["did"] = did
         if ddid is not None:
-            query_params['ddid'] = ddid
+            query_params["ddid"] = ddid
         if odid is not None:
-            query_params['odid'] = odid
+            query_params["odid"] = odid
         if port is not None:
-            query_params['port'] = port
+            query_params["port"] = port
         if sourceport is not None:
-            query_params['sourceport'] = sourceport
+            query_params["sourceport"] = sourceport
         if destinationport is not None:
-            query_params['destinationport'] = destinationport
+            query_params["destinationport"] = destinationport
         if protocol is not None:
-            query_params['protocol'] = protocol
+            query_params["protocol"] = protocol
         if applicationprotocol is not None:
-            query_params['applicationprotocol'] = applicationprotocol
+            query_params["applicationprotocol"] = applicationprotocol
         if starttime is not None:
-            query_params['starttime'] = starttime
+            query_params["starttime"] = starttime
         if endtime is not None:
-            query_params['endtime'] = endtime
+            query_params["endtime"] = endtime
         if from_ is not None:
-            query_params['from'] = from_
+            query_params["from"] = from_
         if to is not None:
-            query_params['to'] = to
+            query_params["to"] = to
         if interval is not None:
-            query_params['interval'] = interval
+            query_params["interval"] = interval
         if breachtimes is not None:
-            query_params['breachtimes'] = breachtimes
+            query_params["breachtimes"] = breachtimes
         if fulldevicedetails is not None:
-            query_params['fulldevicedetails'] = fulldevicedetails
+            query_params["fulldevicedetails"] = fulldevicedetails
         if devices is not None:
-            query_params['devices'] = ','.join(devices)
+            query_params["devices"] = ",".join(devices)
 
-        # Add any extra params
         query_params.update(params)
 
-        headers, sorted_params = self._get_headers(endpoint, query_params)
-
-        resolved_timeout = self._resolve_timeout(timeout)
-        response = self._make_request(
-            "GET", url, headers=headers, params=sorted_params,
-            verify=self.client.verify_ssl, timeout=resolved_timeout
-        )
-        response.raise_for_status()
-        return response.json()
+        return self._get(endpoint, params=query_params, timeout=timeout)

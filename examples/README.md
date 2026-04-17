@@ -1,6 +1,8 @@
 # Darktrace SDK Examples
 
-This directory contains example scripts demonstrating how to use various features of the Darktrace SDK.
+This directory contains **standalone demonstration scripts** that show how to use the Darktrace SDK with real Darktrace instances.
+
+**Note:** These are **runnable scripts** intended to be executed directly (e.g., `python examples/intelfeed_example.py`), not imported as libraries. They are tested in `tests/test_mock.py` using mocking.
 
 ## Intel Feed Module Fix
 

@@ -19,3 +19,30 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# Claude AI
+.claude/
+CLAUDE.md
+
+# Coverage
+.coverage
+
+# Darktrace API Guide
+Darktrace_API_Guide.md
+
+# Sisyphus work state
+.sisyphus/
+
+# Virtual environment
+.venv/
+
+# Desloppify local state
+.desloppify/
+.gitnexus
+
+# Local-only tooling (not for remote)
+.github/workflows/lint.yml
+.gitnexus-allowlist
+.pre-commit-config.yaml
+
+hooks/
