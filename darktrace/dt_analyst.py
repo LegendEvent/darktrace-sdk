@@ -176,6 +176,14 @@ class Analyst(BaseEndpoint):
     ) -> dict:
         """Add a comment to an AI Analyst incident event.
 
+        Note:
+            Observed on Threat Visualizer 7.0.42: the server answers ``SUCCESS``
+            but does not store the comment (it also does so for IDs that do not
+            exist), and ``get_comments`` never returns it. The 7.x UI comments on
+            an incident group or a model breach instead, so to leave a comment
+            that is actually stored use ``client.breaches.add_comment(pbid, ...)``.
+            Verify with ``get_comments`` if you rely on this endpoint.
+
         Args:
             incident_id: Unique identifier for the AI Analyst event.
             message: Text to add as a comment.
