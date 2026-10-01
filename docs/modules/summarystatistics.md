@@ -56,11 +56,13 @@ summary.get(eventtype="networkdevicedetails")   # category + type
 
 The category `saas` cannot be combined with the type `devicedetails`.
 
-With `to` and `hours`, the guide's example counts network device-tracking events in 24 hourly intervals:
+The guide's example counts network device-tracking events in 24 hourly intervals with `to` and `hours`:
 
 ```python
 summary.get(eventtype="networkdevicedetails", to="2021-02-12 12:00:00", hours=24)
 ```
+
+Observed on Threat Visualizer 7.0.42: `eventtype` alone and `eventtype` with `endtime` work, but any request that includes `hours` (with or without `to`) is rejected with `{"summarystatistics": "INPUT ERROR"}` (HTTP 400), although the guide documents it.
 
 ## Response (no parameters)
 
@@ -116,8 +118,8 @@ mitre = summary.get(mitreTactics=True)
 # cSensor bandwidth only
 csensor = summary.get(csensor=True)
 
-# loginput event counts for the last 6 hours
-loginput = summary.get(eventtype="loginput", hours=6)
+# loginput event counts (ending now)
+loginput = summary.get(eventtype="loginput")
 ```
 
 ## Error handling
