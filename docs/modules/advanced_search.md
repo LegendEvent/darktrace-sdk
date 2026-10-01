@@ -87,6 +87,36 @@ for hit in results["hits"]["hits"]:
     print(src["@timestamp"], src["@type"], src["@fields"])
 ```
 
+Paginate by incrementing `offset` (the API returns 50 hits per request by default, as `kibana.per_page` shows; `search()` does not forward `size`, so the step is the number of hits returned):
+
+```python
+query = {
+    "search": '@type:"conn" AND @fields.dest_port:"443"',
+    "fields": [],
+    "offset": 0,
+    "timeframe": "3600",
+}
+all_hits = []
+while True:
+    page = advanced_search.search(query)
+    hits = page["hits"]["hits"]
+    if not hits:
+        break
+    all_hits.extend(hits)
+    query["offset"] += len(hits)
+    if len(all_hits) >= page["hits"]["total"]:
+        break
+print(f"Fetched {len(all_hits)} of {page['hits']['total']} hits")
+```
+
+Check `darktraceChildError` to see whether a probe did not respond:
+
+```python
+results = advanced_search.search({"search": '@type:"dns"', "fields": [], "offset": 0, "timeframe": "3600"})
+if results.get("darktraceChildError"):
+    print(f"Probe error: {results['darktraceChildError']}")
+```
+
 #### Response
 
 The response has the structure shown in the guide (Elasticsearch-style):
@@ -149,6 +179,22 @@ analysis = advanced_search.analyze(
 
 for bucket in analysis["aggregations"]["terms"]["buckets"]:
     print(bucket["key"], bucket["doc_count"])
+```
+
+```python
+# Mean of a numeric field over the last hour
+stats = advanced_search.analyze(
+    field="@fields.orig_ip_bytes",
+    analysis_type="mean",
+    query={
+        "search": '@type:"conn"',
+        "fields": [],
+        "offset": 0,
+        "timeframe": "3600",
+        "time": {"user_interval": 0},
+    },
+)
+print(stats["aggregations"]["stats"]["avg"])
 ```
 
 `terms` returns `aggregations.terms` with `doc_count_error_upper_bound`, `sum_other_doc_count` and `buckets` (`key`, `doc_count`). `mean` returns `aggregations.stats` with `count`, `min`, `max`, `avg`, `sum`. For `trend` and `score`, see the API guide. The response also contains `took`, `timed_out`, `hits` (with an empty `hits` array), `darktraceChildError` and `kibana`.
@@ -216,4 +262,14 @@ except requests.exceptions.HTTPError as e:
     print(f"HTTP error occurred: {e}")
 except Exception as e:
     print(f"An error occurred: {e}")
+```
+
+The SDK's exceptions (for example `AuthenticationError`, `ForbiddenError`) subclass `requests.HTTPError`, so the handler above also catches them.
+
+Use `.get()` with a default when reading optional parts of a response:
+
+```python
+results = client.advanced_search.search(query)
+hits = results.get("hits", {}).get("hits", [])
+print(f"{len(hits)} hits on this page")
 ```

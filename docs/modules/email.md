@@ -61,6 +61,10 @@ Decode an encoded link from an email (`GET /v1.0/admin/decode_link`).
 ```python
 decoded = email.decode_link(link="https://...encoded...")
 print(decoded)
+
+# Decode several links
+for link in ["https://...encoded-1...", "https://...encoded-2..."]:
+    print(link, "->", email.decode_link(link=link))
 ```
 
 #### Parameters
@@ -121,6 +125,19 @@ for address, info in email.get_user_anomaly(days=28, limit=2).items():
     print(address, info["n_emails"], "of", info["total_emails"], f"({info['percentage']}%)")
 ```
 
+Filtering the result, for example users whose recent volume is high relative to their total:
+
+```python
+anomalies = email.get_user_anomaly(days=28, limit=50)
+noisy = {
+    address: info
+    for address, info in anomalies.items()
+    if info["percentage"] >= 25 or info["n_links"] > 0 or info["n_attachments"] > 0
+}
+for address, info in sorted(noisy.items(), key=lambda kv: kv[1]["percentage"], reverse=True):
+    print(address, info["percentage"], info["n_last_week"])
+```
+
 For `get_action_summary()`, `get_dash_stats()` and `get_data_loss()` the API guide gives no response schema; see the instance's api-docs.
 
 ### Email Actions
@@ -133,6 +150,19 @@ available = email.get_actions()
 
 # The body is passed through unchanged as JSON - build it according to the api-docs
 result = email.email_action(uuid="email-uuid-here", data={...})
+```
+
+Handling a permission failure (Restricted Manual Action tokens can only release to the original recipient):
+
+```python
+from darktrace import DarktraceError, ForbiddenError
+
+try:
+    result = email.email_action(uuid="email-uuid-here", data={...})
+except ForbiddenError:
+    print("Token lacks Manual Action / Restricted Manual Action permission")
+except DarktraceError as e:
+    print(f"Action failed: {e} (status {e.status_code})")
 ```
 
 #### Parameters
@@ -173,6 +203,13 @@ email_content = email.download_email(uuid="email-uuid-here")
 
 with open("suspicious_email.eml", "wb") as f:
     f.write(email_content)
+
+# Parse the saved MIME content with the standard library
+from email import policy
+from email.parser import BytesParser
+
+msg = BytesParser(policy=policy.default).parsebytes(email_content)
+print(msg["subject"], msg["from"])
 ```
 
 #### Parameters
@@ -218,6 +255,12 @@ Both audit endpoints require Email logs plus Audit Log (Darktrace/Email).
 event_types = email.get_event_types()   # GET /v1.0/system/audit/eventTypes
 
 events = email.get_audit_events(event_type="login", limit=10, offset=0)   # GET /v1.0/system/audit/events
+
+# Page through events with limit/offset (the response layout is defined in the api-docs)
+page_size = 100
+for page in range(3):
+    chunk = email.get_audit_events(limit=page_size, offset=page * page_size)
+    print(page, chunk)
 ```
 
 #### `get_audit_events()` Parameters
