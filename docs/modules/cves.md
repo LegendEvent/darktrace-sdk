@@ -146,6 +146,70 @@ for severity, count in counts.most_common():
     print(f"{severity}: {count}")
 ```
 
+### Filter by severity (client-side)
+
+```python
+data = client.cves.get()
+
+wanted = {"high", "critical"}
+for entry in data.get("results", []):
+    hits = [c for c in entry.get("cves", [])
+            if str(c.get("BASE_SEVERITY", "")).lower() in wanted]
+    if hits:
+        print(f"Device {entry.get('did')}: {', '.join(c['CVE_ID'] for c in hits)}")
+```
+
+### Devices ranked by number of CVEs
+
+```python
+data = client.cves.get()
+
+ranked = sorted(
+    data.get("results", []),
+    key=lambda e: len(e.get("cves", [])),
+    reverse=True,
+)
+for entry in ranked[:10]:
+    print(f"Device {entry.get('did')}: {len(entry.get('cves', []))} CVEs")
+```
+
+### Unique CVEs across the network
+
+```python
+data = client.cves.get()
+
+devices_per_cve = {}
+for entry in data.get("results", []):
+    for cve in entry.get("cves", []):
+        devices_per_cve.setdefault(cve.get("CVE_ID"), set()).add(entry.get("did"))
+
+for cve_id, dids in sorted(devices_per_cve.items(), key=lambda kv: len(kv[1]), reverse=True):
+    print(f"{cve_id}: {len(dids)} device(s)")
+```
+
+### Check several devices
+
+```python
+for did in [12, 34, 56]:
+    data = client.cves.get(did=did)
+    cve_ids = [c.get("CVE_ID")
+               for entry in data.get("results", [])
+               for c in entry.get("cves", [])]
+    print(f"Device {did}: {len(cve_ids)} CVEs {cve_ids}")
+```
+
+### CPEs with an available patch
+
+```python
+data = client.cves.get()
+
+for entry in data.get("results", []):
+    for cpe in entry.get("platform mappings (CPEs)", []):
+        if cpe.get("patch"):
+            print(f"Device {entry.get('did')}: {cpe.get('vendor')} / {cpe.get('product')} "
+                  f"-> patch {cpe['patch']} ({len(cpe.get('cves', []))} CVEs)")
+```
+
 ### Full device details
 
 ```python

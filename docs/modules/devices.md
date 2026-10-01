@@ -200,6 +200,35 @@ cloud_devices = client.devices.get(cloudsecurity=True)
 print(f"Cloud Security devices: {len(cloud_devices)}")
 ```
 
+### Count Devices by Type
+
+```python
+from collections import Counter
+
+by_type = Counter(d.get("typelabel", "Unknown") for d in client.devices.get(seensince="1day"))
+for label, n in by_type.most_common():
+    print(f"{label}: {n}")
+```
+
+### Look Up a Device by MAC and Label It
+
+```python
+result = client.devices.get(mac="00:11:22:33:44:55")
+# The guide describes a list response; a single match may still come back as an object
+device = (result[0] if result else None) if isinstance(result, list) else result
+if device:
+    client.devices.update(did=device["did"], label="Finance File Server")
+```
+
+### Recently Active Devices per Subnet
+
+```python
+subnet_id = 25
+recent = client.devices.get(sid=subnet_id, seensince="1hour")
+for device in recent:
+    print(f"{device.get('ip')}  {device.get('hostname', '-')}  {device.get('os', '-')}")
+```
+
 ### Update Critical Servers
 
 ```python
@@ -207,6 +236,18 @@ for device in client.devices.get(count=1000):
     hostname = device.get("hostname", "")
     if any(k in hostname.lower() for k in ["dc", "domain", "exchange", "sql"]):
         client.devices.update(did=device["did"], priority=5, label=f"CRITICAL: {hostname}")
+```
+
+Batch updates with per-device error handling:
+
+```python
+import requests
+
+for did in [123, 456, 789]:
+    try:
+        client.devices.update(did=did, priority=5)
+    except requests.exceptions.HTTPError as e:
+        print(f"Device {did} failed: {e}")
 ```
 
 ## Error Handling

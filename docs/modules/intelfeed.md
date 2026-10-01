@@ -186,6 +186,55 @@ for name in client.intelfeed.get_by_source(source):
 client.intelfeed.update(add_list=["new1.com", "new2.com"], source=source)
 ```
 
+### Import IOCs by type
+
+Hostnames are matched exactly and need `is_hostname=True`, so import them in a separate request from domains and IP addresses:
+
+```python
+domains_and_ips = ["malicious-domain.com", "evil-site.net", "192.0.2.100"]
+hostnames = ["c2-server.example.com", "www.phishing-site.example.org"]
+
+client.intelfeed.update(
+    add_list=domains_and_ips,
+    description="IOC batch import",
+    source="IOC_Import",
+    expiry="2030-12-31T12:00:00"
+)
+client.intelfeed.update(
+    add_list=hostnames,
+    description="IOC batch import (hostnames)",
+    source="IOC_Import",
+    is_hostname=True,
+    expiry="2030-12-31T12:00:00"
+)
+```
+
+### Find entries that trigger RESPOND/Network actions
+
+```python
+entries = client.intelfeed.get_with_details()
+auto_action = [e["name"] for e in entries if e.get("iagn")]
+print(f"{len(auto_action)} entries trigger automatic actions: {auto_action}")
+```
+
+### Find entries expiring soon
+
+The guide shows `expiry` values both as `2020-12-31T12:00:00` and `2020-04-03 15:23:20`; normalise the separator before parsing:
+
+```python
+from datetime import datetime, timedelta
+
+entries = client.intelfeed.get(source="CustomSet1", fulldetails=True)
+cutoff = datetime.now() + timedelta(days=7)
+
+expiring = [
+    e["name"]
+    for e in entries
+    if e.get("expiry")
+    and datetime.fromisoformat(e["expiry"].replace(" ", "T")) <= cutoff
+]
+```
+
 ## Error Handling
 
 ```python

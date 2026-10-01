@@ -138,6 +138,53 @@ csensor = summary.get(csensor=True)
 loginput = summary.get(eventtype="loginput")
 ```
 
+### Bandwidth trend over the default window
+
+`bandwidth` is a list of `{timems, time, kb}` samples (one per 24h interval by default).
+
+```python
+samples = summary.get(responsedata="bandwidth")["bandwidth"]
+peak = max(samples, key=lambda s: s["kb"])
+avg_kb = sum(s["kb"] for s in samples) / len(samples)
+print(f"Peak {peak['time']}: {peak['kb']} kB, average {avg_kb:.0f} kB")
+```
+
+### Device counts by type
+
+```python
+counts = summary.get(responsedata="devicecount")["devicecount"]
+print("Total:", counts["total"], "SaaS:", counts["saas"]["total"])
+for dtype in ("laptop", "mobile", "server", "iot"):
+    if dtype in counts:
+        print(dtype, counts[dtype])
+```
+
+### Event counts for a fixed end time
+
+`endtime` (milliseconds since epoch, UTC) and `to` (`YYYY-MM-DD HH:MM:SS`) are alternatives and both require `eventtype`.
+
+```python
+from datetime import datetime, timezone
+
+end = datetime(2021, 2, 12, 12, 0, 0, tzinfo=timezone.utc)
+by_endtime = summary.get(eventtype="networkdevicedetails", endtime=int(end.timestamp() * 1000))
+by_to = summary.get(eventtype="saas", to="2021-02-12 12:00:00")
+```
+
+### Comparing cSensor and Network bandwidth
+
+```python
+endpoint_bw = summary.get(csensor=True)
+network_bw = summary.get(csensor=False)
+```
+
+### Timeouts
+
+```python
+# Single value, or (connect, read)
+stats = summary.get(timeout=(5, 30))
+```
+
 ## Error handling
 
 ```python
@@ -147,4 +194,13 @@ try:
     stats = summary.get()
 except requests.exceptions.HTTPError as e:
     print(f"API error: {e}")
+```
+
+Combining `eventtype`, `csensor` and `mitreTactics` is not allowed by the guide, so the SDK raises `ValueError` before sending (see the observed server behaviour above). Send only one of them:
+
+```python
+try:
+    stats = summary.get(mitreTactics=True)
+except requests.exceptions.HTTPError as e:
+    print(e.response.status_code, e.response.text)
 ```

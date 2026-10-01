@@ -94,6 +94,46 @@ lookup = build_lookup(countries)
 print(lookup.get("AD", "Unknown"))   # codes are strings
 ```
 
+### Find a category by name and list its visible entries
+
+Category key names vary by environment, so match them case-insensitively instead of hard-coding one spelling. Entries flagged `"hidden": true` can be skipped when you only want the selectable values.
+
+```python
+def find_category(data, wanted):
+    """Return the entries of the first dict key matching `wanted` (case-insensitive)."""
+    if not isinstance(data, dict):
+        return []
+    for key, entries in data.items():
+        if key.lower() == wanted.lower():
+            return entries
+    return []
+
+data = client.enums.get()
+for entry in find_category(data, "Country")[:10]:
+    if not entry.get("hidden", False):
+        print(entry["code"], entry["name"])
+```
+
+### Translate codes found in another response
+
+Fetch the enums once, build lookups per category, then resolve the codes you meet elsewhere (codes are compared as strings):
+
+```python
+data = client.enums.get()
+
+lookups = {
+    category: {e["code"]: e["name"] for e in entries}
+    for category, entries in data.items()
+} if isinstance(data, dict) else {}
+
+def name_for(category, code, default="Unknown"):
+    return lookups.get(category, {}).get(str(code), default)
+
+print(name_for("Country", "AD"))
+```
+
+For endpoints that support it (for example `/modelbreaches`), the guide also describes an `expandenums` parameter that returns full strings instead of numeric codes in certain nested lists, which can remove the need for a manual lookup.
+
 ### Caching
 
 Enum data changes rarely, so fetch it once and reuse it:
@@ -104,6 +144,20 @@ from functools import lru_cache
 @lru_cache(maxsize=None)
 def get_enums(responsedata=None):
     return client.enums.get(responsedata=responsedata)
+```
+
+To refresh periodically instead of keeping the data for the whole process, store a timestamp next to it:
+
+```python
+import time
+
+_cache = {"data": None, "fetched": 0.0}
+
+def get_enums_ttl(max_age=3600):
+    if _cache["data"] is None or time.time() - _cache["fetched"] > max_age:
+        _cache["data"] = client.enums.get()
+        _cache["fetched"] = time.time()
+    return _cache["data"]
 ```
 
 ## Error Handling
