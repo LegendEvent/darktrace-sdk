@@ -29,12 +29,22 @@ client = DarktraceClient(
 
 ## Getting API Tokens
 
-To use the Darktrace API, you need to generate API tokens from your Darktrace instance:
+Each Darktrace master instance needs an API token pair (public and private). The private token is shown only once, so store it securely.
 
-1. Log in to your Darktrace instance with an administrator account
-2. Navigate to System Config > API Keys
-3. Click "Generate New API Key"
-4. Save both the public and private tokens securely
+**Per-user token** (Threat Visualizer 5.1 and later):
+
+1. The user must first be granted API access. Only local users (created within the Threat Visualizer) can have tokens, not LDAP or SAML SSO users.
+2. In the Permissions Admin page (Main Menu > Admin, "Created Accounts" tab), edit the user and turn on "API Access" in the Flags step.
+3. As that user, open Account Settings from the main menu, click "API Access" and then "New".
+
+A user token can only reach the endpoints that user can access in the Threat Visualizer interface (see "Minimum Required Permissions for API Endpoints" in the API guide).
+
+**Global token** (generated before 5.1 or from System Config):
+
+1. Open System Config > Settings on the Threat Visualizer.
+2. In the "API Token" subsection, click "New".
+
+Actions made with a global token are attributed to the `DTAPI_[token]` user, where `[token]` is the public token.
 
 ## Authentication Process
 
@@ -42,26 +52,28 @@ The authentication process is handled automatically by the SDK, but here's how i
 
 1. For each API request, the SDK generates a timestamp in UTC format
 2. It creates a signature using:
-   - The request path (e.g., `/devices`)
+   - The request path (e.g., `/devices`), without the host
    - Any query parameters, sorted alphabetically by key (e.g., `?fulldetails=true&source=ThreatIntel`)
    - Your public token
-   - The current timestamp
+   - The current timestamp (`YYYY-MM-DD HH:MM:SS`, UTC)
    - Your private token as the HMAC key
+
+   The signed string is `<path and parameters>\n<public token>\n<date>`.
 3. The signature is generated using HMAC-SHA1 and converted to a hexadecimal string
 4. The headers are added to the request:
    - `DTAPI-Token`: Your public token
    - `DTAPI-Date`: The current timestamp
    - `DTAPI-Signature`: The generated signature
-   - `Content-Type`: `application/json`
+   - `Content-Type`: `application/json` by default (form POSTs override it with `application/x-www-form-urlencoded`)
 5. The same sorted query parameters are used in the actual request to ensure consistency
 
 ## Parameter Ordering and Request Bodies
 
 The Darktrace API recomputes the signature from what it receives, so the SDK signs exactly what it sends:
 
-1. **GET query parameters** are sorted alphabetically. List/tuple values are signed as repeated keys (`a=1&a=2`, the way `requests` sends them), `None` values are dropped and values are encoded as UTF-8.
+1. **GET query parameters** are sorted alphabetically. List/tuple values are signed as repeated keys (`a=1&a=2`, the way `requests` sends them), `None` values are dropped and booleans are sent lowercase (`true`/`false`). Values are signed as plain `key=value` text, without extra encoding.
 2. **Form POSTs** (`analyst.acknowledge/unacknowledge/pin/unpin`, `tags.post_entities`) send one sorted, url-encoded body, and the same string is signed (the API guide: "add each POST parameter into the query string"). Before 0.10.1 these calls failed with `API SIGNATURE ERROR` (#59).
-3. **JSON POSTs** are signed with the compact JSON body appended after the path.
+3. **JSON POSTs** are signed with the compact JSON body appended after the path, e.g. `/modelbreaches/101/comments?{"message":"x"}`, as in the API guide. If a JSON POST also has query parameters, the SDK signs `path?a=1&{json}`; the guide does not define this combined case.
 
 This prevents API signature errors that occur when the signed string differs from the request on the wire.
 
@@ -96,8 +108,9 @@ client = DarktraceClient(
 Common authentication errors include:
 
 - **401 Unauthorized**: Invalid tokens or signature
-- **403 Forbidden**: Valid tokens but insufficient permissions
-- **429 Too Many Requests**: Rate limiting applied
+- **403 Forbidden**: Valid tokens but insufficient permissions (the token's user cannot access the endpoint)
+
+The `DTAPI-Date` must be within 30 minutes of the Darktrace system time (UTC), so a badly skewed local clock causes authentication failures. The SDK's exceptions (`AuthenticationError`, `ForbiddenError`, ...) subclass `requests.HTTPError`.
 
 ```python
 import requests
@@ -113,7 +126,7 @@ try:
     # Test authentication with a simple API call
     status = client.status.get()
     print("Authentication successful!")
-    
+
 except requests.exceptions.HTTPError as e:
     if e.response.status_code == 401:
         print("Authentication failed: Invalid tokens or signature")
@@ -122,4 +135,4 @@ except requests.exceptions.HTTPError as e:
     else:
         print(f"HTTP error: {e}")
 except Exception as e:
-    print(f"Error: {e}") 
+    print(f"Error: {e}")
