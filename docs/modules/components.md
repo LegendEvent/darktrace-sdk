@@ -3,7 +3,7 @@
 > ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
 
-The Components module provides access to Darktrace component information, allowing you to retrieve details about model components used in the Darktrace system for filtering and analysis.
+The Components module provides access to the `/components` endpoint. Components are segments of model logic that are evaluated; each component is identified by its `cid`, which is referenced in the data attribute of model breaches. A component is a series of filters that an event or connection is assessed against as part of a larger model.
 
 ## Initialization
 
@@ -24,75 +24,100 @@ components = client.components
 
 The Components module provides the following method:
 
-- **`get()`** - Retrieve component information with optional filtering
+- **`get()`** - Retrieve all components or a single component by `cid`
 
 ## Methods
 
 ### Get Components
-
-Retrieve information about model components used in the Darktrace system. Components define the building blocks of models and provide filtering capabilities.
 
 ```python
 # Get all components
 all_components = components.get()
 
 # Get specific component by ID
-specific_component = components.get(cid=1234)
+specific_component = components.get(cid=8977)
 
-# Get only specific response data (e.g., filters)
+# Restrict the response to one top-level field
 filters_only = components.get(responsedata='filters')
 
-# Get specific component with restricted response
-component_filters = components.get(
-    cid=1234,
-    responsedata='filters'
-)
+# Specific component, restricted to one field
+component_filters = components.get(cid=8977, responsedata='filters')
 ```
 
 #### Parameters
 
-- `cid` (int, optional): Component ID to retrieve a specific component. If None, returns all components
-- `responsedata` (str, optional): Restrict the returned JSON to only the specified top-level field or object
+- `cid` (int, optional): Component ID. If omitted, all components are returned (`GET /components`); otherwise `GET /components/<cid>`
+- `responsedata` (str, optional): Name of a single top-level field or object; the returned JSON is restricted to only that field or object
+- `timeout` (float or tuple, optional): Per-request timeout override
+- `**params`: Additional query parameters passed through to the API
+
+The method returns the parsed JSON response (`dict` or `list`). The API guide only states that `/components` "returns a list of all component parts"; it does not show an example of the all-components response, so do not rely on a particular wrapper (the examples below handle both a bare list and a dict).
 
 #### Response Structure
 
+Single component (`/components/8977`, abridged from the API guide example):
+
 ```python
-# All components response
 {
-  "components": [
-    {
-      "cid": 1234,
-      "name": "Component Name",
-      "description": "Component description",
-      "type": "component_type",
-      "filters": [...],
-      "metadata": {...}
+  "cid": 8977,
+  "chid": 15524,
+  "mlid": 33,
+  "threshold": 5242880,
+  "interval": 3600,
+  "logic": {
+    "data": {
+      "left": "A",
+      "operator": "AND",
+      "right": {"left": "B", "operator": "AND", "right": "C"}
     },
-    // ... more components
-  ]
-}
-
-# Single component response (when cid specified)
-{
-  "cid": 1234,
-  "name": "Component Name", 
-  "description": "Component description",
-  "type": "component_type",
-  "filters": [...],
-  "metadata": {...}
-}
-
-# With responsedata='filters'
-{
+    "version": "v0.1"
+  },
   "filters": [
-    // Filter objects only
-  ]
+    {
+      "id": "A",
+      "cfid": 59205,
+      "cfhid": 99603,
+      "filtertype": "Direction",
+      "comparator": "is",
+      "arguments": {"value": "out"}
+    },
+    {
+      "id": "d1",
+      "cfid": 59210,
+      "cfhid": 99608,
+      "filtertype": "Connection hostname",
+      "comparator": "display",
+      "arguments": {}
+    }
+  ],
+  "active": True
 }
 ```
 
+| Field | Description |
+|---|---|
+| `cid` | The component ID, a unique identifier |
+| `chid` | The component history ID; increments when the component is edited |
+| `mlid` | The metric logic ID of the metric used in the component |
+| `threshold` | The threshold value the size must exceed for the component to breach |
+| `interval` | Timeframe in seconds within which the threshold must be satisfied |
+| `logic` | Object describing the component logic |
+| `logic.data` | Logical relationship between the component filters (`left`, `operator`, `right`), referencing filters by their alphabetical ID |
+| `logic.version` | Version of the component logic |
+| `filters` | Array of the filters that make up the component |
+| `filters[].id` | Filter identifier within the component: a capital letter (`A`, `F`, ...) for filters used in the model logic, or `d1`, `d4`, ... for display filters |
+| `filters[].cfid` | The component filter ID, a unique identifier |
+| `filters[].cfhid` | The component filter history ID; increments when the filter is edited |
+| `filters[].filtertype` | The filtertype used (full list on the `/filtertypes` endpoint) |
+| `filters[].comparator` | The comparator (valid comparators per filtertype are on the `/filtertypes` endpoint) |
+| `filters[].arguments` | Object containing the value to compare (`arguments.value`); empty for display filters |
+| `active` | Whether the component is currently active as part of a model |
+
+With `responsedata`, only the named top-level field/object is returned (for example `responsedata='filters'` restricts the response to the `filters` field).
+
 ## Examples
 
-### Basic Component Retrieval
+### Listing Components
 
 ```python
 from darktrace import DarktraceClient
@@ -103,169 +128,61 @@ client = DarktraceClient(
     private_token="your_private_token"
 )
 
-# Get all available components
-all_components = client.components.get()
+def component_list(data):
+    # The guide does not show the all-components shape: accept a bare list or a dict
+    if isinstance(data, list):
+        return data
+    return data.get('components', [])
 
-print(f"Total components: {len(all_components.get('components', []))}")
-
-for component in all_components.get('components', []):
-    print(f"Component {component.get('cid')}: {component.get('name')}")
-    print(f"  Type: {component.get('type')}")
-    print(f"  Description: {component.get('description', 'N/A')}")
+for component in component_list(client.components.get()):
+    print(f"Component {component.get('cid')}: "
+          f"{len(component.get('filters', []))} filters, "
+          f"threshold {component.get('threshold')}, "
+          f"interval {component.get('interval')}s, "
+          f"active={component.get('active')}")
 ```
 
-### Component Analysis
+### Inspecting a Specific Component
 
 ```python
-# Analyze component types and usage
-components_data = client.components.get()
+component = client.components.get(cid=8977)
 
-component_types = {}
-for component in components_data.get('components', []):
-    comp_type = component.get('type', 'Unknown')
-    if comp_type not in component_types:
-        component_types[comp_type] = []
-    component_types[comp_type].append(component)
+print(f"Component {component['cid']} (mlid {component['mlid']}, active={component['active']})")
 
-print("Component distribution by type:")
-for comp_type, comps in component_types.items():
-    print(f"  {comp_type}: {len(comps)} components")
-
-# Get detailed info for a specific type
-if 'filter' in component_types:
-    print(f"\nFilter components:")
-    for comp in component_types['filter']:
-        print(f"  {comp.get('cid')}: {comp.get('name')}")
+for f in component.get('filters', []):
+    kind = "display" if f['id'].startswith('d') else "logic"
+    print(f"  {f['id']} ({kind}): {f['filtertype']} {f['comparator']} {f['arguments'].get('value', '')}")
 ```
 
-### Working with Specific Components
+### Restricting the Response
 
 ```python
-# Get detailed information about a specific component
-component_id = 1234
-component_details = client.components.get(cid=component_id)
-
-print(f"Component {component_id} details:")
-print(f"  Name: {component_details.get('name')}")
-print(f"  Type: {component_details.get('type')}")
-print(f"  Description: {component_details.get('description')}")
-
-# Check if component has filters
-if 'filters' in component_details:
-    print(f"  Available filters: {len(component_details['filters'])}")
-    
-    # Get only the filters for this component
-    filters_only = client.components.get(
-        cid=component_id,
-        responsedata='filters'
-    )
-    
-    print("  Filter details:")
-    for filter_obj in filters_only.get('filters', []):
-        print(f"    - {filter_obj.get('name', 'Unnamed filter')}")
-```
-
-### Component Discovery and Mapping
-
-```python
-# Create a mapping of component IDs to names for reference
-components_data = client.components.get()
-component_map = {}
-
-for component in components_data.get('components', []):
-    cid = component.get('cid')
-    name = component.get('name', f'Component_{cid}')
-    component_map[cid] = {
-        'name': name,
-        'type': component.get('type'),
-        'description': component.get('description', '')
-    }
-
-# Function to lookup component details
-def get_component_info(component_id):
-    return component_map.get(component_id, {'name': 'Unknown', 'type': 'Unknown'})
-
-# Example usage
-example_id = 1234
-info = get_component_info(example_id)
-print(f"Component {example_id}: {info['name']} ({info['type']})")
+# Only the 'filters' field of one component
+result = client.components.get(cid=8977, responsedata='filters')
+for f in result.get('filters', []):
+    print(f['id'], f['filtertype'], f['comparator'])
 ```
 
 ## Error Handling
 
 ```python
+import requests
+
 try:
-    # Attempt to get components
-    components_data = client.components.get()
-    
-    # Process components
-    for component in components_data.get('components', []):
-        component_id = component.get('cid')
-        
-        # Get detailed info for each component
-        try:
-            detailed_info = client.components.get(cid=component_id)
-            print(f"Component {component_id}: {detailed_info.get('name')}")
-            
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
-                print(f"Component {component_id} not found")
-            else:
-                print(f"Error retrieving component {component_id}: {e}")
-                
+    component = client.components.get(cid=8977)
+    print(component)
 except requests.exceptions.HTTPError as e:
     print(f"HTTP error: {e}")
-    if hasattr(e, 'response'):
+    if e.response is not None:
         print(f"Status code: {e.response.status_code}")
         print(f"Response: {e.response.text}")
-        
 except Exception as e:
     print(f"Unexpected error: {e}")
 ```
 
 ## Notes
 
-### Usage Context
-- Components are building blocks used in Darktrace models
-- They define filtering and analysis capabilities
-- Useful for understanding model composition and available filters
-
-### Response Data
-- Use `responsedata` parameter to limit response size for large component sets
-- Common responsedata values: 'filters', 'metadata', 'description'
-- Helps optimize API calls when only specific component information is needed
-
-### Component Types
-Components may include various types such as:
-- **Filter components**: Provide filtering capabilities
-- **Analysis components**: Define analysis methods
-- **Detection components**: Specify detection mechanisms
-- **Custom components**: Organization-specific components
-
-### Best Practices
-- Cache component information for reference during analysis workflows
-- Use specific component IDs when you need detailed information
-- Leverage responsedata parameter to reduce bandwidth for large queries
-- Build component mappings for quick lookups in automated systems
-
-## Examples
-
-### Get All Componentss
-
-```python
-components_data = client.components.get()
-for item in components_data.get("components", []):
-    print(f"Item: {item}")
-```
-
-## Error Handling
-
-```python
-try:
-    components_data = client.components.get()
-    # Process the data
-except requests.exceptions.HTTPError as e:
-    print(f"HTTP error occurred: {e}")
-except Exception as e:
-    print(f"An error occurred: {e}")
-```
+- `responsedata` takes the name of ONE top-level field or object. Valid names are the top-level fields above: `cid`, `chid`, `mlid`, `threshold`, `interval`, `logic`, `filters`, `active`.
+- For certain filtertypes, `arguments.value` is a numeric value corresponding to an enumerated type; see the `/enums` endpoint for the full list.
+- Filtertypes and the comparators available for each are listed on the `/filtertypes` endpoint.
+- Display filters (`d1`, `d4`, ...) are shown in the UI when a breach occurs and have no impact on the component logic.
