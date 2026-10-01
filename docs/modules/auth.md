@@ -55,14 +55,15 @@ The authentication process is handled automatically by the SDK, but here's how i
    - `Content-Type`: `application/json`
 5. The same sorted query parameters are used in the actual request to ensure consistency
 
-## Parameter Ordering
+## Parameter Ordering and Request Bodies
 
-The Darktrace API requires that query parameters be included in the signature calculation in **alphabetical order**. The SDK ensures that:
+The Darktrace API recomputes the signature from what it receives, so the SDK signs exactly what it sends:
 
-1. Parameters are sorted alphabetically for signature calculation
-2. The same sorted parameters are used in the actual request
+1. **GET query parameters** are sorted alphabetically. List/tuple values are signed as repeated keys (`a=1&a=2`, the way `requests` sends them), `None` values are dropped and values are encoded as UTF-8.
+2. **Form POSTs** (`analyst.acknowledge/unacknowledge/pin/unpin`, `tags.post_entities`) send one sorted, url-encoded body, and the same string is signed (the API guide: "add each POST parameter into the query string"). Before 0.10.1 these calls failed with `API SIGNATURE ERROR` (#59).
+3. **JSON POSTs** are signed with the compact JSON body appended after the path.
 
-This prevents API signature errors that can occur if the parameter order differs between signature calculation and the actual request.
+This prevents API signature errors that occur when the signed string differs from the request on the wire.
 
 ## Security Best Practices
 
