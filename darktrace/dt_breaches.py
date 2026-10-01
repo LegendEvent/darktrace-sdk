@@ -41,7 +41,7 @@ class ModelBreaches(BaseEndpoint):
             saasonly (bool): Return only SaaS breaches
             group (str): Group results (e.g. 'device')
             includesuppressed (bool): Include suppressed breaches
-            saasfilter (str or list): Filter by SaaS platform (can be repeated)
+            saasfilter (str or list): Wildcard matched against SaaS::[platform], e.g. 'office365*' (trailing * required); a list is sent as repeated keys
             creationtime (bool): Use creation time for filtering
             fulldevicedetails (bool): Return full device/component info (if supported)
 
