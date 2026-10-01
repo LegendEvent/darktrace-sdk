@@ -122,3 +122,28 @@ def test_endpointdetails_bools_lowercase(sent):
     c.endpointdetails.get(ip="1.2.3.4", additionalinfo=True, devices=False)
     q = dict(_prep(log)[2])
     assert q["additionalinfo"] == "true" and q["devices"] == "false"
+
+
+def test_summarystatistics_only_one_selector(sent):
+    ss = sent[0].summarystatistics
+    for kw in (
+        {"eventtype": "saas", "csensor": True},
+        {"eventtype": "saas", "mitreTactics": True},
+        {"csensor": True, "mitreTactics": True},
+    ):
+        with pytest.raises(ValueError, match="Only one of"):
+            ss.get(**kw)
+
+
+def test_summarystatistics_time_params_require_eventtype(sent):
+    ss = sent[0].summarystatistics
+    for kw in ({"endtime": 1}, {"to": "2021-02-12 12:00:00"}, {"hours": 3}, {"csensor": True, "hours": 3}):
+        with pytest.raises(ValueError, match="require eventtype"):
+            ss.get(**kw)
+
+
+def test_summarystatistics_guide_example_is_allowed(sent):
+    client, log = sent
+    client.summarystatistics.get(eventtype="networkdevicedetails", to="2021-02-12 12:00:00", hours=24)
+    q = dict(_prep(log)[2])
+    assert q["eventtype"] == "networkdevicedetails" and q["hours"] == "24"
