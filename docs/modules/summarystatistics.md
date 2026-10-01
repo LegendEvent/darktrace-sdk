@@ -37,8 +37,8 @@ Booleans are sent as lowercase `true`/`false`.
 
 ### Rules from the API guide
 
-- Only ONE of `eventtype`, `csensor` or `mitreTactics` may be used. Neither the SDK nor (observed on 7.0.42) the server rejects a mix; the server silently picks one format.
-- `endtime`, `to` and `hours` require `eventtype`.
+- Only ONE of `eventtype`, `csensor` or `mitreTactics` may be used. The SDK raises `ValueError` if more than one is given (even `csensor=False` counts as given).
+- `endtime`, `to` and `hours` require `eventtype`. The SDK raises `ValueError` otherwise.
 - Default (no parameters): 28 days, one interval = 24 hours. With `eventtype`, one interval = 1 hour.
 - Time windows of the default response: `devicecount`, `subnets`, `totalClient`, `totalServer` are unique values over the last 7 days; `licenseIPCount` is the peak unique IP count in any 24h period of the last 7 days; `usercredentialcount` covers 28 days; `patterns` covers 12 weeks.
 - Device counts and values are affected by visibility restrictions.
@@ -97,6 +97,22 @@ Abbreviated, from the guide's example:
 | `devicecount.saas` | Per-SaaS-service device counts plus `total` |
 | `devicecount.licenseIPCount` / `licenseCloudIPCount` | Peak distinct internal IPs in a 24h period (cloud VLAN IPs counted separately, no overlap) |
 | `devicecount.totalClient` / `totalServer` / `totalOther` / `total` | Totals, last 7 days |
+
+### Observed behaviour (Threat Visualizer 7.0.42)
+
+Not part of the guide, listed for information only. The server does not reject a mixed request; it silently picks one format:
+
+| Request | Response format |
+|---------|-----------------|
+| `mitreTactics=true` plus anything else | MITRE (wins over `eventtype`, `csensor` and the time parameters) |
+| `eventtype` plus `csensor` | events (`eventtype` wins) |
+| `mitreTactics=false` | ignored, as if absent |
+| `csensor=false` | Darktrace/Network bandwidth |
+| `endtime` or `to` without `eventtype` | ignored (default or cSensor bandwidth response) |
+| `hours` without `eventtype` | HTTP 400 |
+| `eventtype` plus `hours` | HTTP 400 (unless `mitreTactics=true` is also sent, which then wins) |
+
+The SDK follows the guide, so these mixes raise `ValueError` before a request is sent.
 
 For `eventtype`, `csensor=true` and `mitreTactics=true` the response format changes. The guide only gives a full example for `eventtype=loginput` (`events` and `data[{timems, time, events}]`); for the other values see the API guide schema.
 
@@ -180,7 +196,7 @@ except requests.exceptions.HTTPError as e:
     print(f"API error: {e}")
 ```
 
-Combining `eventtype`, `csensor` and `mitreTactics` is not supported by the guide. Observed on 7.0.42: the server does not return an error but silently answers in one format (`mitreTactics=true` takes precedence over the others), so send only one of them:
+Combining `eventtype`, `csensor` and `mitreTactics` is not allowed by the guide, so the SDK raises `ValueError` before sending (see the observed server behaviour above). Send only one of them:
 
 ```python
 try:

@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Analyst.acknowledge/unacknowledge/pin/unpin` and `Tags.post_entities` failed with `API SIGNATURE ERROR`: `_post_form` now signs exactly the url-encoded body it sends (#59, #60).
 - GET parameters are signed as sent: list values as repeated keys, `None` dropped, UTF-8; `ModelBreaches.get` no longer collapses a `saasfilter` list (#63, #61).
 
+### Changed
+- `SummaryStatistics.get` raises `ValueError` for combinations the API guide forbids: more than one of `eventtype`, `csensor` and `mitreTactics`, or `endtime`/`to`/`hours` without `eventtype`. The server accepts such mixes but silently answers in one of the formats.
+
 ### Documentation
 - All module docs under `docs/modules` rewritten against the official API guide (response schemas, `responsedata`, return types, defaults).
 - `Analyst.add_comment` is accepted but not stored on Threat Visualizer 7.x; use `breaches.add_comment` (#62).
