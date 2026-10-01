@@ -68,7 +68,7 @@ readable_time_breaches = breaches.get(
 # Get SaaS-only breaches with specific platform filter
 saas_breaches = breaches.get(
     saasonly=True,
-    saasfilter=["Microsoft Office 365", "Google Workspace"]
+    saasfilter=["office365*", "gcp*"]
 )
 
 # Get specific breach by ID
@@ -103,7 +103,7 @@ grouped_breaches = breaches.get(
 - `saasonly` (bool): Return only SaaS-related breaches
 - `group` (str): Group results (e.g., 'device')
 - `includesuppressed` (bool): Include suppressed breaches
-- `saasfilter` (str or list): Filter by SaaS platform(s) - can be single string or list
+- `saasfilter` (str or list): Wildcard string matched against the `SaaS::[platform]` value (e.g. `office365*`, `gcp*`, `azure*`); a trailing `*` is required (API guide). Repeat/pass a list to include several modules.
 - `creationtime` (bool): Use creation time instead of detection time for filtering
 - `fulldevicedetails` (bool): Return complete device/component information
 
@@ -111,7 +111,7 @@ grouped_breaches = breaches.get(
 
 - Time parameters (`starttime`/`endtime` or `from_time`/`to_time`) must be specified in pairs
 - When `minimal=true`, response data is significantly reduced for performance
-- Multiple `saasfilter` values can be provided as a list for OR filtering
+- Multiple `saasfilter` values can be provided as a list (sent as repeated `saasfilter=` keys, as in the API guide) to include several modules; each value needs a trailing `*`
 - The API response structure varies based on parameters like `deviceattop` and `group`
 
 ### Get Comments
@@ -374,7 +374,7 @@ for breach in high_priority_breaches:
 
 ```python
 # Monitor SaaS breaches across multiple platforms
-saas_platforms = ["Microsoft Office 365", "Google Workspace", "Salesforce"]
+saas_platforms = ["office365*", "gcp*", "azure*"]
 
 saas_breaches = client.breaches.get(
     saasonly=True,
@@ -586,9 +586,9 @@ except Exception as e:
 - Time-based filtering is more efficient than post-processing large datasets
 
 ### SaaS Filtering
-- `saasfilter` accepts single platform or list of platforms
+- `saasfilter` accepts a single wildcard value or a list (e.g. `office365*`)
 - `saasonly=true` restricts results to SaaS breaches only
-- Common platforms: "Microsoft Office 365", "Google Workspace", "Salesforce", "AWS", "Azure"
+- Examples from the API guide: `office365*`, `gcp*`, `azure*` (matched against `SaaS::[platform]`, trailing `*` required)
 
 ### Data Structure Variations
 - `deviceattop=true` (default) includes device data in each breach object

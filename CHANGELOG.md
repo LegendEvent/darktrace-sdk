@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 - `Analyst.add_comment` is accepted but not stored on Threat Visualizer 7.x; use `breaches.add_comment` (#62).
+- `saasfilter` is documented as the API guide specifies: a wildcard matched against `SaaS::[platform]` with a trailing `*` (e.g. `office365*`), repeatable as a list.
 
 ## [0.9.0] - 2026-02-27
 

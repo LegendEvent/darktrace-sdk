@@ -37,7 +37,7 @@ class Devices(BaseEndpoint):
             includetags (bool, optional): Include tags in response
             cloudsecurity (bool, optional): Cloud security status
             responsedata (str, optional): Restrict returned JSON to only this field/object
-            saasfilter (Any, optional): SaaS filter
+            saasfilter (str or list, optional): Wildcard matched against SaaS::[platform], e.g. 'office365*' (trailing * required); a list is sent as repeated keys
 
         Returns:
             list or dict: API response containing device information

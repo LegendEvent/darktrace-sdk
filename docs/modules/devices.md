@@ -69,7 +69,7 @@ cloud_devices = devices.get(cloudsecurity=True)
 
 # Get SaaS users from specific platforms
 saas_devices = devices.get(
-    saasfilter=["Microsoft Office 365", "Google Workspace"]
+    saasfilter=["office365*", "gcp*"]
 )
 
 # Get limited response data for performance
@@ -91,7 +91,7 @@ minimal_devices = devices.get(
 - `includetags` (bool, optional): Include tags applied to devices in the response
 - `responsedata` (str, optional): Restrict returned JSON to specified field(s) - comma-separated
 - `cloudsecurity` (bool, optional): Limit to devices identified by Darktrace Cloud Security
-- `saasfilter` (str or list, optional): Filter by SaaS/Cloud/Zero Trust module users (can be repeated)
+- `saasfilter` (str or list, optional): Filter by SaaS/Cloud/Zero Trust module users. Wildcard string matched against the `SaaS::[platform]` value (e.g. `office365*`, `gcp*`, `azure*`); a trailing `*` is required (API guide). Repeat/pass a list to include several modules.
 
 #### Response Structure
 
@@ -399,11 +399,9 @@ for interval in time_intervals:
 ```python
 # Analyze SaaS users across different platforms
 saas_platforms = [
-    "Microsoft Office 365",
-    "Google Workspace", 
-    "Salesforce",
-    "AWS",
-    "Azure"
+    "office365*",
+    "gcp*",
+    "azure*"
 ]
 
 saas_analysis = {}
@@ -433,7 +431,7 @@ print(f"\nCloud Security devices: {len(cloud_devices.get('devices', []))}")
 
 # Cross-platform SaaS users
 multi_platform_devices = client.devices.get(
-    saasfilter=["Microsoft Office 365", "Google Workspace"],
+    saasfilter=["office365*", "gcp*"],
     responsedata="hostname,did"
 )
 
@@ -573,8 +571,8 @@ except Exception as e:
 - Consider using minimal data queries for large-scale analysis
 
 ### SaaS Filtering
-- `saasfilter` can be single string or list of strings for multiple platforms
-- Common platforms: "Microsoft Office 365", "Google Workspace", "Salesforce", "AWS", "Azure"
+- `saasfilter` can be a single wildcard string or a list (e.g. `office365*`; trailing `*` required)
+- Examples from the API guide: `office365*`, `gcp*`, `azure*` (matched against `SaaS::[platform]`)
 - Use `cloudsecurity=true` specifically for cloud security identified devices
 
 ### Device Properties
