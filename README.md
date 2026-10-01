@@ -8,21 +8,15 @@
 
 ---
 
-## 🆕 Latest Updates (v0.9.0)
-
-### New Features
-- **Connection Pooling**: Automatic HTTP connection pooling via `requests.Session()` for 4x faster requests on reused connections
-- **Context Manager Support**: Use `with DarktraceClient(...) as client:` for proper resource cleanup
-- **Automatic Retry Logic**: Transient failures (5xx, 429, connection errors) are automatically retried (3 retries with exponential backoff: 3s, 6s, 12s)
-- **SSRF Protection**: URL scheme validation blocks dangerous schemes (`file://`, `ftp://`, `data://`, `javascript://`)
-- **Configurable Timeout**: New `timeout` parameter on `DarktraceClient`
-
-### Improvements
-- **Error Handling**: `ModelBreaches` methods now properly re-raise exceptions instead of returning error dicts
-- **SSL Verification**: Enabled by default for security (verify_ssl=True)
+## 🆕 Latest Updates (v0.10.1)
 
 ### Bug Fixes
-- Fixed IntelFeed `fulldetails` parameter name in examples
+- **Request signing**: form POSTs (`Analyst.acknowledge/unacknowledge/pin/unpin`, `Tags.post_entities`) and GET requests with list or non-ASCII parameters no longer fail with `API SIGNATURE ERROR` (#59, #63).
+- **Guide conformance**: `MetricData` (`metric1=`, `metric2=`), `SimilarDevices`, `Subnets`, `MBComments.post`, `Antigena.activate_action(duration=...)`, `IntelFeed`, `Tags` and `PCAPs` now send what the API guide specifies; booleans are sent as `true`/`false`.
+- **SummaryStatistics**: `get()` raises `ValueError` for parameter combinations the guide forbids.
+
+### Documentation
+- All module docs under `docs/modules` rewritten against the official API guide, with response schemas and examples.
 
 > For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases) or [CHANGELOG.md](CHANGELOG.md).
 
