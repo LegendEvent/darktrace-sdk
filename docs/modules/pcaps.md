@@ -51,7 +51,7 @@ with open("capture.pcap", "wb") as f:
 - Without `pcap_id`: a **list** of PCAP objects (parsed JSON).
 - With `pcap_id`: the raw **binary** PCAP content (`bytes`).
 
-**Filename prefix:** the list returns `filename` with a `/tm` prefix (for example `/tm/DCIP_....pcap`). Omit that prefix when requesting the file, i.e. pass only `DCIP_....pcap` as `pcap_id`.
+**Filename prefix:** the list returns `filename` with a `/tm` prefix (for example `/tm/DCIP_....pcap`). Omit that prefix when requesting the file, i.e. pass only `DCIP_....pcap` as `pcap_id`. The SDK also strips a leading `/tm/` for you.
 
 A file can only be retrieved once its `state` is `"finished"`.
 
