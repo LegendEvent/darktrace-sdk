@@ -32,7 +32,23 @@ class SummaryStatistics(BaseEndpoint):
 
         Returns:
             dict: Summary statistics information from Darktrace.
+
+        Raises:
+            ValueError: If more than one of ``eventtype``, ``csensor`` and ``mitreTactics`` is
+                given, or if ``endtime``, ``to`` or ``hours`` is used without ``eventtype``
+                (both rules are from the API guide).
         """
+        selectors = [
+            n
+            for n, v in (("eventtype", eventtype), ("csensor", csensor), ("mitreTactics", mitreTactics))
+            if v is not None
+        ]
+        if len(selectors) > 1:
+            raise ValueError(f"Only one of eventtype, csensor or mitreTactics may be used, got: {', '.join(selectors)}")
+        if eventtype is None:
+            time_args = [n for n, v in (("endtime", endtime), ("to", to), ("hours", hours)) if v is not None]
+            if time_args:
+                raise ValueError(f"{', '.join(time_args)} require eventtype")
         params = {}
         if responsedata is not None:
             params["responsedata"] = responsedata

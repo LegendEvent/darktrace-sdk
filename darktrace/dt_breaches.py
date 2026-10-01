@@ -41,7 +41,7 @@ class ModelBreaches(BaseEndpoint):
             saasonly (bool): Return only SaaS breaches
             group (str): Group results (e.g. 'device')
             includesuppressed (bool): Include suppressed breaches
-            saasfilter (str or list): Filter by SaaS platform (can be repeated)
+            saasfilter (str or list): Wildcard matched against SaaS::[platform], e.g. 'office365*' (trailing * required); a list is sent as repeated keys
             creationtime (bool): Use creation time for filtering
             fulldevicedetails (bool): Return full device/component info (if supported)
 
@@ -60,14 +60,7 @@ class ModelBreaches(BaseEndpoint):
         if "to_time" in params:
             params["to"] = params.pop("to_time")
 
-        # Support multiple saasfilter values
-        if "saasfilter" in params and isinstance(params["saasfilter"], list):
-            saasfilters = params.pop("saasfilter")
-            params_list = list(params.items()) + [("saasfilter", v) for v in saasfilters]
-        else:
-            params_list = list(params.items())
-
-        return self._get(endpoint, params=dict(params_list), timeout=timeout)
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_comments(
         self,

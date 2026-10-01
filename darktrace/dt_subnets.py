@@ -18,7 +18,8 @@ class Subnets(BaseEndpoint):
         Get subnet information from Darktrace.
 
         Args:
-            subnet_id (int, optional): Specific subnet ID to retrieve (as path parameter).
+            subnet_id (int, optional): Alias for ``sid``. The API has no /subnets/<id> path (it answers
+                with a non-JSON error); the id is sent as the ``sid`` query parameter.
             seensince (str, optional): Relative offset for activity (e.g., '2min', '1hour', '3600', '3min', '5hour', '6day').
                 Minimum=1 second, Maximum=6 months. Subnets with activity in the specified time period are returned.
             sid (int, optional): Identification number of a subnet modeled in the Darktrace system.
@@ -28,7 +29,9 @@ class Subnets(BaseEndpoint):
         Returns:
             list or dict: Subnet information from Darktrace.
         """
-        endpoint = f"/subnets{f'/{subnet_id}' if subnet_id else ''}"
+        endpoint = "/subnets"
+        if sid is None and subnet_id is not None:
+            sid = subnet_id
 
         params = dict()
         if seensince is not None:

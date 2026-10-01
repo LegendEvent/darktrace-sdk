@@ -36,7 +36,7 @@ class DarktraceAuth:
 
         Args:
             request_path: The API endpoint path
-            params: Optional query parameters to include in the signature
+            params: Optional query (or form) parameters to include in the signature
             json_body: Optional JSON body for POST requests to include in signature
 
         Returns:
@@ -47,24 +47,26 @@ class DarktraceAuth:
         # Use UTC time (Darktrace Server runs on UTC)
         date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
-        # Include query parameters in the signature if provided
+        # Sign exactly what ``requests`` will put on the wire: None is dropped and
+        # list/tuple values become repeated keys. Keys are sorted as the API requires.
+        # Booleans go out lowercase (true/false) as in the API guide examples.
+        def norm(v: Any) -> Any:
+            if isinstance(v, bool):
+                return "true" if v else "false"
+            if isinstance(v, (list, tuple)):
+                return [norm(i) for i in v]
+            return v
+
+        clean = {k: norm(v) for k, v in sorted((params or {}).items()) if v is not None}
+        pairs = [(k, item) for k, v in clean.items() for item in (v if isinstance(v, (list, tuple)) else [v])]
         signature_path = request_path
-        sorted_params = None
+        if pairs:
+            signature_path += "?" + "&".join(f"{k}={v}" for k, v in pairs)
 
-        if params and len(params) > 0:
-            # Sort parameters alphabetically by key as required by Darktrace API
-            sorted_params = dict(sorted(params.items()))
-            query_string = "&".join(f"{k}={v}" for k, v in sorted_params.items())
-            signature_path = f"{request_path}?{query_string}"
-
-        # For POST requests with JSON body, include the JSON string directly as query parameter
-        # as per Darktrace docs example: "/modelbreaches/101/comments?{"message":"Test Comment"}"
+        # JSON bodies are appended compactly, e.g. /modelbreaches/101/comments?{"message":"x"}
         if json_body:
-            # Convert JSON body to string and append directly as query parameter
-            # IMPORTANT: Must use same separators as in dt_breaches.py!
-            json_string = json.dumps(json_body, separators=(",", ":"))  # No spaces in JSON
-            separator = "&" if "?" in signature_path else "?"
-            signature_path = f"{signature_path}{separator}{json_string}"
+            json_string = json.dumps(json_body, separators=(",", ":"))
+            signature_path += ("&" if pairs else "?") + json_string
 
         signature = self.generate_signature(signature_path, date)
 
@@ -75,7 +77,7 @@ class DarktraceAuth:
                 "DTAPI-Signature": signature,
                 "Content-Type": "application/json",
             },
-            "params": sorted_params or params,
+            "params": clean or params,
         }
 
     def generate_signature(self, request_path: str, date: str) -> str:
@@ -90,5 +92,5 @@ class DarktraceAuth:
             The HMAC-SHA1 signature as a hexadecimal string
         """
         message = f"{request_path}\n{self.public_token}\n{date}"
-        signature = hmac.new(self.private_token.encode("ASCII"), message.encode("ASCII"), hashlib.sha1).hexdigest()
+        signature = hmac.new(self.private_token.encode("ASCII"), message.encode("utf-8"), hashlib.sha1).hexdigest()
         return signature

@@ -8,23 +8,9 @@
 
 ---
 
-## 🆕 Latest Updates (v0.9.0)
+## 🆕 What's new
 
-### New Features
-- **Connection Pooling**: Automatic HTTP connection pooling via `requests.Session()` for 4x faster requests on reused connections
-- **Context Manager Support**: Use `with DarktraceClient(...) as client:` for proper resource cleanup
-- **Automatic Retry Logic**: Transient failures (5xx, 429, connection errors) are automatically retried (3 retries with exponential backoff: 3s, 6s, 12s)
-- **SSRF Protection**: URL scheme validation blocks dangerous schemes (`file://`, `ftp://`, `data://`, `javascript://`)
-- **Configurable Timeout**: New `timeout` parameter on `DarktraceClient`
-
-### Improvements
-- **Error Handling**: `ModelBreaches` methods now properly re-raise exceptions instead of returning error dicts
-- **SSL Verification**: Enabled by default for security (verify_ssl=True)
-
-### Bug Fixes
-- Fixed IntelFeed `fulldetails` parameter name in examples
-
-> For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases) or [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](CHANGELOG.md) for the changes in every version, or [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases).
 
 ---
 

@@ -21,7 +21,7 @@ class MBComments(BaseEndpoint):
         Get model breach comments or details for a specific comment.
 
         Args:
-            comment_id (str, optional): Specific comment ID to retrieve. If not provided, returns all comments.
+            comment_id (str, optional): Not supported by the API; raises ValueError. Use pbid/starttime/endtime/count.
             starttime (int, optional): Start time (epoch ms) for comments to return.
             endtime (int, optional): End time (epoch ms) for comments to return.
             responsedata (str, optional): Restrict the returned JSON to only the specified field/object.
@@ -33,7 +33,12 @@ class MBComments(BaseEndpoint):
         Returns:
             list or dict: Comments or comment details from Darktrace.
         """
-        endpoint = f"/mbcomments{f'/{comment_id}' if comment_id else ''}"
+        if comment_id:
+            raise ValueError(
+                "/mbcomments has no per-comment path in the API guide (the server returns a non-JSON error); "
+                "filter with pbid=, starttime=/endtime= or count= instead."
+            )
+        endpoint = "/mbcomments"
         query_params = dict()
         if starttime is not None:
             query_params["starttime"] = starttime
@@ -57,13 +62,15 @@ class MBComments(BaseEndpoint):
     ) -> dict:
         """Add a comment to a model breach.
 
+        The API guide documents /mbcomments as GET only; comments are added with
+        POST /modelbreaches/[pbid]/comments and a JSON body {"message": ...}
+        (identical to ``client.breaches.add_comment``).
+
         Args:
-            breach_id (str): Model breach ID.
+            breach_id (str): Model breach ID (pbid).
             comment (str): Comment text to add.
             timeout (float or tuple, optional): Timeout for the request in seconds.
-            **params: Additional parameters.
+            **params: Ignored; the guide states this call takes no parameters.
         """
-        endpoint = "/mbcomments"
-        body: dict[str, str] = {"breachid": breach_id, "comment": comment}
-        body.update(params)
-        return self._post_json(endpoint, body=body, timeout=timeout)
+        endpoint = f"/modelbreaches/{breach_id}/comments"
+        return self._post_json(endpoint, body={"message": comment}, timeout=timeout)

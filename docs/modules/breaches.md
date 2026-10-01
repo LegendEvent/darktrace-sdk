@@ -2,8 +2,7 @@
 
 > ⚠️ **BREAKING CHANGE**: SSL verification default changed from `False` to `True` in v0.9.0. If using self-signed certificates, you must either add them to your system trust store or set `verify_ssl=False` explicitly.
 
-
-The Model Breaches module provides comprehensive access to model breach alerts in the Darktrace platform. This module allows you to retrieve, acknowledge, comment on, and manage model breach alerts with extensive filtering capabilities.
+The Model Breaches module provides access to model breach alerts in the Darktrace platform (`/modelbreaches`): retrieve breaches with filtering, read and add comments, and acknowledge or unacknowledge breaches.
 
 ## Initialization
 
@@ -22,312 +21,205 @@ breaches = client.breaches
 
 ## Methods Overview
 
-The Model Breaches module provides the following methods:
+- **`get()`** - Retrieve model breach alerts with filtering
+- **`get_comments()`** - Get comments for one or more model breaches
+- **`add_comment()`** - Add a comment to a model breach
+- **`acknowledge()`** - Acknowledge one or more model breaches
+- **`unacknowledge()`** - Unacknowledge one or more model breaches
+- **`acknowledge_with_comment()`** - Acknowledge a breach, then add a comment
+- **`unacknowledge_with_comment()`** - Unacknowledge a breach, then add a comment
 
-- **`get()`** - Retrieve model breach alerts with comprehensive filtering
-- **`get_comments()`** - Get comments for specific model breach alerts
-- **`add_comment()`** - Add comments to model breach alerts
-- **`acknowledge()`** - Acknowledge model breach alerts
-- **`unacknowledge()`** - Unacknowledge model breach alerts
+All methods return the parsed JSON response of the API (not a boolean). Errors are raised as exceptions.
 
 ## Methods
 
 ### Get Model Breaches
 
-Retrieve model breach alerts from the Darktrace platform with extensive filtering and customization options.
+Returns a time-sorted list of model breaches matching the given parameters. All parameters are optional and are passed as keyword arguments.
 
 ```python
-# Get all model breaches (with defaults)
+# All model breaches (default time window, see Notes)
 breaches_data = breaches.get()
 
-# Get breaches with full device details at top level
-breaches_data = breaches.get(deviceattop=True)
+# Breaches for a device, reduced data, without acknowledged breaches
+device_breaches = breaches.get(did=123, minimal=True, includeacknowledged=False)
 
-# Get breaches for specific device with minimal data
-device_breaches = breaches.get(
-    did=123,
-    minimal=True,
-    includeacknowledged=False
-)
-
-# Get high-score breaches within time range
+# Breaches above a score of 80% in a time range (epoch milliseconds)
 high_score_breaches = breaches.get(
-    minscore=80.0,
-    starttime=1640995200000,  # Unix timestamp in milliseconds
+    minscore=0.8,
+    starttime=1640995200000,
     endtime=1641081600000,
     includebreachurl=True
 )
 
-# Get breaches using human-readable time format
+# Human-readable time range
 readable_time_breaches = breaches.get(
     from_time="2024-01-01 10:00:00",
     to_time="2024-01-01 18:00:00",
     expandenums=True
 )
 
-# Get SaaS-only breaches with specific platform filter
-saas_breaches = breaches.get(
-    saasonly=True,
-    saasfilter=["Microsoft Office 365", "Google Workspace"]
-)
+# SaaS breaches for specific platforms (repeated saasfilter keys)
+saas_breaches = breaches.get(saasonly=True, saasfilter=["office365*", "gcp*"])
 
-# Get specific breach by ID
+# A specific breach (single pbid, or several comma-separated)
 specific_breach = breaches.get(pbid=12345)
+several = breaches.get(pbid="12345,12346")
 
-# Get breaches grouped by device
-grouped_breaches = breaches.get(
-    group="device",
-    includesuppressed=True,
-    fulldevicedetails=True
-)
+# Only some top-level fields
+trimmed = breaches.get(responsedata="model")
+
+# Breaches of one model, by UUID or by model ID, with the model as it was at breach time
+by_uuid = breaches.get(uuid="80010119-6d7f-0000-0305-5e0000000420")
+by_pid = breaches.get(pid=143, historicmodelonly=True)
+
+# Include suppressed breaches in a device-scoped query
+with_suppressed = breaches.get(did=123, includesuppressed=True)
 ```
 
 #### Parameters
 
-- `deviceattop` (bool): Return device JSON at top-level (default: True)
+- `deviceattop` (bool): Return the device object at the top level rather than within each matched component. Defaults to `true` for the programmatic API.
 - `did` (int): Device ID to filter by
 - `endtime` (int): End time in milliseconds since epoch
-- `expandenums` (bool): Expand numeric enums to human-readable strings
-- `from_time` (str): Start time in "YYYY-MM-DD HH:MM:SS" format (alternative to starttime)
-- `historicmodelonly` (bool): Return only historic model details
-- `includeacknowledged` (bool): Include acknowledged breaches in results
-- `includebreachurl` (bool): Include breach URLs in response for direct access
-- `minimal` (bool): Reduce data returned for performance (default: False)
-- `minscore` (float): Minimum breach score filter (0.0-100.0)
-- `pbid` (int): Specific breach ID to return (returns single breach)
-- `pid` (int): Filter by specific model ID
+- `expandenums` (bool): Expand numeric enumerated types to their string representation (codes are listed at `/enums`)
+- `from_time` (str): Start time in `YYYY-MM-DD HH:MM:SS` format (sent as `from`)
+- `historicmodelonly` (bool): Return only the historic version of the model details (the model at the time of breach)
+
+> The `model` object of a breach holds the model as it was at breach time under `model.then` and, unless `historicmodelonly` is used, the current version under `model.now` (observed on Threat Visualizer 7.0.42; the guide's examples show both). Examples below read the name via `model.then`.
+- `includeacknowledged` (bool): Include acknowledged breaches
+- `includebreachurl` (bool): Return a URL for the breach (requires the FQDN configuration parameter on the appliance, and only returned when `minimal=False`)
+- `minimal` (bool): Reduce the amount of data returned. Always defaults to `false` programmatically.
+- `minscore` (float): Minimum breach score as a fraction, e.g. `0.8` is a breach score of 80%
+- `pbid` (int or str): Only return the breach with this ID; a comma-separated string returns several
+- `pid` (int): Only return breaches for this model (ID unique only within the instance)
 - `starttime` (int): Start time in milliseconds since epoch
-- `to_time` (str): End time in "YYYY-MM-DD HH:MM:SS" format (alternative to endtime)
-- `uuid` (str): Filter by model UUID
-- `responsedata` (str): Restrict response to specific top-level fields
-- `saasonly` (bool): Return only SaaS-related breaches
-- `group` (str): Group results (e.g., 'device')
-- `includesuppressed` (bool): Include suppressed breaches
-- `saasfilter` (str or list): Filter by SaaS platform(s) - can be single string or list
-- `creationtime` (bool): Use creation time instead of detection time for filtering
-- `fulldevicedetails` (bool): Return complete device/component information
+- `to_time` (str): End time in `YYYY-MM-DD HH:MM:SS` format (sent as `to`)
+- `uuid` (str): Only return breaches for this model (UUID is consistent across Darktrace environments)
+- `responsedata` (str): Name of ONE top-level field or object; restricts the returned JSON to it
+- `saasonly` (bool): Only return breaches classified as SaaS breaches
+- `group` (str): With `group="device"` the `score` field shows the device score (see Notes)
+- `includesuppressed` (bool): Include suppressed breaches (default `false`)
+- `saasfilter` (str or list): Wildcard matched against the `SaaS::[platform]` value (e.g. `office365*`); a trailing `*` is required. A list is sent as repeated `saasfilter=` keys to include several modules.
+- `creationtime` (bool): If `true`, time parameters filter on breach creation time; if `false` (default) they filter on the timestamp of the first activity relevant to the model logic
+- `fulldevicedetails` (bool): Return full device/component information (forwarded as given)
 
 #### Notes
 
-- Time parameters (`starttime`/`endtime` or `from_time`/`to_time`) must be specified in pairs
-- When `minimal=true`, response data is significantly reduced for performance
-- Multiple `saasfilter` values can be provided as a list for OR filtering
-- The API response structure varies based on parameters like `deviceattop` and `group`
+- Time window: use `from_time`/`to_time` or `starttime`/`endtime`. Time parameters must always be specified in pairs. If no time period is given, breaches are pulled from the beginning of memory with a limit of one year per response.
+- Time filters apply to the first relevant activity, not to the creation of the breach record; use `creationtime=True` to filter on creation.
+- `includebreachurl` only returns a URL when `minimal=False`.
+- `group="device"`: `score` (and `devicescore`) is the device score associated with the breach; the model breach score is in `pbscore`. The guide does not give a grouped response example, so the shape of grouped results is not documented here.
+- Alert priority is only returned when `minimal=False` and cannot be used as a filter.
+- `saasfilter` matches `SaaS::[platform]` values such as `SaaS::Office365`.
+- For large environments, query shorter time frames more frequently; shorter windows return faster.
+- The response schema is large; see the API guide's `/modelbreaches` response schema. Fields seen in the guide's example include `pbid`, `time`, `creationTime`, `commentCount` and `model`.
 
 ### Get Comments
 
-Retrieve comments for a specific model breach alert.
+Returns the comments of a breach as a list. If `pbid` is a list or tuple, a dict is returned mapping each `str(pbid)` to that breach's comment list.
 
 ```python
-# Get all comments for a breach
 comments = breaches.get_comments(pbid=12345)
 
-# Get comments with restricted response data
-comments = breaches.get_comments(
-    pbid=12345,
-    responsedata="comments"
-)
+# Several breaches at once
+all_comments = breaches.get_comments(pbid=[12345, 12346])
+
+# Restrict the response to one top-level field
+comments = breaches.get_comments(pbid=12345, responsedata="message")
 ```
 
 #### Parameters
 
-- `pbid` (int): Policy breach ID of the model breach (required)
-- `responsedata` (str, optional): Restrict response to specific fields
-
-#### Response
-
-Returns a list of comment objects with details like author, timestamp, and message content.
-
-### Add Comment
-
-Add a comment to a model breach alert.
-
-```python
-# Add a comment to a breach
-success = breaches.add_comment(
-    pbid=12345,
-    message="Investigated - appears to be false positive due to legitimate admin activity"
-)
-
-if success:
-    print("Comment added successfully")
-else:
-    print("Failed to add comment")
-```
-
-#### Parameters
-
-- `pbid` (int): Policy breach ID of the model breach (required)
-- `message` (str): The comment text to add (required)
-
-### Acknowledge Breach
-
-Acknowledge a model breach alert to mark it as reviewed.
-
-```python
-# Acknowledge a breach
-success = breaches.acknowledge(pbid=12345)
-
-if success:
-    print("Breach acknowledged successfully")
-else:
-    print("Failed to acknowledge breach")
-```
-
-#### Parameters
-
-- `pbid` (int): Policy breach ID of the model breach (required)
-
-### Unacknowledge Breach
-
-Unacknowledge a previously acknowledged model breach alert.
-
-```python
-# Unacknowledge a breach
-success = breaches.unacknowledge(pbid=12345)
-
-if success:
-    print("Breach unacknowledged successfully")
-else:
-    print("Failed to unacknowledge breach")
-```
-
-#### Parameters
-
-- `pbid` (int): Policy breach ID of the model breach (required)
-- `offset` (int, optional): Starting offset for pagination
-- `hostname` (str, optional): Filter by hostname (supports wildcards)
-- `ip` (str, optional): Filter by IP address (supports wildcards)
-- `model` (str, optional): Filter by model name (supports wildcards)
-- `acknowledged` (bool, optional): Filter by acknowledgment status
-- `min_score` (int, optional): Filter by minimum score
-- `max_score` (int, optional): Filter by maximum score
-- `start_time` (str, optional): Filter by start time (ISO format)
-- `end_time` (str, optional): Filter by end time (ISO format)
-- `pbid` (int, optional): Get a specific breach by ID
+- `pbid` (int or list): Policy breach ID(s) (required)
+- `responsedata` (str, optional): Name of one top-level field or object to restrict the response to (GET only)
 
 #### Response
 
 ```json
-{
-  "modelbreaches": [
-    {
-      "pbid": 12345,
-      "did": 123,
-      "hostname": "server01",
-      "ip": "192.168.1.100",
-      "score": 85,
-      "time": "2023-06-15T10:11:12Z",
-      "acknowledged": false,
-      "model": {
-        "name": "Device / Anomalous Connection / External Destination",
-        "uuid": "12345678-1234-1234-1234-123456789012"
-      },
-      "comment_count": 2
-    },
-    // ... more breaches
-  ]
-}
+[
+  {"message": "Test Comment", "username": "ecarr", "time": 1582120499000, "pid": 12},
+  {"message": "Assigned to Aidan Johnston for investigation", "username": "cchester_admin", "time": 1582120616000, "pid": 12}
+]
 ```
 
-### Get Comments
-
-Retrieve comments for a specific model breach alert.
-
-```python
-# Get comments for a breach
-comments = breaches.get_comments(pbid=12345)
-```
-
-#### Parameters
-
-- `pbid` (int, required): The breach ID to get comments for
-
-#### Response
-
-```json
-{
-  "comments": [
-    {
-      "id": 1,
-      "pbid": 12345,
-      "message": "Investigating this alert",
-      "timestamp": "2023-06-15T10:30:00Z",
-      "username": "analyst1"
-    },
-    {
-      "id": 2,
-      "pbid": 12345,
-      "message": "False positive - known behavior",
-      "timestamp": "2023-06-15T11:15:00Z",
-      "username": "analyst2"
-    }
-  ]
-}
-```
+`message` is the comment text, `username` the user who posted it, `time` the posting time in epoch milliseconds and `pid` the ID of the breached model.
 
 ### Add Comment
 
-Add a comment to a model breach alert.
+Posts a comment to `/modelbreaches/<pbid>/comments`. The comment is sent as a JSON body; the API supports no other parameters for POST.
 
 ```python
-# Add a comment to a breach
-success = breaches.add_comment(
+result = breaches.add_comment(
     pbid=12345,
-    message="Investigating this suspicious connection"
+    message="Investigated - appears to be a false positive"
 )
+print(result)  # {'response': 'SUCCESS'}
 ```
 
 #### Parameters
 
-- `pbid` (int, required): The breach ID to add a comment to
-- `message` (str, required): The comment message to add
+- `pbid` (int): Policy breach ID (required)
+- `message` (str): The comment text (required)
 
 #### Response
 
-Returns `True` if the comment was added successfully, `False` otherwise.
+The parsed JSON response, e.g. `{"response": "SUCCESS"}`.
 
 ### Acknowledge
 
-Acknowledge a model breach alert.
+Acknowledges a breach (sends `{"acknowledge": true}` as JSON; JSON bodies require Darktrace 6.0+, older appliances expect form parameters).
 
 ```python
-# Acknowledge a breach
-success = breaches.acknowledge(pbid=12345)
+result = breaches.acknowledge(pbid=12345)
+
+# Several breaches: returns {pbid: response, ...}
+results = breaches.acknowledge(pbid=[12345, 12346])
 ```
 
 #### Parameters
 
-- `pbid` (int, required): The breach ID to acknowledge
+- `pbid` (int or list): Policy breach ID(s) (required)
 
 #### Response
 
-Returns `True` if the breach was acknowledged successfully, `False` otherwise.
+The parsed JSON response of the API (for a list of `pbid`, a dict keyed by the integer `pbid`).
 
 ### Unacknowledge
 
-Unacknowledge a previously acknowledged model breach alert.
+Unacknowledges a breach (sends `{"unacknowledge": true}` as JSON; same 6.0+ note as above).
 
 ```python
-# Unacknowledge a breach
-success = breaches.unacknowledge(pbid=12345)
+result = breaches.unacknowledge(pbid=12345)
 ```
 
 #### Parameters
 
-- `pbid` (int, required): The breach ID to unacknowledge
+- `pbid` (int or list): Policy breach ID(s) (required)
 
 #### Response
 
-Returns `True` if the breach was unacknowledged successfully, `False` otherwise.
+The parsed JSON response of the API (for a list of `pbid`, a dict keyed by the integer `pbid`).
+
+### Acknowledge / Unacknowledge with Comment
+
+Convenience methods that call `acknowledge()` (or `unacknowledge()`) and then `add_comment()` for one breach.
+
+```python
+result = breaches.acknowledge_with_comment(pbid=12345, message="Reviewed, benign")
+# {"acknowledge": <response>, "add_comment": <response>}
+
+result = breaches.unacknowledge_with_comment(pbid=12345, message="Reopened")
+# {"unacknowledge": <response>, "add_comment": <response>}
+```
 
 ## Examples
 
-### Complete Breach Management Workflow
+### Breach Triage Workflow
 
 ```python
-from darktrace import DarktraceClient
 import time
+from darktrace import DarktraceClient
 
 client = DarktraceClient(
     host="https://your-darktrace-instance.com",
@@ -335,268 +227,165 @@ client = DarktraceClient(
     private_token="your_private_token"
 )
 
-# Get high-priority unacknowledged breaches
-high_priority_breaches = client.breaches.get(
-    minscore=80.0,
+# Unacknowledged breaches above 80%
+high_priority = client.breaches.get(
+    minscore=0.8,
     includeacknowledged=False,
-    includebreachurl=True,
     expandenums=True
 )
 
-for breach in high_priority_breaches:
-    pbid = breach.get('pbid')
-    score = breach.get('score', 0)
-    model_name = breach.get('model', {}).get('name', 'Unknown')
-    
-    print(f"Analyzing breach {pbid}: {model_name} (score: {score})")
-    
-    # Get existing comments
+for breach in high_priority:
+    pbid = breach["pbid"]
+    model_name = breach["model"].get("then", breach["model"]).get("name", "Unknown")
+    print(f"Breach {pbid}: {model_name}")
+
     comments = client.breaches.get_comments(pbid)
     print(f"Existing comments: {len(comments)}")
-    
-    # Add analysis comment
-    client.breaches.add_comment(
-        pbid=pbid,
-        message=f"Auto-analysis: High-priority breach detected at {time.ctime()}"
+
+    client.breaches.acknowledge_with_comment(
+        pbid, f"Reviewed automatically at {time.ctime()}"
     )
-    
-    # Auto-acknowledge low-confidence high-score breaches
-    if 80 <= score < 90:
-        client.breaches.acknowledge(pbid)
-        client.breaches.add_comment(
-            pbid=pbid,
-            message="Auto-acknowledged: Medium confidence breach"
-        )
-        print(f"Auto-acknowledged breach {pbid}")
 ```
 
-### SaaS Security Monitoring
+### SaaS Breaches in a Time Range
 
 ```python
-# Monitor SaaS breaches across multiple platforms
-saas_platforms = ["Microsoft Office 365", "Google Workspace", "Salesforce"]
-
 saas_breaches = client.breaches.get(
     saasonly=True,
-    saasfilter=saas_platforms,
-    minscore=50.0,
+    saasfilter=["office365*", "gcp*", "azure*"],
+    minscore=0.5,
     includeacknowledged=False,
     from_time="2024-01-01 00:00:00",
     to_time="2024-01-31 23:59:59"
 )
-
-# Group by platform for analysis
-platform_stats = {}
-for breach in saas_breaches:
-    # Extract SaaS platform info from breach data
-    platform = breach.get('device', {}).get('hostname', 'Unknown')
-    
-    if platform not in platform_stats:
-        platform_stats[platform] = {'count': 0, 'total_score': 0}
-    
-    platform_stats[platform]['count'] += 1
-    platform_stats[platform]['total_score'] += breach.get('score', 0)
-
-# Report platform risk
-for platform, stats in platform_stats.items():
-    avg_score = stats['total_score'] / stats['count'] if stats['count'] > 0 else 0
-    print(f"{platform}: {stats['count']} breaches, avg score: {avg_score:.1f}")
+print(f"{len(saas_breaches)} SaaS breaches")
 ```
 
-### Device-Specific Incident Investigation
+### Breaches of One Device
 
 ```python
-# Investigate specific device
-device_id = 123
 device_breaches = client.breaches.get(
-    did=device_id,
+    did=123,
     includeacknowledged=True,
-    includesuppressed=True,
-    fulldevicedetails=True,
-    group="device"
+    includesuppressed=True
 )
 
-print(f"Breaches for device {device_id}:")
 for breach in device_breaches:
-    pbid = breach.get('pbid')
-    model_name = breach.get('model', {}).get('name', 'Unknown')
-    acknowledged = breach.get('acknowledged', False)
-    suppressed = breach.get('suppressed', False)
-    
-    status = []
-    if acknowledged:
-        status.append("ACK")
-    if suppressed:
-        status.append("SUPP")
-    
-    status_str = f" [{', '.join(status)}]" if status else ""
-    print(f"  {pbid}: {model_name} (score: {breach.get('score', 0)}){status_str}")
-    
-    # Get comments for context
+    pbid = breach["pbid"]
+    model_name = breach["model"].get("then", breach["model"]).get("name", "Unknown")
+    print(f"  {pbid}: {model_name}")
+
     comments = client.breaches.get_comments(pbid)
     if comments:
-        print(f"    Latest comment: {comments[-1].get('message', '')[:50]}...")
-
-# Add investigation summary
-investigation_summary = f"""
-Device investigation completed:
-- Total breaches: {len(device_breaches)}
-- Investigation date: {time.ctime()}
-- Analyst: Automated System
-"""
-
-if device_breaches:
-    # Add summary to the most recent breach
-    latest_breach = max(device_breaches, key=lambda x: x.get('time', 0))
-    client.breaches.add_comment(
-        pbid=latest_breach.get('pbid'),
-        message=investigation_summary
-    )
+        print(f"    Latest comment: {comments[-1]['message'][:50]}")
 ```
 
-### Time-Based Trend Analysis
+### Last 7 Days
 
 ```python
 import datetime
 
-# Get breaches from the last 7 days
 end_time = datetime.datetime.now()
 start_time = end_time - datetime.timedelta(days=7)
 
 weekly_breaches = client.breaches.get(
     from_time=start_time.strftime("%Y-%m-%d %H:%M:%S"),
     to_time=end_time.strftime("%Y-%m-%d %H:%M:%S"),
-    minimal=False,
     expandenums=True
 )
 
-# Analyze trends
 daily_counts = {}
-score_distribution = {'low': 0, 'medium': 0, 'high': 0, 'critical': 0}
-
 for breach in weekly_breaches:
-    # Daily trend
-    breach_date = datetime.datetime.fromtimestamp(
-        breach.get('time', 0) / 1000
-    ).strftime('%Y-%m-%d')
-    
-    daily_counts[breach_date] = daily_counts.get(breach_date, 0) + 1
-    
-    # Score distribution
-    score = breach.get('score', 0)
-    if score < 25:
-        score_distribution['low'] += 1
-    elif score < 50:
-        score_distribution['medium'] += 1
-    elif score < 75:
-        score_distribution['high'] += 1
-    else:
-        score_distribution['critical'] += 1
+    day = datetime.datetime.fromtimestamp(breach["time"] / 1000).strftime("%Y-%m-%d")
+    daily_counts[day] = daily_counts.get(day, 0) + 1
 
-print("Daily breach counts:")
-for date, count in sorted(daily_counts.items()):
-    print(f"  {date}: {count}")
+for day, count in sorted(daily_counts.items()):
+    print(f"{day}: {count}")
+```
 
-print(f"\nScore distribution:")
-for category, count in score_distribution.items():
-    print(f"  {category}: {count}")
+### Review Breaches Without Comments
+
+`commentCount` is part of each breach object, so breaches nobody has commented on can be found without an extra request per breach.
+
+```python
+open_breaches = client.breaches.get(includeacknowledged=False, minscore=0.6)
+
+uncommented = [b for b in open_breaches if b.get("commentCount", 0) == 0]
+for breach in uncommented:
+    print(breach["pbid"], breach["model"].get("then", breach["model"]).get("name", "Unknown"))
+```
+
+### Acknowledge Several Breaches and Reopen One
+
+```python
+pbids = [b["pbid"] for b in client.breaches.get(did=123, includeacknowledged=False)]
+
+# One call, one response per breach, keyed by the integer pbid
+results = client.breaches.acknowledge(pbid=pbids)
+for pbid, response in results.items():
+    print(pbid, response)
+
+# Reopen a breach and record why
+client.breaches.unacknowledge_with_comment(pbid=pbids[0], message="Reopened for further review")
+```
+
+### Comments of Several Breaches
+
+```python
+all_comments = client.breaches.get_comments(pbid=[12345, 12346])
+
+# Keys are str(pbid); each value is that breach's list of comments
+for pbid, comments in all_comments.items():
+    for comment in comments:
+        print(pbid, comment["username"], comment["message"])
 ```
 
 ## Error Handling
 
 ```python
+import requests
+
 try:
-    # Attempt to get breaches
-    breaches_data = client.breaches.get(
-        minscore=50.0,
-        includeacknowledged=False
-    )
-    
-    # Process each breach
-    for breach in breaches_data:
-        pbid = breach.get('pbid')
-        
-        # Attempt to add comment
-        success = client.breaches.add_comment(
-            pbid=pbid,
-            message="Automated processing"
-        )
-        
-        if not success:
-            print(f"Failed to add comment to breach {pbid}")
-            
+    for breach in client.breaches.get(minscore=0.5, includeacknowledged=False):
+        client.breaches.add_comment(pbid=breach["pbid"], message="Automated processing")
 except requests.exceptions.HTTPError as e:
     print(f"HTTP error: {e}")
-    if hasattr(e, 'response'):
+    if e.response is not None:
         print(f"Status code: {e.response.status_code}")
         print(f"Response: {e.response.text}")
-        
-except Exception as e:
-    print(f"Unexpected error: {e}")
+
+# Handle failures per breach so one bad pbid does not stop the loop
+failed = []
+for pbid in [12345, 12346, 12347]:
+    try:
+        client.breaches.acknowledge_with_comment(pbid, "Reviewed, benign")
+    except requests.exceptions.HTTPError as e:
+        failed.append((pbid, e.response.status_code if e.response is not None else None))
+print(f"Failed: {failed}")
 ```
 
 ## Response Structure Examples
 
-### Basic Breach Object
+Truncated from the API guide's example for `/modelbreaches/123?historicmodelonly=true`; see the guide for the complete schema.
 
-```python
+```json
 {
-  "pbid": 12345,
-  "score": 85.5,
-  "time": 1641038400000,
-  "acknowledged": false,
-  "suppressed": false,
+  "creationTime": 1582213002000,
+  "commentCount": 0,
+  "pbid": 287232,
+  "time": 1582212986000,
   "model": {
-    "name": "Device / Anomalous Connection",
-    "uuid": "model-uuid-here",
-    "pid": 67
-  },
-  "device": {
-    "did": 123,
-    "hostname": "server01",
-    "ip": "192.168.1.100"
-  },
-  "connectionDetails": {...},
-  "url": "https://darktrace.instance/modelbreaches/12345"
-}
-```
-
-### Comment Object
-
-```python
-{
-  "id": 456,
-  "message": "Investigated - legitimate activity",
-  "author": "analyst@company.com",
-  "timestamp": 1641042000000,
-  "edited": false
+    "name": "Compromise::HTTP Beaconing to Rare Destination",
+    "pid": 143,
+    "phid": 123,
+    "uuid": "1a814475-5fef-499b-a467-4e2e68352cbb"
+  }
 }
 ```
 
 ## Notes
 
-### Time Handling
-- All timestamps are Unix timestamps in milliseconds
-- Time parameters must be specified in pairs (`starttime`/`endtime` or `from_time`/`to_time`)
-- Human-readable format: "YYYY-MM-DD HH:MM:SS"
-
-### Performance Considerations
-- Use `minimal=true` for large datasets to reduce response size
-- Consider using `responsedata` parameter to limit returned fields
-- Time-based filtering is more efficient than post-processing large datasets
-
-### SaaS Filtering
-- `saasfilter` accepts single platform or list of platforms
-- `saasonly=true` restricts results to SaaS breaches only
-- Common platforms: "Microsoft Office 365", "Google Workspace", "Salesforce", "AWS", "Azure"
-
-### Data Structure Variations
-- `deviceattop=true` (default) includes device data in each breach object
-- `group="device"` groups breaches by device
-- `fulldevicedetails=true` provides complete device information
-- `expandenums=true` converts numeric codes to human-readable strings
-
-### Acknowledgment States
-- Acknowledged breaches are excluded by default unless `includeacknowledged=true`
-- Suppressed breaches require `includesuppressed=true` to be included
-- Use `acknowledge()` and `unacknowledge()` to manage breach states
+- `time` and `creationTime` in responses are epoch milliseconds; `from_time`/`to_time` are `YYYY-MM-DD HH:MM:SS` strings.
+- `minimal`, `deviceattop`, `creationtime` and `includesuppressed` defaults are described above (programmatic API: `minimal=false`, `deviceattop=true`).
+- `responsedata` accepts the name of a single top-level field or object.
+- Suppressed breaches (models that trigger too frequently) require `includesuppressed=True`; acknowledged breaches require `includeacknowledged=True`.
