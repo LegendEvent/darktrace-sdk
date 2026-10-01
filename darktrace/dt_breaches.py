@@ -60,14 +60,7 @@ class ModelBreaches(BaseEndpoint):
         if "to_time" in params:
             params["to"] = params.pop("to_time")
 
-        # Support multiple saasfilter values
-        if "saasfilter" in params and isinstance(params["saasfilter"], list):
-            saasfilters = params.pop("saasfilter")
-            params_list = list(params.items()) + [("saasfilter", v) for v in saasfilters]
-        else:
-            params_list = list(params.items())
-
-        return self._get(endpoint, params=dict(params_list), timeout=timeout)
+        return self._get(endpoint, params=params, timeout=timeout)
 
     def get_comments(
         self,
