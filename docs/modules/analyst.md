@@ -35,8 +35,6 @@ The AI Analyst module provides the following methods:
 - **`unacknowledge()`** - Unacknowledge incident events
 - **`pin()`** - Pin incident events
 - **`unpin()`** - Unpin incident events
-- **`acknowledge()`** - Acknowledge incident events
-- **`unacknowledge()`** - Unacknowledge incident events
 
 ## Enhanced Methods
 
@@ -245,6 +243,11 @@ success = client.analyst.add_comment(
 
 - `incident_id` (str): Unique identifier for the AI Analyst event
 - `message` (str): Text that should be added as a comment to the AI Analyst incident event
+
+> **Note (Threat Visualizer 7.x):** On 7.0.42 this endpoint answers `SUCCESS` but the comment is **not stored**
+> (it does the same for IDs that do not exist), and `get_comments()` never returns it. The 7.x UI comments on an
+> incident group or a model breach instead. To leave a comment that is actually stored, use
+> `client.breaches.add_comment(pbid, message)` and check the result with `get_comments()`.
 
 ### 8. Event Management Methods
 
