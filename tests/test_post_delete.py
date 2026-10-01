@@ -523,7 +523,7 @@ class TestMBCommentsPost:
     """Test MBComments POST operations."""
 
     def test_mbcomments_post(self, client, mock_response):
-        """Test MBComments.post() sends POST with breachid and comment."""
+        """Test MBComments.post() sends POST to /modelbreaches/<id>/comments."""
         mock_response.json.return_value = {"id": 1, "comment": "test"}
         client._session.request = Mock(return_value=mock_response)
 
@@ -532,7 +532,7 @@ class TestMBCommentsPost:
 
         call_args = client._session.request.call_args
         assert call_args[0][0] == "POST"
-        assert "/mbcomments" in call_args[0][1]
+        assert "/modelbreaches/1/comments" in call_args[0][1]
 
 
 # ==============================================================================

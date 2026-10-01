@@ -23,6 +23,8 @@ class PCAPs(BaseEndpoint):
         Returns:
             list, dict, or bytes: List of PCAPs, details of a specific PCAP, or binary PCAP file content.
         """
+        if pcap_id and pcap_id.startswith("/tm/"):
+            pcap_id = pcap_id[len("/tm/") :]  # guide: the /tm prefix is dropped for downloads
         endpoint = f"/pcaps{f'/{pcap_id}' if pcap_id else ''}"
         url = f"{self.client.host}{endpoint}"
         params = dict()
