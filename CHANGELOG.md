@@ -5,6 +5,15 @@ All notable changes to the Darktrace SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2026-10-01
+
+### Fixed
+- `Analyst.acknowledge/unacknowledge/pin/unpin` and `Tags.post_entities` failed with `API SIGNATURE ERROR`: `_post_form` now signs exactly the url-encoded body it sends (#59, #60).
+- GET parameters are signed as sent: list values as repeated keys, `None` dropped, UTF-8; `ModelBreaches.get` no longer collapses a `saasfilter` list (#63, #61).
+
+### Documentation
+- `Analyst.add_comment` is accepted but not stored on Threat Visualizer 7.x; use `breaches.add_comment` (#62).
+
 ## [0.9.0] - 2026-02-27
 
 ### Added
