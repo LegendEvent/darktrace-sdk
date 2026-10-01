@@ -7,6 +7,7 @@ import json
 import logging
 import time
 from typing import TYPE_CHECKING, Any
+from urllib.parse import quote_plus, urlencode
 
 import requests
 
@@ -202,32 +203,33 @@ class BaseEndpoint:
         self,
         endpoint: str,
         form_data: dict[str, Any],
-        params: dict[str, Any] | None = None,
         timeout: _InternalTimeoutType = _UNSET,
     ) -> dict | list:
         """Make an authenticated POST request with form-encoded data.
 
+        Darktrace verifies the signature over ``endpoint?<form body>`` with the body
+        exactly as sent on the wire (``a b`` -> ``a+b``, ``a,b`` -> ``a%2Cb``), so the
+        same sorted, url-encoded string is both signed and sent.
+
         Args:
             endpoint: The API endpoint path.
             form_data: Dict of form fields to send.
-            params: Optional additional query parameters.
             timeout: Per-request timeout override.
 
         Returns:
             Parsed JSON response.
         """
-        headers, sorted_params = self._get_headers(endpoint, params)
+        body = urlencode(sorted(form_data.items()))
+        headers, _ = self._get_headers(endpoint, {k: quote_plus(str(v)) for k, v in form_data.items()})
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         url = f"{self.client.host}{endpoint}"
-        resolved_timeout = self._resolve_timeout(timeout)
         response = self._make_request(
             "POST",
             url,
             headers=headers,
-            params=sorted_params,
-            data=form_data,
+            data=body,
             verify=self.client.verify_ssl,
-            timeout=resolved_timeout,
+            timeout=self._resolve_timeout(timeout),
         )
         _raise_for_status(response, method="POST", url=url)
         return response.json()
