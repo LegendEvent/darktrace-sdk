@@ -101,6 +101,8 @@ class Tags(BaseEndpoint):
         Returns:
             list or dict: Tag or device information from Darktrace.
         """
+        if did is None and tag is None:
+            raise ValueError("A GET to /tags/entities must include either did or tag.")
         params: dict[str, Any] = dict()
         if did is not None:
             params["did"] = did
@@ -203,6 +205,11 @@ class Tags(BaseEndpoint):
         Returns:
             dict: API response from Darktrace.
         """
+        # The guide expects device ids as strings.
+        if isinstance(entityValue, (list, tuple)):
+            entityValue = [str(v) for v in entityValue]
+        else:
+            entityValue = str(entityValue)
         body: dict[str, Any] = {"entityType": entityType, "entityValue": entityValue}
         if expiryDuration is not None:
             body["expiryDuration"] = expiryDuration

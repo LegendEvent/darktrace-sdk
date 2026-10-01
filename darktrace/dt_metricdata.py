@@ -16,16 +16,15 @@ class MetricData(BaseEndpoint):
         port: int | None = None,
         sourceport: int | None = None,
         destinationport: int | None = None,
-        protocol: str | None = None,
+        protocol: int | str | None = None,
         applicationprotocol: str | None = None,
         starttime: int | None = None,
         endtime: int | None = None,
-        from_: int | None = None,
-        to: int | None = None,
-        interval: str | None = None,
+        from_: str | None = None,
+        to: str | None = None,
+        interval: int | None = None,
         breachtimes: bool | None = None,
         fulldevicedetails: bool | None = None,
-        devices: list[str] | None = None,
         timeout: float | tuple[float, float] | None = _UNSET,
         **params,
     ) -> dict | list:
@@ -33,36 +32,46 @@ class MetricData(BaseEndpoint):
         Get metric time series data from Darktrace /metricdata endpoint.
 
         Args:
-            metric (str, optional): Metric name to retrieve (use 'metrics' for multiple).
-            metrics (list of str, optional): List of metric names to retrieve.
+            metric (str, optional): System name of a metric (the ``name`` field of /metrics, not the label).
+            metrics (list of str, optional): Several metric names; sent as ``metric1=``, ``metric2=``, ... and
+                one metric object is returned per name.
             did (int, optional): Device ID.
             ddid (int, optional): Destination Device ID.
             odid (int, optional): Other Device ID.
             port (int, optional): Port number.
             sourceport (int, optional): Source port number.
             destinationport (int, optional): Destination port number.
-            protocol (str, optional): Protocol name (e.g., 'tcp', 'udp').
-            applicationprotocol (str, optional): Application protocol name.
+            protocol (int or str, optional): IP protocol, see /enums for the list (e.g. 6 for TCP).
+            applicationprotocol (str, optional): Application protocol, see /enums for the list.
             starttime (int, optional): Start time (epoch ms).
             endtime (int, optional): End time (epoch ms).
-            from_ (int, optional): Alias for starttime (epoch ms).
-            to (int, optional): Alias for endtime (epoch ms).
-            interval (str, optional): Time interval (e.g., '1min', '5min').
-            breachtimes (bool, optional): Whether to include breach times.
+            from_ (str, optional): Start time in ``YYYY-MM-DD HH:MM:SS`` format (sent as ``from``).
+            to (str, optional): End time in ``YYYY-MM-DD HH:MM:SS`` format.
+            interval (int, optional): Interval size in seconds to group data into (guide default 60).
+            breachtimes (bool, optional): Whether to include breach times (alters the response structure).
             fulldevicedetails (bool, optional): Whether to include full device details.
-            devices (list of str, optional): List of device IDs or names.
             timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
             **params: Additional API parameters.
 
         Returns:
-            dict: Metric time series data from Darktrace.
+            list: One ``{"metric": ..., "data": [...]}`` object per requested metric; with
+            ``breachtimes`` the first element is a ``{"breachtimes": [...]}`` object.
+
+        Note:
+            The API requires time parameters in pairs (starttime+endtime or from+to).
         """
         endpoint = "/metricdata"
         query_params = dict()
 
-        # Handle metric/metrics - mutually exclusive: use either metrics (list) or metric (single string)
+        if (starttime is None) != (endtime is None):
+            raise ValueError("starttime and endtime must be given together.")
+        if (from_ is None) != (to is None):
+            raise ValueError("from_ and to must be given together.")
+
+        # Several metrics: metric1=, metric2=, ... (guide); a single metric uses metric=
         if metrics is not None:
-            query_params["metric"] = ",".join(metrics)
+            for i, name in enumerate(metrics, start=1):
+                query_params[f"metric{i}"] = name
         elif metric is not None:
             query_params["metric"] = metric
 
@@ -96,8 +105,6 @@ class MetricData(BaseEndpoint):
             query_params["breachtimes"] = breachtimes
         if fulldevicedetails is not None:
             query_params["fulldevicedetails"] = fulldevicedetails
-        if devices is not None:
-            query_params["devices"] = ",".join(devices)
 
         query_params.update(params)
 

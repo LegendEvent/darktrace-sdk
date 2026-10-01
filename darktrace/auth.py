@@ -49,7 +49,15 @@ class DarktraceAuth:
 
         # Sign exactly what ``requests`` will put on the wire: None is dropped and
         # list/tuple values become repeated keys. Keys are sorted as the API requires.
-        clean = {k: v for k, v in sorted((params or {}).items()) if v is not None}
+        # Booleans go out lowercase (true/false) as in the API guide examples.
+        def norm(v: Any) -> Any:
+            if isinstance(v, bool):
+                return "true" if v else "false"
+            if isinstance(v, (list, tuple)):
+                return [norm(i) for i in v]
+            return v
+
+        clean = {k: norm(v) for k, v in sorted((params or {}).items()) if v is not None}
         pairs = [(k, item) for k, v in clean.items() for item in (v if isinstance(v, (list, tuple)) else [v])]
         signature_path = request_path
         if pairs:

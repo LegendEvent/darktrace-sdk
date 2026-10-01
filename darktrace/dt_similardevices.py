@@ -8,7 +8,7 @@ __all__ = ["SimilarDevices"]
 class SimilarDevices(BaseEndpoint):
     def get(
         self,
-        device_id: str | None = None,
+        device_id: int | str | None = None,
         count: int | None = None,
         fulldevicedetails: bool | None = None,
         token: str | None = None,
@@ -20,10 +20,10 @@ class SimilarDevices(BaseEndpoint):
         Get similar devices information from Darktrace.
 
         Args:
-            device_id (str, optional): Device ID to find similar devices for. If not provided, returns all similar devices.
+            device_id (int or str, optional): Device ID (sent as the ``did`` query parameter) to find similar devices for.
             count (int, optional): Number of similar devices to return.
             fulldevicedetails (bool, optional): Whether to include full device details in the response.
-            token (str, optional): Pagination token for large result sets.
+            token (str, optional): System-notice change token; the response then contains the old and new similar-device lists.
             responsedata (str, optional): Restrict the returned JSON to only the specified field(s).
             timeout (float or tuple, optional): Request timeout in seconds. Can be a single value or (connect_timeout, read_timeout).
             **kwargs: Additional API parameters.
@@ -31,8 +31,10 @@ class SimilarDevices(BaseEndpoint):
         Returns:
             list or dict: Similar devices information from Darktrace.
         """
-        endpoint = f"/similardevices{f'/{device_id}' if device_id else ''}"
+        endpoint = "/similardevices"
         params = {}
+        if device_id is not None:
+            params["did"] = device_id
         if count is not None:
             params["count"] = count
         if fulldevicedetails is not None:

@@ -71,7 +71,7 @@ class Details(BaseEndpoint):
         endpoint = "/details"
         # --- Parameter validation logic ---
         # At least one of did, pbid, msg, or blockedconnections is required
-        if not any([did, pbid, msg, blockedconnections]):
+        if all(v is None for v in (did, pbid, msg, blockedconnections)):
             raise ValueError("At least one of did, pbid, msg, or blockedconnections must be specified.")
 
         # Time parameter validation

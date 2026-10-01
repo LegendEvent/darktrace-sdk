@@ -99,6 +99,7 @@ class Antigena(BaseEndpoint):
         self,
         codeid: int,
         reason: str = "",
+        duration: int | None = None,
         timeout: float | tuple[float, float] | None = _UNSET,
     ) -> dict:
         """
@@ -109,6 +110,7 @@ class Antigena(BaseEndpoint):
         Args:
             codeid (int): Unique numeric identifier of a RESPOND action.
             reason (str, optional): Free text field to specify the activation purpose.
+            duration (int, optional): Optional duration of the action in seconds.
             timeout (float or tuple, optional): Timeout for the request in seconds. Can be a single
                 float for both connect and read timeouts, or a tuple of (connect_timeout, read_timeout).
 
@@ -125,6 +127,8 @@ class Antigena(BaseEndpoint):
 
         if reason:
             body["reason"] = reason
+        if duration is not None:
+            body["duration"] = duration
 
         return self._post_json(endpoint, body=body, timeout=timeout)
 

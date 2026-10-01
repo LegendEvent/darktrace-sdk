@@ -76,7 +76,7 @@ class IntelFeed(BaseEndpoint):
     def update(
         self,
         add_entry: str | None = None,
-        add_list: list[str] | None = None,
+        add_list: list[str] | str | None = None,
         description: str | None = None,
         source: str | None = None,
         expiry: str | None = None,
@@ -106,7 +106,7 @@ class IntelFeed(BaseEndpoint):
         if add_entry:
             body["addentry"] = add_entry
         if add_list:
-            body["addlist"] = ",".join(add_list)
+            body["addlist"] = add_list if isinstance(add_list, str) else ",".join(add_list)
         if remove_entry:
             body["removeentry"] = remove_entry
         if remove_all:

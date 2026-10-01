@@ -5,6 +5,16 @@ All notable changes to the Darktrace SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed (verified against the official API guide and read-only against a live 7.0.42 instance)
+- `MetricData.get(metrics=[...])` sent one comma-joined `metric=a,b` (the server returned unrelated data); it now sends `metric1=`, `metric2=`, ... as the guide specifies. `from_`/`to` are typed as `YYYY-MM-DD HH:MM:SS` strings, `interval` as seconds, and unpaired time parameters raise `ValueError`. The `devices` parameter (never in the guide, rejected by the server) is removed.
+- `SimilarDevices.get(device_id=...)` used `/similardevices/<id>`, which the server answers with a non-JSON error; it now sends `?did=`.
+- `Subnets.get(subnet_id=...)` now sends `sid=` instead of the non-existent `/subnets/<id>` path; `MBComments.get(comment_id=...)` (same dead path) raises `ValueError`.
+- `MBComments.post` now posts to `/modelbreaches/<pbid>/comments` with `{"message": ...}`; `/mbcomments` is GET only in the guide.
+- Boolean query parameters are sent as `true`/`false` (guide format) instead of `True`/`False`.
+- `Antigena.activate_action` accepts the guide's optional `duration`; `Details.get(did=0)` is no longer rejected; `Tags.get_entities` requires `did` or `tag`; `Tags.post_tag_entities` sends device ids as strings; `IntelFeed.update(add_list=...)` also accepts a string.
+
 ## [0.10.1] - 2026-10-01
 
 ### Fixed

@@ -85,6 +85,7 @@ SAMPLE: dict[str, Any] = {
 OVERRIDE: dict[str, dict[str, Any]] = {
     "details.get": {"did": 1},
     "intelfeed.update": {"add_entry": "a.com"},
+    "tags.get_entities": {"did": 1},
 }
 
 
