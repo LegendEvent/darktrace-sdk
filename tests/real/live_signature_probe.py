@@ -2,7 +2,8 @@
 """
 Live signature probe against a REAL Darktrace - designed to change nothing.
 
-Default (no flag): GET requests only (connectivity / signing controls).
+Default (no flag): GET requests only. Verifies that list / None / non-ASCII GET
+parameters are signed correctly.
 
 --allow-sentinel-post: additionally fires the five form POSTs from issue #59
 (analyst ack/unack/pin/unpin, tags.post_entities) but ONLY with sentinel IDs that
@@ -73,6 +74,10 @@ def main() -> int:
     cases: list[tuple[str, Callable[[], Any]]] = [
         ("GET control: status.get", lambda: c.status.get()),
         ("GET control: devices.get(count=1)", lambda: c.devices.get(count=1)),
+        ("GET devices.get(saasfilter=[a,b])", lambda: c.devices.get(saasfilter=["Office365", "Zoom"], count=1)),
+        ("GET breaches.get(saasfilter=[a,b])", lambda: c.breaches.get(saasfilter=["Office365", "Zoom"], count=1)),
+        ("GET breaches.get(did=None)", lambda: c.breaches.get(did=None, count=1)),
+        ("GET breaches.get(non-ASCII value)", lambda: c.breaches.get(device="Müller-PC", count=1)),
     ]
     if a.allow_sentinel_post:
         # ids that look real but are verified absent: fresh uuid4s, and max(did)+100000
