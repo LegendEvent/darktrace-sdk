@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MBComments.post` now posts to `/modelbreaches/<pbid>/comments` with `{"message": ...}`; `/mbcomments` is GET only in the guide.
 - Boolean query parameters are sent as `true`/`false` (guide format) instead of `True`/`False`.
 - `Antigena.activate_action` accepts the guide's optional `duration`; `Details.get(did=0)` is no longer rejected; `Tags.get_entities` requires `did` or `tag`; `Tags.post_tag_entities` sends device ids as strings; `IntelFeed.update(add_list=...)` also accepts a string.
+- `PCAPs.get(pcap_id="/tm/<file>")` drops the `/tm` prefix, as the guide specifies for downloads.
 
 ## [0.10.1] - 2026-10-01
 

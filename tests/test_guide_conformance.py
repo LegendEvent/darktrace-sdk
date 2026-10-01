@@ -109,3 +109,16 @@ def test_mbcomments_get_rejects_path_form(sent):
     c, _ = sent
     with pytest.raises(ValueError):
         c.mbcomments.get(comment_id="1")
+
+
+def test_pcaps_get_strips_tm_prefix(sent):
+    c, log = sent
+    c.pcaps.get(pcap_id="/tm/abc.pcap")
+    assert _prep(log)[1] == "/pcaps/abc.pcap"
+
+
+def test_endpointdetails_bools_lowercase(sent):
+    c, log = sent
+    c.endpointdetails.get(ip="1.2.3.4", additionalinfo=True, devices=False)
+    q = dict(_prep(log)[2])
+    assert q["additionalinfo"] == "true" and q["devices"] == "false"
