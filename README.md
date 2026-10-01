@@ -8,17 +8,9 @@
 
 ---
 
-## 🆕 Latest Updates (v0.10.1)
+## 🆕 What's new
 
-### Bug Fixes
-- **Request signing**: form POSTs (`Analyst.acknowledge/unacknowledge/pin/unpin`, `Tags.post_entities`) and GET requests with list or non-ASCII parameters no longer fail with `API SIGNATURE ERROR` (#59, #63).
-- **Guide conformance**: `MetricData` (`metric1=`, `metric2=`), `SimilarDevices`, `Subnets`, `MBComments.post`, `Antigena.activate_action(duration=...)`, `IntelFeed`, `Tags` and `PCAPs` now send what the API guide specifies; booleans are sent as `true`/`false`.
-- **SummaryStatistics**: `get()` raises `ValueError` for parameter combinations the guide forbids.
-
-### Documentation
-- All module docs under `docs/modules` rewritten against the official API guide, with response schemas and examples.
-
-> For previous updates, see [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases) or [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](CHANGELOG.md) for the changes in every version, or [GitHub Releases](https://github.com/LegendEvent/darktrace-sdk/releases).
 
 ---
 
