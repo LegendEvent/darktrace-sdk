@@ -163,6 +163,67 @@ for f in result.get('filters', []):
     print(f['id'], f['filtertype'], f['comparator'])
 ```
 
+### Building a Component Lookup
+
+```python
+# Map each cid to a short summary for later lookups (e.g. from the cid values in model breach data)
+component_map = {}
+for component in component_list(client.components.get()):
+    component_map[component['cid']] = {
+        'mlid': component.get('mlid'),
+        'threshold': component.get('threshold'),
+        'interval': component.get('interval'),
+        'active': component.get('active'),
+    }
+
+info = component_map.get(8977, {})
+print(info)
+```
+
+### Counting Filtertypes
+
+```python
+from collections import Counter
+
+# Count which filtertypes are used across all components
+counts = Counter()
+for component in component_list(client.components.get()):
+    for f in component.get('filters', []):
+        counts[f['filtertype']] += 1
+
+for filtertype, n in counts.most_common():
+    print(f"{filtertype}: {n}")
+```
+
+### Reading the Component Logic
+
+```python
+component = client.components.get(cid=8977)
+logic = component['logic']['data']
+
+def render(node):
+    # A node is either a filter id (e.g. "A") or {"left", "operator", "right"}
+    if isinstance(node, str):
+        return node
+    return f"({render(node['left'])} {node['operator']} {render(node['right'])})"
+
+print(render(logic))   # e.g. (A AND (B AND C))
+```
+
+### Inspecting Several Components
+
+```python
+import requests
+
+for cid in (8977, 8978):
+    try:
+        component = client.components.get(cid=cid)
+    except requests.exceptions.HTTPError as e:
+        print(f"Component {cid}: HTTP error {e}")
+        continue
+    print(cid, component.get('active'), [f['id'] for f in component.get('filters', [])])
+```
+
 ## Error Handling
 
 ```python

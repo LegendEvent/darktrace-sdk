@@ -68,6 +68,13 @@ several = breaches.get(pbid="12345,12346")
 
 # Only some top-level fields
 trimmed = breaches.get(responsedata="model")
+
+# Breaches of one model, by UUID or by model ID, with the model as it was at breach time
+by_uuid = breaches.get(uuid="80010119-6d7f-0000-0305-5e0000000420")
+by_pid = breaches.get(pid=143, historicmodelonly=True)
+
+# Include suppressed breaches in a device-scoped query
+with_suppressed = breaches.get(did=123, includesuppressed=True)
 ```
 
 #### Parameters
@@ -78,6 +85,8 @@ trimmed = breaches.get(responsedata="model")
 - `expandenums` (bool): Expand numeric enumerated types to their string representation (codes are listed at `/enums`)
 - `from_time` (str): Start time in `YYYY-MM-DD HH:MM:SS` format (sent as `from`)
 - `historicmodelonly` (bool): Return only the historic version of the model details (the model at the time of breach)
+
+> The `model` object of a breach holds the model as it was at breach time under `model.then` and, unless `historicmodelonly` is used, the current version under `model.now` (observed on Threat Visualizer 7.0.42; the guide's examples show both). Examples below read the name via `model.then`.
 - `includeacknowledged` (bool): Include acknowledged breaches
 - `includebreachurl` (bool): Return a URL for the breach (requires the FQDN configuration parameter on the appliance, and only returned when `minimal=False`)
 - `minimal` (bool): Reduce the amount of data returned. Always defaults to `false` programmatically.
@@ -227,7 +236,7 @@ high_priority = client.breaches.get(
 
 for breach in high_priority:
     pbid = breach["pbid"]
-    model_name = breach.get("model", {}).get("name", "Unknown")
+    model_name = breach["model"].get("then", breach["model"]).get("name", "Unknown")
     print(f"Breach {pbid}: {model_name}")
 
     comments = client.breaches.get_comments(pbid)
@@ -263,7 +272,7 @@ device_breaches = client.breaches.get(
 
 for breach in device_breaches:
     pbid = breach["pbid"]
-    model_name = breach.get("model", {}).get("name", "Unknown")
+    model_name = breach["model"].get("then", breach["model"]).get("name", "Unknown")
     print(f"  {pbid}: {model_name}")
 
     comments = client.breaches.get_comments(pbid)
@@ -294,6 +303,43 @@ for day, count in sorted(daily_counts.items()):
     print(f"{day}: {count}")
 ```
 
+### Review Breaches Without Comments
+
+`commentCount` is part of each breach object, so breaches nobody has commented on can be found without an extra request per breach.
+
+```python
+open_breaches = client.breaches.get(includeacknowledged=False, minscore=0.6)
+
+uncommented = [b for b in open_breaches if b.get("commentCount", 0) == 0]
+for breach in uncommented:
+    print(breach["pbid"], breach["model"].get("then", breach["model"]).get("name", "Unknown"))
+```
+
+### Acknowledge Several Breaches and Reopen One
+
+```python
+pbids = [b["pbid"] for b in client.breaches.get(did=123, includeacknowledged=False)]
+
+# One call, one response per breach, keyed by the integer pbid
+results = client.breaches.acknowledge(pbid=pbids)
+for pbid, response in results.items():
+    print(pbid, response)
+
+# Reopen a breach and record why
+client.breaches.unacknowledge_with_comment(pbid=pbids[0], message="Reopened for further review")
+```
+
+### Comments of Several Breaches
+
+```python
+all_comments = client.breaches.get_comments(pbid=[12345, 12346])
+
+# Keys are str(pbid); each value is that breach's list of comments
+for pbid, comments in all_comments.items():
+    for comment in comments:
+        print(pbid, comment["username"], comment["message"])
+```
+
 ## Error Handling
 
 ```python
@@ -307,6 +353,15 @@ except requests.exceptions.HTTPError as e:
     if e.response is not None:
         print(f"Status code: {e.response.status_code}")
         print(f"Response: {e.response.text}")
+
+# Handle failures per breach so one bad pbid does not stop the loop
+failed = []
+for pbid in [12345, 12346, 12347]:
+    try:
+        client.breaches.acknowledge_with_comment(pbid, "Reviewed, benign")
+    except requests.exceptions.HTTPError as e:
+        failed.append((pbid, e.response.status_code if e.response is not None else None))
+print(f"Failed: {failed}")
 ```
 
 ## Response Structure Examples
